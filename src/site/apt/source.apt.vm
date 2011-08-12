@@ -1,0 +1,24 @@
+  ----
+  Kurento Android SDK. Source code
+  ----
+  ----
+  Date
+  ----
+  
+Kurento Android SDK
+
+  Following projects contain Kurento Android SDK source code
+ 
+   * <<{{{../site/tk-sipua/${tkSipUaVersion}}SIP User Agent API}}>>: Defines the SIP User Agent API
+ 
+   * <<{{{../site/tk-android-sipua/${tkAndroidSipUaVersion}}SIP User Agent for Android}}>>: Implements a SIP User Agent for the Android platform 
+
+   * <<{{{../site/tk-mediaspec/${tkMediaSpecVersion}}Media Spec}}>>: Utility library intended to manage SDP messages
+
+   * <<{{{../site/tk-android-media/${tkAndroidMediaVersion}}Android Media}}>>: Implements media core functionalities
+   
+Applications
+
+   * <<{{{../site/tk-android-softphone/${tkAndroidSoftPhoneVersion}}Kurento Softphone}}>>: This is a video soft phone application that uses Kurento Android SDK
+   
+   

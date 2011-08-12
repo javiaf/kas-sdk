@@ -1,0 +1,33 @@
+   ------
+   Kurento Android SDK developer's guide
+   ------
+   ------
+   Date
+   ------
+
+
+Call management
+
+* Sip User Agent initialization
+
+* Call management
+
+	* Setup a call
+	
+	* Hangup a call
+
+* Incoming call
+
+Media management
+
+* Media Stack initialization
+
+* Display video stream reception
+
+* Stream camera video
+
+* Play audio reception
+
+Example
+
+Simplest application with code snippets
