@@ -1,0 +1,44 @@
+-----
+Kurento Android SDK
+-----
+
+Introduction
+
+  Kurento Android SDK enables easy integration of conversational video conferencing
+  capabilities within Android Applications. It implements SIP User Agent and a media
+  stack, providing a comprehensive API for call management and media control. 
+   
+ 		 MOSTRAR UNA IMAGEN DE BLOQUES DE LA PILA
+  
+    
+Kurento Android SDK
+
+  Kurento Android SDK is an Android Library that can be easily added to projects. The 
+  API covers to main areas:
+  
+    * <<SIP User Agent>>: Enables call control from the application
+    
+    		FIGURA ASOCIADA AL API SIP
+    
+    * <<Media control>>: Provides a mechanism to build and connect a media network.
+      
+      Media Control API is designed with the same philosophy as 
+      {{{http://www.jcp.org/en/jsr/detail?id=309}JSR309 Media Server Control API}}.
+      This API define multiple  components for media transmission and process and provides a common
+      interface called Joinable that facilitates creation of arbitrarily complex networks
+      for media delivery. JSR309 is (as stated in the title) intended for Media Servers.
+      It defines the concept of MediaGroup as a point of media termination within the 
+      reception device. This termination points can be either a PLAYER or a RECORER to
+      connect the relay elements with the storage devices. This approach does not suits
+      well when termination points are client devices that interacts with cameras or
+      screens that can not be named with an URL. For that reason Kurento Android SDK 
+      defines a new API with the same philosophy, but more adapted to a mobile terminating
+      point
+      		
+      		FIGURA ASOCIADA AL CONTROL DE MEDIA
+      		
+  Detalied information about Kurento Android SDK usage can be found in the 
+  {{{./developer-guide.html}Kurento Android SDK developer's guide}}
+   
+
+

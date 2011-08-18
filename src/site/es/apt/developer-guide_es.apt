@@ -1,0 +1,129 @@
+   ------
+   Kurento Android SDK developer's guide
+   ------
+   ------
+   Date
+   ------
+
+
+Crear una aplicación en Android
+
+* Configuración del fichero AndroidManifest.xml
+	
+	La configuración del fichero AndroidManifest.xml dentro de una aplicación basada en Android es muy importante, debido a que en este fichero se encuentran por un lado definidos los permisos que deberá aceptar el usuario cuando se instale la aplicación, y por otro las actividades y los servicios de los cuales estará compuesta la aplicación.
+	
+		Algunos de los permisos necesarios son:
+		
+		<<<	\<uses-permission android:name="android.permission.VIBRATE"\>\<\/uses-permission\> >>>
+		
+		<<<	\<uses-permission android:name="android.permission.CAMERA"\>\<\/uses-permission\> >>>
+			
+		<<<	\<uses-permission android:name="android.permission.RECORD_AUDIO"\>\<\/uses-permission\> >>>
+			
+		<<<	\<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"\>\<\/uses-permission\> >>>
+			 
+		<<<	\<uses-permission android:name="android.permission.INTERNET"\>\<\/uses-permission\\> >>>
+			
+		<<<	\<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"\>\<\/uses-permission\> >>>
+			
+		<<<	\<uses-permission android:name="android.permission.WAKE_LOCK"\>\<\/uses-permission\> >>>
+			
+		<<<	\<uses-permission android:name="android.permission.READ_CONTACTS"\>\<\/uses-permission\> >>>
+			
+		<<<	\<uses-permission android:name="android.permission.WRITE_CONTACTS"\>\<\/uses-permission\> >>>
+			 
+		<<<	\<uses-permission android:name="android.permission.READ_PHONE_STATE"\>\<\/uses-permission\> >>>
+			
+		Dependiendo de que tipo de aplicación se quiera implementar algunos de estos permisos no serán necesarios. Para conocer todos los permisos de los que se dispone se pueden consultar en la {{{http://developer.android.com/reference/android/Manifest.permission.html}guía de desarrollo de Android}}.
+		
+		Por otro lado, también se definirán las actividades y los servicios que compondrán nuestra aplicación, como por ejemplo:
+		
+			* Un servicio se define como:
+			
+			<<<	\<service android:enabled="true" 	android:name="com.tikal.softphone.SoftPhoneService" /\> >>>
+
+			* Una actividad se define como:
+			
+			<<<	\<activity android:name="com.tikal.videocall.VideoCall" 	android:label="Video Call" android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+			android:screenOrientation="landscape" android:launchMode="singleTop" \> >>>
+				
+		Cada una de las actividades que vayan a ser lanzadas dentro de la aplicación deben ser definidas en este fichero. Para más información sobre la configuración del fichero AndroidManifest.xml se pueden consultar en la {{{http://developer.android.com/guide/topics/manifest/manifest-intro.html}guía de desarrollo de Android}}.
+
+		Por último, en la configuración de la actividad principal deberá incluirse un apartado llamado <<intent-filter>> que nos servirá para cuando un usuario quiera realizar una llamada desde los contactos según el "scheme" que nosotros elijamos, en este caso se busca que cuando un usuario tenga guardado un contacto con datos como "sip:juan@server.net"> se abra nuestra actividad:
+		
+		<<< \<intent-filter\> >>> \
+			<<<		\<action android:name="android.intent.action.SENDTO" /\> >>> \
+			<<<		\<category android:name="android.intent.category.DEFAULT" /\> >>> \
+			<<<		\<data android:scheme="sip" /\> >>> \
+			<<<		\<data android:scheme="imto" /\> >>> \
+		<<< \</intent-filter\> >>> \
+	
+	
+* Actividades básicas
+
+	** Actividad principal 
+	
+	** Gestión de {{preferencias}} de {{Conexión}}
+	
+	** Gestión de {{preferencias}} del {{Media}} 
+	
+	** Visualización de la {{Recepción}} de una llamada 
+	
+	** Visualización de la {{Emisión}} de una llamada 
+	
+	** Visualización del media (vídeo y audio)
+
+
+* Servicios necesarios
+
+	** Servicio principal
+	
+		Iniciar la notificación de la aplicación en la barra de notificaciones  \
+		Agregarse al listener que se debe crear para controlar los eventos SIP. (Ver Clases importantes) \
+		Control del registro del usuario en el servidor (registro correctamente, fallido, etc..) \
+		Control de los estados de una llamada \
+		Parar el propio servicio  y eliminar la notificación \
+		Parar el servicio de una llamada activa cuando finalice una llamada
+	
+	** Servicio para una llamada activa
+	
+		Inicial la notificación de la llamada activa en la barra de notificaciones \
+		Crear y arrancar los componentes de media (sólo de audio), los componentes de vídeo se crearan y se arrancaran en la actividad encargada de mostrar el media \
+		Arrancar la actividad encargada de mostrar el media (vídeo y audio) \
+		Parar la actividad que muestra el media cuando finalice una llamada \
+		Parar el propio servicio y para los componentes de media (sólo audio)
+
+* Clases importantes
+
+	Deberá existir una clase que debe implementar varias interfaces: SipEndPointListener, SipCallListener, IPhone, CallNotifier. A está clase se le puede llamar para entender su funcionamiento "controller". Será la encargada de controlar y gestionar todos los eventos SIP que nos puedan llegar o que podamos enviar. De igual manera, nos servirá para avisar a algunas de las actividades de que ha ocurrido algo para que éstas puedan realizar sus tareas, como levantar el interfaz de una llamada entrante, una llamada saliente, etc... 
+
+
+Gestión de {preferencias}
+
+* {Conexión}
+
+* {Media}
+
+Gestión de emisión y recepción de llamadas
+
+* {Emisión} de llamadas
+
+* {Recepción} de llamadas
+
+
+Gestión del media (vídeo y audio)
+
+
+Clases Auxiliares
+
+* Almacenamiento de datos para interactuar entre las clases
+
+* Obtener la ip actual
+
+* Obtener datos de los contactos de la agenda según su Uri.
+
+
+
+Ejemplos
+
+Fragmentos de código fuente
