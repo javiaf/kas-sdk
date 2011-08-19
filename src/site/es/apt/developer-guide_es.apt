@@ -106,14 +106,29 @@ Crear una aplicación en Android
 
 	La implementación de este método en la clase <<controller>> deberá ser capaz de tratar los siguientes eventos:
 		
-		* <<<INCOMING_CALL>>>, la recepción de este evento significa que alguien nos está realizando una llamada, por lo que desde la clase <<controller>> hay que notificar al <<<listener>>> que se haya agregado que está llegando una llamada. En este caso habrá que invocar a un método de un objeto de la clase <<<CallListener>>>, de la cual hablaremos en la {{Actividad principal}} que será quien implemente esta interfaz, llamado <<<incomingCall(String uri)>>>.  Básicamente lo que hará será levantar la actividad encargada de la recepción de llamadas.
+		* <<<INCOMING_CALL>>>, la recepción de este evento significa que alguien nos está realizando una llamada, por lo que desde la clase <<controller>> hay que notificar al <<<listener>>> que se haya agregado que está llegando una llamada. En este caso habrá que invocar a un método de un objeto de la interfaz <<<CallListener>>>, de la cual hablaremos en la {{Actividad principal}} que será quien implemente esta interfaz, llamado <<<incomingCall(String uri)>>>.  Básicamente lo que hará será levantar la actividad encargada de la recepción de llamadas.
 	
-		* <<<REGISTER_USER_SUCESSFUL>>>, la recepción de este evento significa que el registro con los parámetros de configuración de conexión son correctos y hemos podido registrarnos en el servidor. En este caso al igual que en el anterior, será un método de un objeto de la clase <<<CallListener>>> a quien tendremos que invocar, llamado <<<registerUserSucessful()>>>. Este método se encargará de hacerle saber al usuario de la aplicación que su registro ha sido correcto.
+		* <<<REGISTER_USER_SUCESSFUL>>>, la recepción de este evento significa que el registro con los parámetros de configuración de conexión son correctos y hemos podido registrarnos en el servidor. En este caso al igual que en el anterior, será un método de un objeto de la interfaz <<<CallListener>>> a quien tendremos que invocar, llamado <<<registerUserSucessful()>>>. Este método se encargará de hacerle saber al usuario de la aplicación que su registro ha sido correcto.
 
 		* <<<REGISTER_USER_FAIL>>>, la recepción de este evento significa al contrario que el evento anterior que el registro ha sido incorrecto. El método al que se llamará será <<<registerUserFailed()>>>  y se encargará de hacerle saber al usuario de la aplicación que su registro ha sido incorrecto.
 	
 
 ** SipCallListener
+
+	Este interfaz representa un método encargado de recibir eventos del tipo <<<SipCallEvent>>>:
+	
+	*<<<onEvent()>>>
+
+*** <<<onEvent()>>>
+
+	La implementación de este método en la clase <<controller>> deberá ser capaz de tratar los siguientes eventos, al igual que en el apartado anterior la llamada a los métodos serán de un objeto de la interfaz <<<CallListener>>> que serán implementados por la {{Actividad principal}}:
+
+	* <<<CALL_SETUP>>>, la recepción de este evento significa que la llamada ha sido establecida y que por lo tanto se puede cerrar la actividad encargada de gestionar o bien la emisión de llamadas o bien la recepción de llamadas y empezar la actividad y el servicio que se encargará de gestionar el media, tanto el vídeo como el audio. Esto se hará llamando al método <<<callSetup(NetworkConnection networkConnection)>>>.
+
+	* <<<CALL_TERMINATE>>>, la recepción de este evento significa que la llamada ha sido terminada por alguno de los usuarios, por lo tanto habrá que parar el servicio y la actividad que se encarga de gestionar una llamada activa. Esto se hará llamado al método <<<callTerminate()>>>.
+	
+	* <<<CALL_REJECT>>>, la recepción de este evento significa que la llamada ha sido rechazada por el contacto, por lo que habrá que cerrar la actividad que se encarga de gestionar la emisión de llamadas. Esto se hará llamando al método <<<callReject()>>>.
+		
 
 ** IPhone 
 
