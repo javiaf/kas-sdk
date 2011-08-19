@@ -13,26 +13,19 @@ Crear una aplicación en Android
 	La configuración del fichero AndroidManifest.xml dentro de una aplicación basada en Android es muy importante, debido a que en este fichero se encuentran por un lado definidos los permisos que deberá aceptar el usuario cuando se instale la aplicación, y por otro las actividades y los servicios de los cuales estará compuesta la aplicación.
 	
 		Algunos de los permisos necesarios son:
-		
-		<<<	\<uses-permission android:name="android.permission.VIBRATE"\>\<\/uses-permission\> >>>
-		
-		<<<	\<uses-permission android:name="android.permission.CAMERA"\>\<\/uses-permission\> >>>
-			
-		<<<	\<uses-permission android:name="android.permission.RECORD_AUDIO"\>\<\/uses-permission\> >>>
-			
-		<<<	\<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"\>\<\/uses-permission\> >>>
-			 
-		<<<	\<uses-permission android:name="android.permission.INTERNET"\>\<\/uses-permission\\> >>>
-			
-		<<<	\<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"\>\<\/uses-permission\> >>>
-			
-		<<<	\<uses-permission android:name="android.permission.WAKE_LOCK"\>\<\/uses-permission\> >>>
-			
-		<<<	\<uses-permission android:name="android.permission.READ_CONTACTS"\>\<\/uses-permission\> >>>
-			
-		<<<	\<uses-permission android:name="android.permission.WRITE_CONTACTS"\>\<\/uses-permission\> >>>
-			 
-		<<<	\<uses-permission android:name="android.permission.READ_PHONE_STATE"\>\<\/uses-permission\> >>>
+
+---
+	<uses-permission android:name="android.permission.VIBRATE"></uses-permission>
+	<uses-permission android:name="android.permission.CAMERA"></uses-permission>
+	<uses-permission android:name="android.permission.RECORD_AUDIO"></uses-permission>
+	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>
+	<uses-permission android:name="android.permission.INTERNET"></uses-permission\>
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"></uses-permission>
+	<uses-permission android:name="android.permission.WAKE_LOCK"></uses-permission>
+	<uses-permission android:name="android.permission.READ_CONTACTS"></uses-permission>
+	<uses-permission android:name="android.permission.WRITE_CONTACTS"></uses-permission>
+	<uses-permission android:name="android.permission.READ_PHONE_STATE"></uses-permission>
+---
 			
 		Dependiendo de que tipo de aplicación se quiera implementar algunos de estos permisos no serán necesarios. Para conocer todos los permisos de los que se dispone se pueden consultar en la {{{http://developer.android.com/reference/android/Manifest.permission.html}guía de desarrollo de Android}}.
 		
@@ -40,24 +33,30 @@ Crear una aplicación en Android
 		
 			* Un servicio se define como:
 			
-			<<<	\<service android:enabled="true" 	android:name="com.tikal.softphone.SoftPhoneService" /\> >>>
+--- 
+	<service android:enabled="true" android:name="com.tikal.softphone.SoftPhoneService" \>
+---
 
 			* Una actividad se define como:
 			
-			<<<	\<activity android:name="com.tikal.videocall.VideoCall" 	android:label="Video Call" android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
-			android:screenOrientation="landscape" android:launchMode="singleTop" \> >>>
+---			
+	<activity android:name="com.tikal.videocall.VideoCall" 	android:label="Video Call" 
+	android:theme="@android:style/Theme.NoTitleBar.Fullscreen" android:screenOrientation="landscape" 
+	android:launchMode="singleTop" \>
+---
 				
 		Cada una de las actividades que vayan a ser lanzadas dentro de la aplicación deben ser definidas en este fichero. Para más información sobre la configuración del fichero AndroidManifest.xml se pueden consultar en la {{{http://developer.android.com/guide/topics/manifest/manifest-intro.html}guía de desarrollo de Android}}.
 
-		Por último, en la configuración de la actividad principal deberá incluirse un apartado llamado <<intent-filter>> que nos servirá para cuando un usuario quiera realizar una llamada desde los contactos según el "scheme" que nosotros elijamos, en este caso se busca que cuando un usuario tenga guardado un contacto con datos como "sip:juan@server.net"> se abra nuestra actividad:
+		Por último, en la configuración de la actividad principal deberá incluirse un apartado llamado <<{{{http://developer.android.com/guide/topics/manifest/intent-filter-element.html}intent-filter}}>> que nos servirá para cuando un usuario quiera realizar una llamada desde los contactos según el "scheme" que nosotros elijamos, en este caso se busca que cuando un usuario tenga guardado un contacto con datos como "sip:juan@server.net"> se abra nuestra actividad:
 		
-		<<< \<intent-filter\> >>> \
-			<<<		\<action android:name="android.intent.action.SENDTO" /\> >>> \
-			<<<		\<category android:name="android.intent.category.DEFAULT" /\> >>> \
-			<<<		\<data android:scheme="sip" /\> >>> \
-			<<<		\<data android:scheme="imto" /\> >>> \
-		<<< \</intent-filter\> >>> \
-	
+---
+	<intent-filter>
+		<action android:name="android.intent.action.SENDTO" \>
+		<category android:name="android.intent.category.DEFAULT" \>
+		<data android:scheme="sip" \>
+		<data android:scheme="imto" \>
+	<\intent-filter> 
+---	
 	
 * Actividades básicas
 
@@ -102,13 +101,67 @@ Gestión de {preferencias}
 
 * {Conexión}
 
+	En las preferencias de conexión deberemos dejar configurar los siguientes datos:
+	
+	** <<Usuario>>: será el usuario con el que quedará registrado en el servidor SIP.
+
+	** <<Dominio>>: será el dominio con el que quedará registrado en el servidor SIP.
+
+	** <<Ip del servidor SIP>>: será el servidor donde se registraran los usuarios.
+
+	** <<Puerto del servidor SIP>>: será el puerto del servidor.
+
+	Con estos datos, más adelante veremos que pasos hay que seguir para registrarse en el servidor.
+
 * {Media}
 
 Gestión de emisión y recepción de llamadas
 
+	Tanto para la emisión como para la recepción de llamadas podemos tener dos actividades que nos representen que un contacto nos está llamando o bien que le estamos llamando nosotros.
+
 * {Emisión} de llamadas
 
+	La actividad que se encargue de la emisión de llamadas será creada cuando se haya elegido un contacto o se sepa a que contacto se quiere realizar la llamada y debería mostrar en la pantalla como mínimo:
+	
+		** El nombre del contacto.
+
+		** La imagen del contacto, si éste lo tuviera.
+
+		** Un botón para cancelar la llamada.
+
+	Esta actividad no deberá hacer nada más que mostrar la interfaz para que el usuario sepa que se está realizando una llamada y que puede cancelarla. La realización de la llamada se encargará la clase <<controller>> que hemos definido anteriormente. 
+
+	El cierre de esta actividad puede venir dada por 3 circunstancias:
+
+		** El contacto rechaza la llamada.
+		
+		** El contacto acepta la llamada.
+	
+		** El usuario cancela la llamada.
+
+
 * {Recepción} de llamadas
+
+	La actividad que se encargue de la recepción de llamadas será creada a partir del servicio encargado de controlar los eventos SIP que puedan llegar, como sería un <invite> en el caso de una recepción de llamada. La interfaz de esta actividad debería mostrar en la pantalla como mínimo:
+
+		** El nombre del contacto.
+		
+		** La imagen del contacto, si éste lo tuviera.
+
+		** Un botón para aceptar la llamada. Cuando se pulse, se deberá notificar a <<controller>> que la llamada se ha aceptado y cerrar la actividad.
+
+		** Un botón para cancelar la llamada. Cuando se pulse, se deberá notificar a <<controller>> que la llamada se ha rechazado y cerrar la actividad.
+	
+		** Vibrar e incluso hacer sonar el sonido del dispositivo. Cuando se acepte o se rechace la llamada la vibración y/o el sonido deberá cesar.
+
+	Como se ha comentado anteriormente, el cierre de esta actividad puede venir dada por 3 circunstancias:
+		
+		** Quien llama cancela la llamada.
+	
+		** Se rechaza la llamada.
+
+		** Se acepta la llamada.
+	
 
 
 Gestión del media (vídeo y audio)
@@ -118,10 +171,57 @@ Clases Auxiliares
 
 * Almacenamiento de datos para interactuar entre las clases
 
+	Está clase nos servirá para poder compartir algunos datos entre todas las actividades y no perder información cuando la actividad esté en segundo plano. Simplemente será una tabla Hash en la que iremos almacenando y recogiendo datos según los necesitemos.
+
+---
+	public static HashMap<String, Object> contextTable = new HashMap<String, Object>();
+---
+
+
 * Obtener la ip actual
 
-* Obtener datos de los contactos de la agenda según su Uri.
+	Recoger la ip de un dispositivo Android, en muchas de las aplicaciones es algo que se puede necesitar muy a menudo, por lo que se recomienda realizar una pequeña clase que nos ayude con esta tarea. Un ejemplo de la función sería:
 
+---
+	public static InetAddress getLocalAddress() {
+		try {
+			for (Enumeration<NetworkInterface> en = NetworkInterface
+					.getNetworkInterfaces(); en.hasMoreElements();) {
+				NetworkInterface intf = en.nextElement();
+				for (Enumeration<InetAddress> enumIpAddr = intf
+						.getInetAddresses(); enumIpAddr.hasMoreElements();) {
+					InetAddress inetAddress = enumIpAddr.nextElement();
+					if (!inetAddress.isLoopbackAddress()
+							&& (inetAddress instanceof Inet4Address)) {
+						return inetAddress;
+					}
+				}
+			}
+		} catch (SocketException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+---
+
+
+* Obtener datos de los contactos de la agenda según su Uri
+
+	Para tener una mayor facilidad a la hora de obtener datos de los contactos, es recomendable crearse una clase que se encargue de ello a partir de la uri del usuario. De esta manera, podremos recoger el nombre, la foto, la música asociada a ese contacto. 
+
+	De esa manera podremos hacer consultas del estilo:
+
+		* <<<getName(Integer id)>>> donde obtendremos el nombre del contacto según su identificador dentro de los contactos. Esto nos servirá cuando elijamos a un contacto desde el acceso a los contactos de la aplicación.
+
+		*<<<getName(Intent data)>>> donde obtendremos el nombre del contacto después de elegir el contacto directamente desde la agenda sin pasar por la aplicación.
+
+		*<<<getId(String sipUri)>>> donde obtendremos el id del contacto en la agenda a partir de su identificador SIP.
+
+		*<<<getId(Intent data)>>> donde obtendremos el id del contacto en la agenda.
+
+		*<<<getSip(Intent data)>>> donde obtendremos el identificador SIP después de elegir el contacto directamente desde la agenda sin pasar por la aplicación.
+
+		*<<<getPhoto(Integer id)>>> donde obtendremos la imagen del contacto, si tiene.
 
 
 Ejemplos
