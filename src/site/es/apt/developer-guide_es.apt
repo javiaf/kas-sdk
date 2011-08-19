@@ -160,8 +160,13 @@ Crear una aplicación en Android
 	Este método de la clase <<controller>> se llamará desde la actividad que gestione una llamada activa. La implementación de este método usará un objeto de la clase <<SipCall>> para llamar a su método <<<hang()>>> de esta manera usando el protocolo SIP se podrá enviar el mensaje de finalización de llamada.
 
 
-** CallNotifier	
+** CallNotifier
 
+	Este interfaz representa dos métodos para poder añadir o eliminar <<listener>> del tipo interfaz <<<CallListener>>>, como se ha comentado antes será implementado en la {{Actividad principal}}:
+	
+		* <<<addListener(CallListener listener)>>>. Añadir un <<listener>>.
+
+		*<<<removeListener(CallListener listener)>>>. Eliminar un <<listener>>.
 
 
 {Actividad principal}
