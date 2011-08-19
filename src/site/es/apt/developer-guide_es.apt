@@ -58,22 +58,22 @@ Crear una aplicación en Android
 	<\intent-filter> 
 ---	
 	
-* Actividades básicas
+* Actividades
 
-	** Actividad principal 
+	** {{Actividad principal}}
 	
 	** Gestión de {{preferencias}} de {{Conexión}}
 	
 	** Gestión de {{preferencias}} del {{Media}} 
 	
-	** Visualización de la {{Recepción}} de una llamada 
+	** Gestión de la {{Recepción}} de una llamada 
 	
-	** Visualización de la {{Emisión}} de una llamada 
+	** Gestión de la {{Emisión}} de una llamada 
 	
-	** Visualización del media (vídeo y audio)
+	** {{Gestión del media}} ({{Vídeo}} y {{Audio}})
 
 
-* Servicios necesarios
+* Servicios
 
 	** Servicio principal
 	
@@ -92,10 +92,48 @@ Crear una aplicación en Android
 		Parar la actividad que muestra el media cuando finalice una llamada \
 		Parar el propio servicio y para los componentes de media (sólo audio)
 
-* Clases importantes
+* Controller
 
-	Deberá existir una clase que debe implementar varias interfaces: SipEndPointListener, SipCallListener, IPhone, CallNotifier. A está clase se le puede llamar para entender su funcionamiento "controller". Será la encargada de controlar y gestionar todos los eventos SIP que nos puedan llegar o que podamos enviar. De igual manera, nos servirá para avisar a algunas de las actividades de que ha ocurrido algo para que éstas puedan realizar sus tareas, como levantar el interfaz de una llamada entrante, una llamada saliente, etc... 
+	Deberá existir una clase que debe implementar varias interfaces: <<<SipEndPointListener, SipCallListener, IPhone y CallNotifier>>>. A está clase la llamaremos para entender su funcionamiento <<"controller">>. Será la encargada de controlar y gestionar todos los eventos SIP que nos puedan llegar o que podamos enviar, de implementar los comportamientos normales de un teléfono como aceptar una llamada, rechazarla, etc... A esta clase se añadirán "listener" y será el <<controller>> quien les irá avisando de qué está pasando.
 
+
+** IPhone 
+
+	Esta interfaz representa las acciones básicas de un teléfono:
+	
+		* <<<aceptCall()>>>. Aceptar una llamada entrante.
+
+		* <<<reject()>>>. Rechazar una llamada entrante.
+
+		* <<<call(String remoteURI)>>>. Realizar una llamada saliente a un contacto.
+
+		* <<<hang()>>>. Colgar una llamada en curso.
+
+*** <<<aceptCall()>>>
+	
+	Este método de la clase <<controller>> se llamará desde la actividad que se encargue de la gestión de las llamadas entrantes. La implementación de este método debe recoger los datos de la llamada y llamar al método <<<accept()>>> de la clase <<<SipCall>>>. De esta manera se podrá enviar mediante el protocolo SIP que la llamada ha sido aceptada.
+
+*** <<<reject()>>>
+
+	Este método de la clase <<controller>> se llamará desde la actividad que se encargue de la gestión de las llamadas entrantes también. La implementación de este método debe recoger los datos de la llamada y llamara al método <<<reject()>>> de la clase <<<SipCall>>>. De esta manera se podrá enviar mediante el protocolo SIP que la llamada ha sido rechazada.
+
+
+*** <<<call(String remoteURI)>>>
+
+	Este método de la clase <<controller>> se llamará desde la actividad principal de la aplicación o desde la actividad que se encargue de gestionar la emisión de llamadas a partir de un contacto. Deberá tener como parámetro la Uri del contacto al que se quiere realizar la llamada. En la implementación de este método, se usará un objeto de la clase <<<SipEndPoint>>>, que será definido en el registro del usuario (se verá en el apartado que donde se registran los usuarios), usando el método <<<dial(String remoteParty, Direction direction, SipCallListener callController)>>> el cual se encargará de enviar mediante el protocolo SIP el mensaje de invitación.
+
+*** <<<hang()>>>
+
+	Este método de la clase <<controller>> se llamará desde la actividad que gestione una llamada activa. La implementación de este método usará un objeto de la clase <<SipCall>> para llamar a su método <<<hang()>>> de esta manera usando el protocolo SIP se podrá enviar el mensaje de finalización de llamada.
+
+		
+
+
+
+
+
+
+{Actividad principal}
 
 Gestión de {preferencias}
 
@@ -163,11 +201,15 @@ Gestión de emisión y recepción de llamadas
 		** Se acepta la llamada.
 	
 
+{Gestión del media} (Vídeo y Audio)
 
-Gestión del media (vídeo y audio)
+* {Vídeo}
 
+* {Audio}
 
-Clases Auxiliares
+Otras clases de ayuda
+
+	Estas clases que se mencionan a continuación, son clases que se pueden crear para facilitar la labor de desarrollo de algunas de las funcionalidades que pueda tener la aplicación.
 
 * Almacenamiento de datos para interactuar entre las clases
 
@@ -205,7 +247,7 @@ Clases Auxiliares
 ---
 
 
-* Obtener datos de los contactos de la agenda según su Uri
+* Obtener datos de los contactos de la agenda
 
 	Para tener una mayor facilidad a la hora de obtener datos de los contactos, es recomendable crearse una clase que se encargue de ello a partir de la uri del usuario. De esta manera, podremos recoger el nombre, la foto, la música asociada a ese contacto. 
 
