@@ -96,6 +96,24 @@ Crear una aplicación en Android
 
 	Deberá existir una clase que debe implementar varias interfaces: <<<SipEndPointListener, SipCallListener, IPhone y CallNotifier>>>. A está clase la llamaremos para entender su funcionamiento <<"controller">>. Será la encargada de controlar y gestionar todos los eventos SIP que nos puedan llegar o que podamos enviar, de implementar los comportamientos normales de un teléfono como aceptar una llamada, rechazarla, etc... A esta clase se añadirán "listener" y será el <<controller>> quien les irá avisando de qué está pasando.
 
+** SipEndPointListener
+
+	Este interfaz representa un método encargado de recibir eventos del tipo <<<SipEndPointEvent>>>:
+	
+	*<<<onEvent()>>>
+
+*** <<<onEvent()>>>
+
+	La implementación de este método en la clase <<controller>> deberá ser capaz de tratar los siguientes eventos:
+		
+		* <<<INCOMING_CALL>>>, la recepción de este evento significa que alguien nos está realizando una llamada, por lo que desde la clase <<controller>> hay que notificar al <<<listener>>> que se haya agregado que está llegando una llamada. En este caso habrá que invocar a un método de un objeto de la clase <<<CallListener>>>, de la cual hablaremos en la {{Actividad principal}} que será quien implemente esta interfaz, llamado <<<incomingCall(String uri)>>>.  Básicamente lo que hará será levantar la actividad encargada de la recepción de llamadas.
+	
+		* <<<REGISTER_USER_SUCESSFUL>>>, la recepción de este evento significa que el registro con los parámetros de configuración de conexión son correctos y hemos podido registrarnos en el servidor. En este caso al igual que en el anterior, será un método de un objeto de la clase <<<CallListener>>> a quien tendremos que invocar, llamado <<<registerUserSucessful()>>>. Este método se encargará de hacerle saber al usuario de la aplicación que su registro ha sido correcto.
+
+		* <<<REGISTER_USER_FAIL>>>, la recepción de este evento significa al contrario que el evento anterior que el registro ha sido incorrecto. El método al que se llamará será <<<registerUserFailed()>>>  y se encargará de hacerle saber al usuario de la aplicación que su registro ha sido incorrecto.
+	
+
+** SipCallListener
 
 ** IPhone 
 
@@ -126,10 +144,8 @@ Crear una aplicación en Android
 
 	Este método de la clase <<controller>> se llamará desde la actividad que gestione una llamada activa. La implementación de este método usará un objeto de la clase <<SipCall>> para llamar a su método <<<hang()>>> de esta manera usando el protocolo SIP se podrá enviar el mensaje de finalización de llamada.
 
-		
 
-
-
+** CallNotifier	
 
 
 
