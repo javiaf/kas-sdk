@@ -8,7 +8,7 @@
 	<packaging>jar</packaging>
 
 	<name>kurento-android-docs</name>
-	<url>http://maven.apache.org</url>
+	<url>http://repository.kurento.com/site/kurento-android-docs</url>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

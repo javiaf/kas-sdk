@@ -73,24 +73,12 @@ Crear una aplicación en Android
 	** {{Gestión del media}} ({{Vídeo}} y {{Audio}})
 
 
-* Servicios
+* {{Servicios}}
 
-	** Servicio principal
+	** {{Servicio principal}}
 	
-		Iniciar la notificación de la aplicación en la barra de notificaciones  \
-		Agregarse al listener que se debe crear para controlar los eventos SIP. (Ver Clases importantes) \
-		Control del registro del usuario en el servidor (registro correctamente, fallido, etc..) \
-		Control de los estados de una llamada \
-		Parar el propio servicio  y eliminar la notificación \
-		Parar el servicio de una llamada activa cuando finalice una llamada
-	
-	** Servicio para una llamada activa
-	
-		Inicial la notificación de la llamada activa en la barra de notificaciones \
-		Crear y arrancar los componentes de media (sólo de audio), los componentes de vídeo se crearan y se arrancaran en la actividad encargada de mostrar el media \
-		Arrancar la actividad encargada de mostrar el media (vídeo y audio) \
-		Parar la actividad que muestra el media cuando finalice una llamada \
-		Parar el propio servicio y para los componentes de media (sólo audio)
+	** {{Servicio para una llamada activa}}
+
 
 * Controller
 
@@ -106,7 +94,7 @@ Crear una aplicación en Android
 
 	La implementación de este método en la clase <<controller>> deberá ser capaz de tratar los siguientes eventos:
 		
-		* <<<INCOMING_CALL>>>, la recepción de este evento significa que alguien nos está realizando una llamada, por lo que desde la clase <<controller>> hay que notificar al <<<listener>>> que se haya agregado que está llegando una llamada. En este caso habrá que invocar a un método de un objeto de la interfaz <<<CallListener>>>, de la cual hablaremos en la {{Actividad principal}} que será quien implemente esta interfaz, llamado <<<incomingCall(String uri)>>>.  Básicamente lo que hará será levantar la actividad encargada de la recepción de llamadas.
+		* <<<INCOMING_CALL>>>, la recepción de este evento significa que alguien nos está realizando una llamada, por lo que desde la clase <<controller>> hay que notificar al <<<listener>>> que se haya agregado que está llegando una llamada. En este caso habrá que invocar a un método de un objeto de la interfaz <<<CallListener>>>, de la cual hablaremos en el {{Servicio principal}} que será quien implemente esta interfaz, llamado <<<incomingCall(String uri)>>>.  Básicamente lo que hará será levantar la actividad encargada de la recepción de llamadas.
 	
 		* <<<REGISTER_USER_SUCESSFUL>>>, la recepción de este evento significa que el registro con los parámetros de configuración de conexión son correctos y hemos podido registrarnos en el servidor. En este caso al igual que en el anterior, será un método de un objeto de la interfaz <<<CallListener>>> a quien tendremos que invocar, llamado <<<registerUserSucessful()>>>. Este método se encargará de hacerle saber al usuario de la aplicación que su registro ha sido correcto.
 
@@ -121,7 +109,7 @@ Crear una aplicación en Android
 
 *** <<<onEvent()>>>
 
-	La implementación de este método en la clase <<controller>> deberá ser capaz de tratar los siguientes eventos, al igual que en el apartado anterior la llamada a los métodos serán de un objeto de la interfaz <<<CallListener>>> que serán implementados por la {{Actividad principal}}:
+	La implementación de este método en la clase <<controller>> deberá ser capaz de tratar los siguientes eventos, al igual que en el apartado anterior la llamada a los métodos serán de un objeto de la interfaz <<<CallListener>>> que serán implementados por el {{Servicio principal}}:
 
 	* <<<CALL_SETUP>>>, la recepción de este evento significa que la llamada ha sido establecida y que por lo tanto se puede cerrar la actividad encargada de gestionar o bien la emisión de llamadas o bien la recepción de llamadas y empezar la actividad y el servicio que se encargará de gestionar el media, tanto el vídeo como el audio. Esto se hará llamando al método <<<callSetup(NetworkConnection networkConnection)>>>.
 
@@ -162,7 +150,7 @@ Crear una aplicación en Android
 
 ** CallNotifier
 
-	Este interfaz representa dos métodos para poder añadir o eliminar <<listener>> del tipo interfaz <<<CallListener>>>, como se ha comentado antes será implementado en la {{Actividad principal}}:
+	Este interfaz representa dos métodos para poder añadir o eliminar <<listener>> del tipo interfaz <<<CallListener>>>, como se ha comentado antes será implementado en el {{Servicio principal}}:
 	
 		* <<<addListener(CallListener listener)>>>. Añadir un <<listener>>.
 
@@ -170,6 +158,90 @@ Crear una aplicación en Android
 
 
 {Actividad principal}
+
+{Servicios}
+
+	La creación de los servicios es necesaria para poder controlar ciertos eventos que pueden ocurrir cuando la aplicación no está en primer plano. Para ello se deberían crear dos servicios, uno que gestione todos los eventos de la conexión SIP y otro que gestione el media durante una llamada.
+
+* {Servicio principal}
+
+	El servicio principal de la aplicación será el encargado de controlar los eventos que puedan surgir desde SIP, por ello, es el encargado de implementar la interfaz {{<<<CallListener>>>}}. 
+
+	Algunas de las responsabilidades que tendrá este servicio son:
+
+	* Cuando desde la aplicación principal se arranque el servicio, debería iniciar la notificación de que la aplicación está abierta en la barra de notificaciones. A la hora de crear la notificación se debería asociar la actividad principal a esta notificación.
+
+	* Agregarse mediante el método  <<<addListener()>>> del objeto <<controller>>, que recuperaremos gracias a <<<ApplicationContext>>>,  para poder recibir los eventos anteriormente mencionados. De esta manera desde <<controller>> se podrá llamar a nuestra implementación de <<<CallListener>>>.
+
+	* Cuando recibamos una llamada a <<<incomingCall(String uri)>>>, se deberá iniciar la actividad que gestione la recepción de llamadas. De esta manera será el usuario el que podrá aceptar o rechazar la llamada. Por otro lado, gracias a que estamos usando un servicio, cada vez que este método sea invocado y aunque la aplicación esté en segundo plano se podrá levantar dicha actividad.
+
+	* Cuando recibamos una llamada a <<<registerUserSucessful()>>>, se deberá indicar a la actividad principal mediante un mensaje que el usuario se ha registrado correctamente para que ésta pueda notificárselo al usuario mediante algún mensaje.
+
+	* Cuando recibamos una llamada a <<<registerUserFailed()>>>, se deberá indicar a la actividad principal mediante un mensaje que el usuario no se ha registrado correctamente para que ésta pueda notificárselo al usuario mediante algún mensaje.
+
+	* Cuando recibamos una llamada a <<<callSetup(NetworkConnection networkConnection)>>>, se deberá indicar a la actividad principal mediante un mensaje que debe para la actividad de emisión de llamadas o de recepción de llamadas según sea el caso. Además, se deberá arrancar el {{Servicio para una llamada activa}}.
+
+	* Cuando recibamos una llamada a <<<callTerminate()>>>, se deberá para el {{Servicio para una llamada activa}}.
+
+	* Cuando recibamos una llamada a <<<callReject()>>>, se deberá indicar a la actividad principal mediante un mensaje que debe parar la actividad encargar de emisión de llamadas, ya que sólo nos podrán rechazar una llamada cuando la realicemos nosotros.
+
+	* Por último, cuando se finalice la aplicación el servicio será en encargado de eliminar la notificación de la barra de notificaciones y además cerrar el {{Servicio para una llamada activa}} para evitar que se quedase corriendo.
+
+	
+**{CallListener}
+
+	Esta interfaz representa los eventos que podremos recibir desde SIP:
+	
+		* <<<incomingCall(String uri)>>>. Este evento nos indicará que estamos recibiendo una invitación a una llamada.
+
+		* <<<registerUserSucessful()>>>. Este evento nos indicará que el usuario se ha registrado correctamente.
+
+		* <<<registerUserFailed()>>>. Este evento nos indicará que el usuario no se ha registrado correctamente.
+
+		* <<<callSetup(NetworkConnection networkConnection)>>>. Este evento nos indicará que la llamada se ha establecido correctamente por parte de los usuarios.
+
+		* <<<callTerminate()>>>. Este evento nos indicará que la llamada ha finalizado.
+		
+		* <<<callReject()>>>. Este evento nos indicará que la llamada ha sido rechazada.
+
+* {{Servicio para una llamada activa}}
+
+	Este servicio será el encargado de gestionar una llamada activa y será creado desde el servicio principal cuando se ha establecido una llamada correctamente.
+
+	* Cuando se crea el servicio, uno de los primeros pasos que debe hacerse es cambiar la notificación que tenemos en la barra de notificaciones para indicar que tenemos una llamada activa, de este modo si salimos al menú principal o a la agenda, etc... podemos volver a la llamada sin problemas. La notificación estará asociada a la actividad que se encargue de mostrar el media en el dispositivo.
+
+	* Durante la creación del servicio, también se crearan los componentes de audio, tanto para la emisión como para la recepción. Los componentes de vídeo se crearan en la actividad encargada de mostrar el media en el dispositivo, esto es así para poder seguir enviando audio si la aplicación está en segundo plano, pero no vídeo. Para poder crear los componentes de audio usaremos uno de los métodos de <<<MediaSessionAndroid>>>.
+
+		** <<<createMediaComponent>>>, le indicaremos el tipo de componente que necesitamos, si es de emisión o de recepción, además de el altavoz por el cual queremos recibir. En el siguiente ejemplo, estaríamos creando un componente de recepción de audio y se reproducirá por el altavoz externo:
+
+---
+	Parameters params = new ParametersImpl();
+	params.put(MediaComponentAndroid.STREAM_TYPE, AudioManager.STREAM_MUSIC);
+	audioRecorderComponent = mediaSession.createMediaComponent(MediaComponentAndroid.AUDIO_RECORDER, params);
+---		
+
+	* Cuando el servicio ha comenzado, y hemos creado los componentes de audio correctamente, debemos definir como será cada componente, sí de emisión o de recepción y hacerlos empezar. De la siguiente manera, seleccionaríamos que el componente que hemos creado anteriormente es de recepción y que puede comenzar.
+
+---
+	audioRecorderComponent.join(Direction.RECV,
+						nc.getJoinableStream(StreamType.audio));
+	audioRecorderComponent.start();
+---
+
+	* Una vez los componentes de audio han comenzado, se deberá arrancar la actividad que se encargará de mostrar el media en el dispositivo, entonces crearemos los componentes de vídeo.
+
+	* Cuando se destruye el servicio, éste deberá:
+
+		** Volver a cambiar la notificación de la barra de notificaciones a la notificación principal.
+
+		** Detener los componentes de audio.
+
+---
+	audioRecorderComponent.stop();	
+---
+
+		** Avisar a la actividad que se encarga de mostrar el media en el dispositivo que debe cerrarse.
+
 
 Gestión de {preferencias}
 
