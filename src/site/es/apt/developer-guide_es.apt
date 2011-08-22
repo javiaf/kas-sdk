@@ -311,9 +311,103 @@ Gestión de emisión y recepción de llamadas
 
 {Gestión del media} (Vídeo y Audio)
 
+	Como se ha explicado anteriormente, la gestión de vídeo y audio están separadas. El motivo de que estén separadas es básicamente que podamos seguir con una conversación tanto si la aplicación está en primer plano como si no. De está manera, el audio se gestiona en el servicio encargado de las llamadas activas y el vídeo se gestiona en la actividad que se encargará de mostrar el media en el dispositivo, esto es así para no enviar ni recibir vídeo cuando el dispositivo no los va a mostrar y así no saturarlo.
+
+* {La actividad}
+
+	Esta actividad será la encargada de mostrar el media en el dispositivo, además de reproducir el audio por los altavoces y recoger el audio que generamos nosotros. Esta actividad tendrá su propia definición en un fichero xml, donde se mostrarán los elementos que tendrá la interfaz, debería tener como mínimo:
+
+	* Un <<<SurfaceView>>> para mostrar el vídeo que recibimos.
+
+	* Un <<<SurfaceView>>> para mostrar el vídeo que enviamos.
+
+	* Un <<<Button>>> para poder colgar la llamada.
+
+	Además podemos añadir dos botones más para:
+	
+	* Gestionar el mute durante una conversación.
+	
+	* Gestionar el altavoz por el cual queremos reproducir el audio.
+
+	
+	La creación de esta actividad viene dada porque se ha establecido una llamada correctamente, y el servicio encargado de gestionar las llamadas activas la ha lanzado. El servicio por su lado ya se ha encargado de gestionar los componentes de audio por su lado, como ya se ha explicado anteriormente. Esta actividad será la que se encargue de gestionar los componentes de vídeo, para ello cuando se crea deberá establecer cada componente asociando cada uno a su <<<SurfaceView>>> correspondiente.
+
+	Una vez que ya está activa la actividad, deberá arrancar esos componentes de vídeo para empezar a emitir y recibir vídeo y poder mostrarlos en cada uno de los <<<SurfaceView>>>. Como se ha comentado anteriormente, podremos tener varios botones para gestionar diferentes aspectos de la conversación. 
+
+	* Si quisiésemos terminar la llamada usaríamos el botón destinado para ello. Para poder terminar la llamada usaremos el objeto <<controller>>, que recuperaremos gracias a <<<ApplicationContext>>>, usando el método <<<hang()>>>. Y además finalizaremos la actividad para acabar con la llamada.
+
+	* Si quisiésemos poner o quitar el mute de la conversación usaremos el botón destinado para ello. Para poder realizarlo debemos parar o volver arrancar el componente de audio, que también recuperaremos gracias a <<<ApplicationContext>>>. Antes de parar o arrancarlo deberemos saber que estaba haciendo ese componente.
+
+---
+	if (audioPlayerComponent.isStarted())
+		audioPlayerComponent.stop();
+	else
+		audioPlayerComponent.start();
+---
+
+	* Tenemos la opción de cambiar el altavoz por el cual se reproduce el audio. Recuperaríamos el componente de audio mediante <<<ApplicationContext>>> y volveríamos a definir el tipo de componente de audio que es y el altavoz por el cual se quiere reproducir.
+
+---
+	if (audioRecorderComponent != null) {
+		audioRecorderComponent.stop();
+		audioRecorderComponent.unjoin(nc
+				.getJoinableStream(StreamType.audio));
+	}
+
+	Parameters params = new ParametersImpl();
+	params.put(MediaComponentAndroid.STREAM_TYPE,
+			AudioManager.STREAM_VOICE_CALL);
+	audioRecorderComponent = mediaSession
+			.createMediaComponent(
+					MediaComponentAndroid.AUDIO_RECORDER,
+					params);
+
+	if (audioRecorderComponent != null) {
+		audioRecorderComponent.join(Direction.RECV,
+				nc.getJoinableStream(StreamType.audio));
+		audioRecorderComponent.start();
+	}
+---
+
+	* Gracias a que existe un servicio que gestiona las llamada activas, si en algún momento el usuario sale de esta actividad lo único que "perderíamos" sería el vídeo, ya que, la actividad cuando entra en <<pause>> debe detener los componentes de vídeo para no congestionar el dispositivo. Además no tiene sentido seguir enviando o recibiendo vídeo cuando no se va a visualizar.
+
+	* Cuando volvamos a la actividad gracias a la notificación de la barra de notificaciones, los componentes de vídeo se deben volver a crear y para así poder volver a recibir y emitir vídeo.
+
+	* Por último, cuando se finaliza la actividad, bien porque se ha pulsado el botón para terminar la llamada o bien porque hemos recibido el mensaje desde el servicio que han colgado desde el otro lado, debemos parar los componentes de vídeo.
+
+
 * {Vídeo}
 
+	La creación de los componentes de media son muy parecidos a los de audio. También usaremos uno de los métodos de <<<MediaSessionAndroid>>>. En este caso deberemos añadir algunos parámetros más como el <<SurfaceView>> (será la superficie donde se mostrará el vídeo recibido), el ancho y el largo de la pantalla del dispositivo. En el siguiente ejemplo, estamos definiendo un componente de recepción de vídeo, añadiendo su <<SurfaceView>>, la altura y anchura de la pantalla del dispositivo.
+
+---
+	params = new ParametersImpl();
+	params.put(MediaComponentAndroid.VIEW_SURFACE,
+			(View) findViewById(R.id.video_receive_surface));
+	params.put(MediaComponentAndroid.DISPLAY_WIDTH, dm.widthPixels);
+	params.put(MediaComponentAndroid.DISPLAY_HEIGHT,
+			dm.heightPixels);
+	videoRecorderComponent = mediaSession.createMediaComponent(
+			MediaComponentAndroid.VIDEO_RECORDER, params);
+---
+
+	Cuando la actividad haya comenzado deberemos definir el tipo de componente que es, si es de emisión o de recepción y arrancarlo.
+
+---
+	videoRecorderComponent.join(Direction.RECV,
+							nc.getJoinableStream(StreamType.video));
+	videoRecorderComponent.start();
+---
+	
+	Para detener el componente:
+
+---
+	videoRecorderComponent.stop();
+---
 * {Audio}
+
+	La gestión de los componentes de audio se puede ver explicada en el apartado {{Servicio para una llamada activa}}.
+
 
 Otras clases de ayuda
 
