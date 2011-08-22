@@ -177,13 +177,13 @@ Crear una aplicación en Android
 
 	* Cuando recibamos una llamada a <<<registerUserSucessful()>>>, se deberá indicar a la actividad principal mediante un mensaje que el usuario se ha registrado correctamente para que ésta pueda notificárselo al usuario mediante algún mensaje.
 
-	* Cuando recibamos una llamada a <<<registerUserFailed()>>>, se deberá indicar a la actividad principal mediante un mensaje que el usuario no se ha registrado correctamente para que ésta pueda notificárselo al usuario mediante algún mensaje.
+	* Cuando recibamos una llamada a <<<registerUserFailed()>>>, se deberá indicar a la actividad principal mediante un mensaje que el usuario <<no>> se ha registrado correctamente para que ésta pueda notificárselo al usuario mediante algún mensaje.
 
-	* Cuando recibamos una llamada a <<<callSetup(NetworkConnection networkConnection)>>>, se deberá indicar a la actividad principal mediante un mensaje que debe para la actividad de emisión de llamadas o de recepción de llamadas según sea el caso. Además, se deberá arrancar el {{Servicio para una llamada activa}}.
+	* Cuando recibamos una llamada a <<<callSetup(NetworkConnection networkConnection)>>>, se deberá indicar a la actividad principal mediante un mensaje que debe parar la actividad de emisión de llamadas o de recepción de llamadas según sea el caso. Además, se deberá arrancar el {{Servicio para una llamada activa}}.
 
 	* Cuando recibamos una llamada a <<<callTerminate()>>>, se deberá para el {{Servicio para una llamada activa}}.
 
-	* Cuando recibamos una llamada a <<<callReject()>>>, se deberá indicar a la actividad principal mediante un mensaje que debe parar la actividad encargar de emisión de llamadas, ya que sólo nos podrán rechazar una llamada cuando la realicemos nosotros.
+	* Cuando recibamos una llamada a <<<callReject()>>>, se deberá indicar a la actividad principal mediante un mensaje que debe parar la actividad encargada de emisión de llamadas, ya que sólo nos podrán rechazar una llamada cuando la realicemos nosotros.
 
 	* Por último, cuando se finalice la aplicación el servicio será en encargado de eliminar la notificación de la barra de notificaciones y además cerrar el {{Servicio para una llamada activa}} para evitar que se quedase corriendo.
 
@@ -192,17 +192,17 @@ Crear una aplicación en Android
 
 	Esta interfaz representa los eventos que podremos recibir desde SIP:
 	
-		* <<<incomingCall(String uri)>>>. Este evento nos indicará que estamos recibiendo una invitación a una llamada.
+		* <<<incomingCall(String uri)>>>. Se llamará a este método desde <<controller>> cuando recibamos una invitación de llamada.
 
-		* <<<registerUserSucessful()>>>. Este evento nos indicará que el usuario se ha registrado correctamente.
+		* <<<registerUserSucessful()>>>. Se llamará a este método desde <<controller>> cuando el usuario se ha registrado correctamente.
 
-		* <<<registerUserFailed()>>>. Este evento nos indicará que el usuario no se ha registrado correctamente.
+		* <<<registerUserFailed()>>>. Se llamará a este método desde <<controller>> cuando el usuario <<no>> se ha registrado correctamente.
 
-		* <<<callSetup(NetworkConnection networkConnection)>>>. Este evento nos indicará que la llamada se ha establecido correctamente por parte de los usuarios.
+		* <<<callSetup(NetworkConnection networkConnection)>>>. Se llamará a este método desde <<controller>> cuando la llamada se ha establecido correctamente por parte de los usuarios.
 
-		* <<<callTerminate()>>>. Este evento nos indicará que la llamada ha finalizado.
+		* <<<callTerminate()>>>. Se llamará a este método desde <<controller>> cuando la llamada ha finalizado.
 		
-		* <<<callReject()>>>. Este evento nos indicará que la llamada ha sido rechazada.
+		* <<<callReject()>>>. Se llamará a este método desde <<controller>> cuando la llamada ha sido rechazada.
 
 * {{Servicio para una llamada activa}}
 
@@ -311,7 +311,7 @@ Gestión de emisión y recepción de llamadas
 
 {Gestión del media} (Vídeo y Audio)
 
-	Como se ha explicado anteriormente, la gestión de vídeo y audio están separadas. El motivo de que estén separadas es básicamente que podamos seguir con una conversación tanto si la aplicación está en primer plano como si no. De está manera, el audio se gestiona en el servicio encargado de las llamadas activas y el vídeo se gestiona en la actividad que se encargará de mostrar el media en el dispositivo, esto es así para no enviar ni recibir vídeo cuando el dispositivo no los va a mostrar y así no saturarlo.
+	Como se ha explicado anteriormente, la gestión de vídeo y audio están separadas. El motivo de que estén separadas es básicamente que podamos seguir con una conversación tanto si la aplicación está en primer plano como si no. De esta manera, el audio se gestiona en el servicio encargado de las llamadas activas y el vídeo se gestiona en la actividad que se encargará de mostrar el media en el dispositivo, esto es así para no enviar ni recibir vídeo cuando el dispositivo no los va a mostrar y así no saturarlo.
 
 * {La actividad}
 
