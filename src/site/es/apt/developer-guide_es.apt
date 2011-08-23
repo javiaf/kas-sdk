@@ -113,7 +113,7 @@ Crear una aplicación en Android
 
 	* <<<CALL_SETUP>>>, la recepción de este evento significa que la llamada ha sido establecida y que por lo tanto se puede cerrar la actividad encargada de gestionar o bien la emisión de llamadas o bien la recepción de llamadas y empezar la actividad y el servicio que se encargará de gestionar el media, tanto el vídeo como el audio. Esto se hará llamando al método <<<callSetup(NetworkConnection networkConnection)>>>.
 
-	* <<<CALL_TERMINATE>>>, la recepción de este evento significa que la llamada ha sido terminada por alguno de los usuarios, por lo tanto habrá que parar el servicio y la actividad que se encarga de gestionar una llamada activa. Esto se hará llamado al método <<<callTerminate()>>>.
+	* <<<CALL_TERMINATE>>>, la recepción de este evento significa que la llamada ha sido terminada por alguno de los usuarios, por lo tanto habrá que parar el servicio y la actividad que se encarga de gestionar una llamada activa. Esto se hará llamando al método <<<callTerminate()>>>.
 	
 	* <<<CALL_REJECT>>>, la recepción de este evento significa que la llamada ha sido rechazada por el contacto, por lo que habrá que cerrar la actividad que se encarga de gestionar la emisión de llamadas. Esto se hará llamando al método <<<callReject()>>>.
 		
@@ -136,7 +136,7 @@ Crear una aplicación en Android
 
 *** <<<reject()>>>
 
-	Este método de la clase <<controller>> se llamará desde la actividad que se encargue de la gestión de las llamadas entrantes también. La implementación de este método debe recoger los datos de la llamada y llamara al método <<<reject()>>> de la clase <<<SipCall>>>. De esta manera se podrá enviar mediante el protocolo SIP que la llamada ha sido rechazada.
+	Este método de la clase <<controller>> se llamará desde la actividad que se encargue de la gestión de las llamadas entrantes también. La implementación de este método debe recoger los datos de la llamada y llamará al método <<<reject()>>> de la clase <<<SipCall>>>. De esta manera se podrá enviar mediante el protocolo SIP que la llamada ha sido rechazada.
 
 
 *** <<<call(String remoteURI)>>>
@@ -194,7 +194,7 @@ Crear una aplicación en Android
 
 	La actividad se suscribirá a la entrega de mensajes que realizará el {{Servicio principal}} para así recibir los mensajes que lleguen cuando la actividad este en primer o segundo plano.
 
-	Una vez estamos hemos realizado la comprobación de la red, se debe recoger los datos de las preferencias para configurar los datos necesarios para el registro en el servidor SIP (usuario, dominio, servidor, puerto). También se recoge la información necesaria de la configuración del media. Si la recogida de todos estos datos son correctos, se procede a intentar el registro contra el servidor configurado en las preferencias. Según tenga éxito el registro o no, se llamaran a las funciones correspondientes con los mensajes que envíe el {{Servicio principal}}.
+	Una vez estamos hemos realizado la comprobación de la red, se debe recoger los datos de las preferencias para configurar los datos necesarios para el registro en el servidor SIP (usuario, dominio, servidor, puerto). También se recoge la información necesaria de la configuración del media. Si la recogida de todos estos datos son correctos, se procede a intentar el registro contra el servidor configurado en las preferencias. Según tenga éxito el registro o no, se llamarán a las funciones correspondientes con los mensajes que envíe el {{Servicio principal}}.
 
 * onNewIntent
 
