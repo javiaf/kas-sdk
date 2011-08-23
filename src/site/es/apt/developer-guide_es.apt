@@ -585,4 +585,1081 @@ Otras clases de ayuda
 
 Ejemplos
 
-Fragmentos de código fuente
+* AndroidManifest.xml
+
+	En este apartado definiremos:
+
+		* La versión de la aplicación.
+
+		* Donde queremos que se instale (en este caso en la tarjeta de memoria si es posible).
+
+		* El paquete principal de la aplicación (com.tikal.softphone).
+
+---
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+	package="com.tikal.softphone" android:versionCode="1"
+	android:versionName="1.0" android:installLocation="preferExternal">
+---
+	
+	Definimos el icono y el nombre de la aplicación.	
+
+---
+	<application android:icon="@drawable/icon" android:label="@string/app_name">
+---
+
+	Definimos la actividad principal:
+	
+		* El nombre de la actividad (SoftPhone).
+
+		* El modo de lanzar la actividad (singleTask).
+
+		* Los <<intent-filter>> que tendrá:
+		
+			** Actividad principal (android.intent.action.MAIN)
+
+			** Arrancará la actividad siempre que desde los contactos se pulse uno de ellos que tenga almacenado datos <<<sip:xxx@xxxx.xxx>>>.
+		
+---
+<activity android:name="SoftPhone" android:label="@string/app_name"
+	android:launchMode="singleTask">
+	<intent-filter>
+		<action android:name="android.intent.action.MAIN" />
+		<category android:name="android.intent.category.LAUNCHER" />
+	</intent-filter>
+
+	<intent-filter>
+		<action android:name="android.intent.action.SENDTO" />
+		<category android:name="android.intent.category.DEFAULT" />
+		<data android:scheme="sip" />
+		<data android:scheme="imto" />
+	</intent-filter>
+</activity>
+---
+
+	Definición de las actividades de gestión de emisión y recepción de llamadas.
+
+---
+	<activity android:name="com.tikal.media.MediaControlIncoming"
+		android:label="Media Control Incoming">
+	</activity>
+	<activity android:name="com.tikal.media.MediaControlOutgoing"
+		android:label="Media Control Outgoing">
+	</activity>
+---
+
+	Definición de la actividad que muestra el media en el dispositivo. Se añade un parámetro para que desaparezca la barra de notificaciones y esté a pantalla completa (<<<android:theme="@android:style\/Theme.NoTitleBar.Fullscreen">>>). Además, se obliga a que la orientación sea siempre horizontal (<<<android:screenOrientation="landscape">>>).
+
+---
+	<activity android:name="com.tikal.videocall.VideoCall"
+		android:label="Video Call" android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+		android:screenOrientation="landscape" android:launchMode="singleTop" >
+	</activity>
+---
+
+	Definición de las actividades de gestión de preferencias. En este caso la orientación es vertical.
+
+---
+	<activity android:name="com.tikal.preferences.Connection_Preferences"
+		android:label="Connection Preferences" android:screenOrientation="portrait">
+	</activity>
+
+	<activity android:name="com.tikal.preferences.Video_Preferences"
+		android:label="Video Preferences" android:screenOrientation="portrait">
+	</activity>
+---
+
+	Definición de los servicios que tendrá la aplicación.
+
+---
+	<service android:enabled="true"
+		android:name="com.tikal.softphone.SoftPhoneService" />
+	<service android:enabled="true"
+		android:name="com.tikal.videocall.VideoCallService" />
+---
+
+	Definición de:
+
+		* Versión mínima del sistema operativo que debe tener instalado el dispositivo (<<<uses-sdk android:minSdkVersion="8" >>>).
+
+		* Dependencias de hardware y software (<<<uses-feature android:name="android.hardware.camera">>>).
+	
+		* Permisos que debe aceptar el usuario (<<<uses-permission android:name="android.permission.CAMERA">>>).
+
+---
+<uses-sdk android:minSdkVersion="8" />
+
+<uses-feature android:name="android.hardware.camera"></uses-feature>
+<uses-feature android:name="android.hardware.camera" android:required="false" />
+<uses-feature android:name="android.hardware.camera.front" android:required="false" />
+<uses-feature android:name="android.hardware.camera.autofocus"></uses-feature>
+
+<uses-permission android:name="android.permission.VIBRATE"></uses-permission>
+<uses-permission android:name="android.permission.CAMERA"></uses-permission>
+<uses-permission android:name="android.permission.RECORD_AUDIO"></uses-permission>
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>
+<uses-permission android:name="android.permission.INTERNET"></uses-permission>
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+<uses-permission android:name="android.permission.WAKE_LOCK"></uses-permission>
+<uses-permission android:name="android.permission.READ_CONTACTS"></uses-permission>
+<uses-permission android:name="android.permission.WRITE_CONTACTS"></uses-permission>
+<uses-permission android:name="android.permission.READ_PHONE_STATE"></uses-permission>
+---
+	
+* La aplicación
+
+	Suscripción al servicio de mensajes del servicio principal cuando se crea la actividad. De esta manera le estamos diciendo que tendremos un método <<<update>>> en el cual procesaremos  los mensajes que lleguen desde el servicio principal.
+
+---
+	SoftPhoneService.setUpdateListener(this);
+---
+
+---
+	@Override
+	public void update(Message message) {
+		 if (message.getData().containsKey("Register")) {
+			if (message.getData().getString("Register").equals("Sucessful")) {
+				registerSucessful();
+			} else if (message.getData().getString("Register").equals("Failed")) {
+				registerFailed();
+			}
+		} else if (message.getData().containsKey("finishActivity")) {
+			if (message.getData().getString("finishActivity").equals("MEDIA_CONTROL_OUTGOING")) {
+				finishActivity(MEDIA_CONTROL_OUTGOING);
+			}
+		}
+	}
+---
+
+	Cuando se recibe alguno de estos mensajes, los métodos deberán ser de la siguiente manera para darle un aviso al usuario.
+
+---
+	public void registerSucessful() {
+		SoftPhone.this.text = (TextView) findViewById(R.id.textRegister);
+		SoftPhone.this.text.setTextSize(20);
+		SoftPhone.this.text.setTextColor(Color.GREEN);
+		SoftPhone.this.text.setText("Register Sucessful");
+
+		isRegister = true;
+		ApplicationContext.contextTable.put("isRegister", isRegister);
+	}
+---
+
+	Suscripción a los cambios que puedan existir en la conexiones del dispositivo. Tras suscribirse hay que implementar un nuevo <<<PhoneStateListener>>> y dentro el método <<<onDataConnectionStateChanged>>>. Los pasos a seguir que tiene este método están explicados en el apartado {{Control de red}}.
+
+---
+	signalManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+	signalManager.listen(signalListener,	PhoneStateListener.LISTEN_DATA_CONNECTION_STATE);
+---
+
+---
+	private final PhoneStateListener signalListener = new PhoneStateListener() {
+		public void onDataConnectionStateChanged(int state) {
+				if (!isExit) {
+					ConnectivityManager ConnectManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
+					String sNetworkType = "No Activate";
+					/*
+					 * Control para sólo transmitir cuando tengamos conexión si es
+					 */
+					boolean backgroundEnabled = ConnectManager.getBackgroundDataSetting();
+					int networkType = -1;
+					NetworkInfo activeNetwork = ConnectManager.getActiveNetworkInfo();
+					if (activeNetwork != null) {
+						networkType = activeNetwork.getType();
+					}
+					boolean isAddressEqual = false;
+					boolean isNetworking = false;
+					InetAddress lAddressNew;
+					InetAddress lAddress;
+
+					switch (networkType) {
+					case ConnectivityManager.TYPE_WIFI: 
+						lAddressNew = NetworkIP.getLocalAddress();
+						lAddress = (InetAddress) ApplicationContext.contextTable.get("localAddress");
+						if (lAddress != null)
+							if (lAddressNew.equals(lAddress))
+								isAddressEqual = true;
+							else
+								isAddressEqual = false;
+						isNetworking = true;
+						break;
+					case ConnectivityManager.TYPE_MOBILE: 
+						ApplicationContext.contextTable.put("isNetworking", true);
+						lAddressNew = NetworkIP.getLocalAddress();
+						lAddress = (InetAddress) ApplicationContext.contextTable.get("localAddress");
+						if (lAddress != null)
+							if (lAddressNew.equals(lAddress))
+								isAddressEqual = true;
+							else
+								isAddressEqual = false;
+						isNetworking = true;
+						break;
+					case -1: // Disconneted
+						isNetworking = false;
+						break;
+					default:
+						break;
+					}
+
+					if (isNetworking) {
+						if (!isAddressEqual) {
+							controller = null;
+							isRegister = false;
+							ApplicationContext.contextTable.put("isRegister", isRegister);
+
+							intentService = (Intent) ApplicationContext.contextTable.get("intentService");
+							try {
+								stopService(intentService);
+							} catch (Exception e) {
+								Log.e(LOG_TAG, "stopService " + e.getMessage()
+										+ "; " + e.toString());
+							}
+							ApplicationContext.contextTable.clear();
+							if (initControllerUAFromSettings()) {
+								register();
+							}
+						}
+					} else {
+						try {
+							if ((Boolean) ApplicationContext.contextTable.get("isRegister")) {
+								if (controller != null)
+									try {
+										controller.finishUA();
+										controller = null;
+									} catch (Exception e1) {
+										e1.printStackTrace();
+									}
+								isRegister = false;
+								ApplicationContext.contextTable.put("isRegister", isRegister);
+								intentService = (Intent) ApplicationContext.contextTable.get("intentService");
+								try {
+									stopService(intentService);
+								} catch (Exception e) {
+									Log.e(LOG_TAG, "stopService " + e.getMessage()
+											+ "; " + e.toString());
+								}
+								ApplicationContext.contextTable.clear();
+							}
+						} catch (Exception e) {
+
+						}
+					}
+				}
+			}
+	};
+---
+
+	Inicializar los valores necesarios para poder usar el método <<<initUA>>> de <<controller>>. Este método nos devolverá <<<true>>> si toda la inicialización ha ido correctamente y además tenemos alguna interfaz de red levantada. Si no tenemos ninguna interfaz de red activa devolverá <<<false>>> además de salir de la actividad y mostrarle un mensaje al usuario.
+
+---
+	private boolean initControllerUAFromSettings() {
+		try {
+			SharedPreferences settings = PreferenceManager
+					.getDefaultSharedPreferences(getBaseContext());
+			localUser = settings.getString("LOCAL_USERNAME", "android1");
+			localRealm = settings.getString("LOCAL_DOMAIN", "urjc.es");
+			proxyIP = settings.getString("PROXY_IP", "193.147.51.17");
+			proxyPort = Integer.parseInt(settings.getString("PROXY_PORT",
+					"5060"));
+
+			this.textUser = (TextView) findViewById(R.id.textUser);
+			this.textUser.setText("User: " + localUser + "@" + localRealm);
+
+			this.textServer = (TextView) findViewById(R.id.textServer);
+			this.textServer.setText("Server: " + proxyIP + ":" + proxyPort);
+
+			ni = connManager.getActiveNetworkInfo();
+			String conType = ni.getTypeName();
+
+			if ("WIFI".equalsIgnoreCase(conType))
+				connectionType = ConnectionType.WIFI;
+			else if ("MOBILE".equalsIgnoreCase(conType))
+				connectionType = ConnectionType.MOBILE;
+
+			this.audioCodecs = getAudioCodecsFromSettings();
+			this.videoCodecs = getVideoCodecsFromSettings();
+			this.localAddress = NetworkIP.getLocalAddress();
+			ApplicationContext.contextTable.put("localAddress", localAddress);
+			return true;
+		} catch (Exception e) {
+			Toast.makeText(SoftPhone.this,
+					"SoftPhone: Please enable any network interface.",
+					Toast.LENGTH_SHORT).show();
+
+			finish();
+			return false;
+		}
+
+	}
+---
+
+	Recogida de datos desde las preferencias de media.
+
+---
+	private ArrayList<VideoCodecType> getVideoCodecsFromSettings() {
+		SharedPreferences settings = PreferenceManager
+				.getDefaultSharedPreferences(getBaseContext());
+
+		ArrayList<VideoCodecType> selectedVideoCodecs = new ArrayList<VideoCodecType>();
+		if (settings.getBoolean("H263_CODEC", false))
+			selectedVideoCodecs.add(VideoCodecType.H263);
+		if (settings.getBoolean("MPEG4_CODEC", false))
+			selectedVideoCodecs.add(VideoCodecType.MPEG4);
+		if (settings.getBoolean("H264_CODEC", false))
+			selectedVideoCodecs.add(VideoCodecType.H264);
+
+		return selectedVideoCodecs;
+	}
+
+	private ArrayList<AudioCodecType> getAudioCodecsFromSettings() {
+		SharedPreferences settings = PreferenceManager
+				.getDefaultSharedPreferences(getBaseContext());
+
+		ArrayList<AudioCodecType> selectedAudioCodecs = new ArrayList<AudioCodecType>();
+		if (settings.getBoolean("AMR_AUDIO_CODEC", false))
+			selectedAudioCodecs.add(AudioCodecType.AMR);
+		if (settings.getBoolean("MP2_AUDIO_CODEC", false))
+			selectedAudioCodecs.add(AudioCodecType.MP2);
+		if (settings.getBoolean("AAC_AUDIO_CODEC", false))
+			selectedAudioCodecs.add(AudioCodecType.AAC);
+
+		return selectedAudioCodecs;
+	}
+---
+
+	Una vez que están inicializados las variables necesarias realizamos un registro y arrancamos el servicio principal.
+
+---
+	private void register() {
+		if (controller == null)
+			controller = new Controller();
+		intentService = (Intent) ApplicationContext.contextTable.get("intentService");
+		if (intentService == null) {
+			intentService = new Intent(this, SoftPhoneService.class);
+			ApplicationContext.contextTable.put("intentService", intentService);
+			startService(intentService);
+		}
+
+		if (initControllerUAFromSettings())
+			initUA();
+	}
+---
+
+	Durante el método <<<register>>> aparece la llamada a <<<initUA>>>, que finalmente realizará la llamada a <<<initUA>>> de <<controller>>. Donde realmente realizamos el registro y la inicialización de las estructuras para SIP.
+
+---
+	private void initUA() {
+		try {
+			controller.initUA(audioCodecs, videoCodecs, localAddress,
+					connectionType, proxyIP, proxyPort, localUser, localRealm);
+			ApplicationContext.contextTable.put("controller", controller);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+---
+
+	Realizar una llamada a un contacto.
+	
+		* Usando el botón para acceder a la agenda.
+
+---
+	final Button buttonContacts = (Button) findViewById(R.id.contacts);
+		buttonContacts.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				try {
+					openContacts();
+				} catch (Exception e) {
+					Log.e("Error Search", e.toString());
+				}
+			}
+		});
+	private void openContacts() {
+		Intent intentContacts = new Intent(Intent.ACTION_PICK, 	ContactsContract.Contacts.CONTENT_URI);
+		startActivityForResult(intentContacts, PICK_CONTACT_REQUEST);
+	}
+---	
+		Y dentro de <<<onActivityResult(int requestCode, int resultCode, Intent data) >>> tendremos:
+
+---
+		if (requestCode == PICK_CONTACT_REQUEST) {
+			if (resultCode == RESULT_OK) {
+				Integer id = null;
+				String sip = null;
+				String name = null;
+
+				id = controlcontacts.getId(data);
+				sip = controlcontacts.getSip(data);
+				name = controlcontacts.getName(data);
+
+				if (sip != null) {
+					Toast.makeText(SoftPhone.this, name + ", SIP:" + sip,
+							Toast.LENGTH_SHORT).show();
+					call("sip:" + sip, id);
+				} else
+					Toast.makeText(SoftPhone.this, name + ", No tiene SIP:",
+							Toast.LENGTH_SHORT).show();
+			}
+		}
+---
+
+		* Rellenando la caja de texto para escribir un contacto y usando el botón de la llamada.
+
+---
+	final Button buttonCall = (Button) findViewById(R.id.call);
+		buttonCall.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				TextView textRemoteUri = (TextView) findViewById(R.id.textRemoteUri);
+				String remoteURI = "sip:";
+
+				remoteURI += textRemoteUri.getText().toString();
+				Integer idContact;
+				idContact = controlcontacts.getId(textRemoteUri.getText().toString());
+				call(remoteURI, idContact);
+		}
+	});
+---
+
+	El método <<<call>>> para realizar una llamada.
+
+---
+	private void call(String remoteURI, Integer id) {
+		if (controller != null) {
+			if (controller.getUa() == null)
+				initControllerUAFromSettings();
+			try {
+				controller.call(remoteURI);
+				Intent mediaIntent = new Intent(SoftPhone.this, MediaControlOutgoing.class);
+
+				mediaIntent.putExtra("Id", id);
+				mediaIntent.putExtra("Uri", remoteURI);
+				startActivityForResult(mediaIntent, MEDIA_CONTROL_OUTGOING);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		} else
+			notRegister();
+	}
+---
+
+	Cuando destruimos la actividad.
+
+---
+	if (isExit) {
+		signalManager.listen(signalListener, PhoneStateListener.LISTEN_NONE);
+		if (controller != null)
+			controller.finishUA();
+		isRegister = false;
+		ApplicationContext.contextTable.put("isRegister", isRegister);
+
+		intentService = (Intent) ApplicationContext.contextTable
+				.get("intentService");
+		try {
+			stopService(intentService);
+		} catch (Exception e) {
+			Log.e(LOG_TAG, "stopService " + e.getMessage() + "; " + e.toString());
+		}
+		ApplicationContext.contextTable.clear();
+	}
+---
+
+* Servicios
+
+** {{Servicio principal}}
+
+	La definición de una notificación en la barra de notificaciones, con el nombre <<Softphone>> y que está asociada a la clase <<SoftPhone.class>>.
+
+---
+	private NotificationManager mNotificationMgr;
+	private final static int NOTIF_SOFTPHONE = 1;
+	private final static int NOTIF_VIDEOCALL = 1;
+
+	private Notification mNotif;
+	private PendingIntent mNotifContentIntent;
+	private Intent notifIntent;
+	private String notificationTitle = "Softphone";
+	private static final int IC_LEVEL_ORANGE = 0;
+
+	mNotificationMgr = (NotificationManager) this
+				.getSystemService(Context.NOTIFICATION_SERVICE);
+
+	mNotif = new Notification(R.drawable.icon, notificationTitle,
+			System.currentTimeMillis());
+	mNotif.iconLevel = IC_LEVEL_ORANGE;
+	mNotif.flags |= Notification.FLAG_ONGOING_EVENT;
+
+	notifIntent = new Intent(this, SoftPhone.class);
+	mNotifContentIntent = PendingIntent
+			.getActivity(this, 0, notifIntent, 0);
+	mNotif.setLatestEventInfo(this, notificationTitle, "",
+			mNotifContentIntent);
+
+	mNotificationMgr.notify(NOTIF_SOFTPHONE, mNotif);
+---
+
+	Recoger <<controller>> de <<<ApplicationContext>>> e informar al <<controller>> que el servicio implementará <<<CallListener>>>.
+
+---
+	Controller controller = (Controller) ApplicationContext.contextTable
+				.get("controller");
+	if (controller != null)
+			controller.addListener(this);
+---
+
+	Una posible implementación de <<<incomingCall(String uri)>>>. Arrancaremos como explicamos en la documentación la actividad que se encarga de gestionar las llamadas entrantes, añadiendo mediante <<<putExtra>>> la <<<uri>>> que nos ha llegado.
+
+---
+	@Override
+	public void incomingCall(String uri) {
+		Log.d(LOG_TAG, "Invite received");
+		Intent mediaIntent = new Intent(this, MediaControlIncoming.class);
+		mediaIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		mediaIntent.putExtra("Uri", uri);
+		startActivity(mediaIntent);
+		
+	}
+---
+	
+	Una posible implementación de <<<callSetup>>>. La llamada se ha establecido por lo tanto debemos avisar a la aplicación principal que debe detener la actividad que gestionar las llamadas salientes mediante un mensaje (<<<handler.sendMessage(msg)>>>). Además, debemos arrancar el servicio que se encarga de gestionar las llamadas activas.
+
+---
+	@Override
+	public void callSetup(NetworkConnection networkConnection) {
+		ApplicationContext.contextTable.put("networkConnection", networkConnection);
+		
+		Message msg = new Message();
+		Bundle b = new Bundle();
+		b.putString("finishActivity", "MEDIA_CONTROL_OUTGOING");
+		msg.setData(b);
+		handler.sendMessage(msg);
+
+		videoCallIntent = new Intent(this, VideoCallService.class);
+		videoCallIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		startService(videoCallIntent);
+	}
+---
+	
+	Método para el envío de mensajes a la aplicación que se suscriba. En este caso será la aplicación principal.
+
+---
+	public interface ServiceUpdateUIListener {
+		public void update(Message message);
+	}
+
+
+	public static ServiceUpdateUIListener UI_UPDATE_LISTENER;
+	
+	public static void setUpdateListener(ServiceUpdateUIListener l) {
+		UI_UPDATE_LISTENER = l;
+	}
+
+	private Handler handler = new Handler() {
+		@Override
+		public void handleMessage(Message msg) {
+			UI_UPDATE_LISTENER.update(msg);
+		}
+	};
+---
+
+	Al destruir el servicio, cancelar las notificaciones que pueda estar en la barra de notificaciones y parar el servicio que gestiona las llamadas activas.	
+
+---
+	mNotificationMgr.cancel(NOTIF_SOFTPHONE);
+	mNotificationMgr.cancel(NOTIF_VIDEOCALL);
+	stopService(videoCallIntent);
+---
+
+
+** {{Servicio para una llamada activa}}
+
+	Recuperación de <<controller>> desde <<<ApplicationContext>>>. Creación del objeto mediaSession y de los componentes de audio. Además se añaden los objetos de los componentes de audio en el <<<ApplicationContext>>> para poder acceder a ellos desde otra parte de la aplicación.
+
+---
+	Controller controller = (Controller) ApplicationContext.contextTable
+				.get("controller");
+	if (controller == null) 		
+		return;
+	
+	MediaSessionAndroid mediaSession = controller.getMediaSession();
+
+	try {
+		audioPlayerComponent = mediaSession.createMediaComponent(MediaComponentAndroid.AUDIO_PLAYER, Parameters.NO_PARAMETER);
+		
+		Parameters params = new ParametersImpl();
+		params.put(MediaComponentAndroid.STREAM_TYPE, AudioManager.STREAM_MUSIC);
+		audioRecorderComponent = mediaSession.createMediaComponent(MediaComponentAndroid.AUDIO_RECORDER, params);
+	} catch (MsControlException e) {
+		e.printStackTrace();
+	}
+	ApplicationContext.contextTable.put("audioPlayerComponent", audioPlayerComponent);
+	ApplicationContext.contextTable.put("audioRecorderComponent", audioRecorderComponent);
+---
+
+	Recuperación de <<<NetworkConnection>>> de <<<ApplicationContext>>> y configuración y arranque de los componentes de audio.
+
+---
+	NetworkConnection nc = (NetworkConnection) ApplicationContext.contextTable
+		.get("networkConnection");
+	if (nc == null) 
+		return;
+			
+	try {
+		if (audioPlayerComponent != null) {
+			audioPlayerComponent.join(Direction.SEND,
+					nc.getJoinableStream(StreamType.audio));
+			audioPlayerComponent.start();
+		}
+		if (audioRecorderComponent != null) {
+			audioRecorderComponent.join(Direction.RECV,
+					nc.getJoinableStream(StreamType.audio));
+			audioRecorderComponent.start();
+		}
+		
+	} catch (MsControlException e) {
+		e.printStackTrace();
+	}
+---
+
+	Arrancar la actividad que controlará la gestión de una llamada activa.
+
+---
+	videoCallIntent = new Intent(this, VideoCall.class);
+	videoCallIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+	startActivity(videoCallIntent);
+---
+
+	Al destruir el servicio, cambiar la notificación de una llamada activa por el de la aplicación.
+
+---
+	mNotificationMgr.cancel(NOTIF_VIDEOCALL);
+	mNotif = new Notification(R.drawable.icon, notificationTitleSoft,
+			System.currentTimeMillis());
+
+	notifIntent = new Intent(this, SoftPhone.class);
+	mNotifContentIntent = PendingIntent
+			.getActivity(this, 0, notifIntent, 0);
+	mNotif.setLatestEventInfo(this, notificationTitleSoft, "",
+			mNotifContentIntent);
+
+	mNotificationMgr.notify(NOTIF_SOFTPHONE, mNotif);
+---
+
+	Además de parar los componentes de audio.
+
+---
+	if (audioPlayerComponent != null)
+		audioPlayerComponent.stop();
+
+	if (audioRecorderComponent != null)
+		audioRecorderComponent.stop();
+---
+
+	Y enviar un mensaje confirmando que la llamada ha terminado. En este caso, se le enviará a la actividad que gestiona la llamada activa igual que he hemos visto en el servicio principal.
+
+---
+	Message msg = new Message();
+	Bundle b = new Bundle();
+	b.putString("Call", "Terminate");
+	msg.setData(b);
+	handler.sendMessage(msg);
+---
+
+* Controller
+
+	Variables que deberán ser generales. Estas variables se irán utilizando a lo largo de los ejemplos.
+
+---
+	private UA ua = null;
+	private SipEndPoint endPoint = null;;
+	private SipEndPointEvent pendingEndPointEvent;
+	private SipCall currentCall;
+
+	private CallListener callListener;
+
+	private MediaSessionAndroid mediaSession;
+---
+
+	Inicialización de todos los componentes. A partir de la configuración de la aplicación principal se rellenan los datos importantes para la configuración de SIP. Una vez se ha hecho la configuración correctamente, se realiza un registro contra el servidor SIP correspondiente.
+
+---
+public void initUA(ArrayList<AudioCodecType> audioCodecs,
+			ArrayList<VideoCodecType> videoCodecs, InetAddress localAddress,
+			ConnectionType connectionType, String proxyIP, int proxyPort, String localUser,
+			String localRealm) throws Exception {
+
+		Parameters params = new ParametersImpl();
+		params.put(MediaSessionAndroid.AUDIO_CODECS, audioCodecs);
+		params.put(MediaSessionAndroid.VIDEO_CODECS, videoCodecs);
+		params.put(MediaSessionAndroid.LOCAL_ADDRESS, localAddress);
+		params.put(MediaSessionAndroid.CONNECTION_TYPE, connectionType);
+		
+		mediaSession = MSControlFactory.createMediaSession(params);
+		UaFactory.setMediaSession(mediaSession);
+
+		SipConfig sipConfig = new SipConfig();
+		sipConfig.setLocalAddress(localAddress.getHostAddress());
+		sipConfig.setLocalPort(6060);
+		sipConfig.setProxyAddress(proxyIP);
+		sipConfig.setProxyPort(proxyPort);
+
+		if (ua != null) {
+			ua.terminate();
+		}
+
+		ua = UaFactory.getInstance(sipConfig);
+
+		register(localUser, localRealm);
+	}
+---
+
+	Realizar el registro contra el servidor.
+
+---
+	private void register(String localUser, String localRealm) throws Exception {
+		endPoint = ua.registerEndPoint(localUser, localRealm, null, 3600, this);
+	}
+---
+
+	Facilitar si seguimos registrados. Si el <<<endPoint>>> es <<<null>>> significa que no nos hemos registrado aún.
+
+---
+	public boolean isRegister() {
+		return (endPoint != null);
+	}	
+---
+
+
+	Finalizar la conexión SIP.
+
+---
+	public void finishUA() throws Exception {
+		if (ua != null)
+			ua.terminate();
+	}
+---
+
+	Implementación de la interfaz <<<SipCallListener>>>. <<Controller>> ya sabe a quien tiene que llamar cuando se use <<<callListener>>> ya que se ha definido en el servicio principal.
+
+---
+	@Override
+	public void onEvent(SipCallEvent event) {
+		SipEventType eventType = event.getEventType();
+	
+		if (SipCallEvent.CALL_SETUP.equals(eventType)) {
+			currentCall = event.getSource();
+			if (callListener != null) {
+				callListener.callSetup(currentCall.getNetworkConnection(null));
+			}
+		} else if (SipCallEvent.CALL_TERMINATE.equals(eventType)) {
+			if (callListener != null)
+				callListener.callTerminate();
+		} else if (SipCallEvent.CALL_REJECT.equals(eventType)) {
+			if (callListener != null)
+				callListener.callReject();
+		} else if (SipCallEvent.CALL_ERROR.equals(eventType)) {
+			Log.d(LOG_TAG, "Call Error");
+		}
+	}
+---
+
+	Implementación de la interfaz <<<SipEndPointListener>>>.
+
+---
+	@Override
+	public void onEvent(SipEndPointEvent event) {
+		SipEventType eventType = event.getEventType();
+		if (SipEndPointEvent.INCOMING_CALL.equals(eventType)) {
+			this.pendingEndPointEvent = event;
+			try {
+				if (callListener != null)
+					callListener.incomingCall(event.getCallSource().getRemoteUri());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		if (SipEndPointEvent.REGISTER_USER_SUCESSFUL.equals(eventType)) {
+			this.pendingEndPointEvent = event;
+			try {
+				if (callListener != null)
+					callListener.registerUserSucessful();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		if (SipEndPointEvent.REGISTER_USER_FAIL.equals(eventType)) {
+			this.pendingEndPointEvent = event;
+			try {
+				if (callListener != null)
+					callListener.registerUserFailed();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+---
+
+	Implementación de la interfaz <<<Iphone>>>.
+
+---
+	@Override
+	public void aceptCall() throws Exception {
+		SipCall sipCall = pendingEndPointEvent.getCallSource();
+		sipCall.addListener(this);
+		sipCall.accept();
+	}
+
+	@Override
+	public void reject() throws Exception {
+		pendingEndPointEvent.getCallSource().reject();
+	}
+
+	@Override
+	public void call(String remoteURI) throws Exception {
+		currentCall = endPoint.dial(remoteURI, Direction.DUPLEX, this);
+	}
+
+	@Override
+	public void hang() {
+		if (currentCall != null)
+			try {
+				currentCall.hangup();
+			} catch (ServerInternalErrorException e) {
+				e.printStackTrace();
+			}
+	}
+---
+
+	Implementación de la interfaz <<<CallNotifier>>>. Se supondrá que sólo existe un <<listener>>.
+
+---
+	@Override
+	public void addListener(CallListener listener) {
+		callListener = listener;
+	}
+
+	@Override
+	public void removeListener(CallListener listener) {
+		callListener = null;
+	}
+---
+
+
+
+
+
+
+
+* Gestión de contactos 
+
+	Posible implementación de la obtención del nombre de un contacto a partir de su <<<id>>>. La idea es realizar una consulta, parecida a una query de sql en el cual le indicamos el identificador del usuario que buscamos. Si existe, podremos devolver el nombre.
+
+---
+	public String getName(Integer id) {
+
+		int contact_id = -1;
+		String name = "";
+		contact_id = id;
+
+		Cursor pidcursor = c.getContentResolver().query(
+				ContactsContract.Contacts.CONTENT_URI,
+				new String[] { ContactsContract.Contacts.DISPLAY_NAME },
+				ContactsContract.Contacts._ID + "=" + contact_id, null, null);
+		if (pidcursor != null) {
+			if (pidcursor.moveToFirst()) {
+				name = pidcursor.getString(0);
+			}
+		}
+		return name;
+	}
+---
+
+	Otra forma de realizar esta consulta es usando los datos que nos ofrece Android cuando accedemos desde la agenda. En este caso la consulta se realiza usando los datos del <<<Intent>>>.
+
+---
+	public String getName(Intent data) {
+		Cursor cursor = c.getContentResolver().query(data.getData(), null,
+				null, null, null);
+
+		String name = null;
+
+		if (cursor.moveToFirst()) {
+			int nameIdx = cursor
+					.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME);
+
+			name = cursor.getString(nameIdx);
+		}
+		if (name != null)
+			return name;
+		else
+			return null;
+	}
+---
+
+	Para recuperar el <<<id>>> de un posible contacto, buscamos mediante su <<<uri>>> dentro de los contactos que tengan algún contenido del tipo <<<CONTENT_URI>>>. Si el contacto existe se devolverá el <<<id>>>.
+
+---
+	public Integer getId(String sipUri) {
+
+		Integer idContact = -1;
+		String sipUriContact = "";
+
+		String whereIm = ContactsContract.Data.MIMETYPE + " = ?";
+		String[] whereParametersIm = new String[] { ContactsContract.CommonDataKinds.Im.CONTENT_ITEM_TYPE };
+
+		Cursor contactsIm = c.getContentResolver().query(
+				ContactsContract.Data.CONTENT_URI, null, whereIm,
+				whereParametersIm, null);
+
+		while (contactsIm.moveToNext()) {
+
+			sipUriContact = contactsIm.getString(contactsIm
+					.getColumnIndexOrThrow(ContactsContract.Data.DATA1));
+			if (sipUri.equals(sipUriContact)) {
+				int idIdx = contactsIm
+						.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.CONTACT_ID);
+				idContact = contactsIm.getInt(idIdx);
+
+				break;
+			}
+		}
+		contactsIm.close();
+		return idContact;
+	}
+---
+
+	Recuperación de la foto de un contacto mediante su <<<id>>>. Se buscará primero el contacto dentro de la agenda, para una vez encontrado, conseguir su fotografía usando el <<<photo_id>>>.
+
+---
+	public Bitmap getPhoto(Integer id) {
+
+		byte[] photo = null;
+		Bitmap bm = null;
+		int contact_id = -1;
+		int photo_id = -1;
+
+		if (id != -1){
+			contact_id = id;
+
+			Cursor pidcursor = c.getContentResolver().query(
+					ContactsContract.Contacts.CONTENT_URI,
+					new String[] { ContactsContract.Contacts.PHOTO_ID },
+					ContactsContract.Contacts._ID + "=" + contact_id, null,
+					null);
+			if (pidcursor != null) {
+				if (pidcursor.moveToFirst()) {
+					photo_id = pidcursor.getInt(0);
+				}
+			}
+
+			Cursor pcursor = c.getContentResolver().query(
+					ContactsContract.Data.CONTENT_URI,
+					new String[] { ContactsContract.Data.DATA15 },
+					ContactsContract.Data._ID + "=" + photo_id, null, null);
+			if (pcursor.moveToFirst()) {
+				photo = pcursor.getBlob(0);
+			}
+			if (photo != null) {
+				bm = BitmapFactory.decodeByteArray(photo, 0, photo.length);
+			}
+		}
+		else Log.d(LOG_TAG, "Id is null, not contatc");
+		return bm;
+	}
+---
+
+* Gestión de llamadas
+
+** Emisión de llamadas
+
+	Al crear la actividad, se recuperan los datos como la <<<uri>>> y el <<<id>>> y a partir de ahí se intentan recuperar los datos y la foto del contacto que nos llama desde la agenda. Si está en la agenda se rellena el interfaz con los datos para que sepamos a quién llamamos.
+
+---
+	Bundle extras = getIntent().getExtras();
+	String uri = (String) extras.getSerializable("Uri");
+	Integer id = (Integer) extras.getSerializable("Id");
+	TextView text = (TextView) findViewById(R.id.outgoing_sip);
+	text.setText(uri);
+
+	ImageView imageCall = (ImageView) findViewById(R.id.image_call);
+
+	ControlContacts controlcontacts = new ControlContacts(this);
+
+	Bitmap bm = controlcontacts.getPhoto(id);
+
+	if (bm != null) {
+
+		imageCall.setImageBitmap(bm);
+	}
+---
+
+	Cancelar una llamada saliente.
+
+---
+	controller.cancel();
+	finish();
+---
+
+** Recepción de llamadas
+
+	Al crear la actividad, se recuperan los datos como la <<<uri>>> y a partir de ahí se intentan recuperar los datos y la foto del contacto que nos llama desde la agenda. Si está en la agenda se rellena el interfaz con los datos para que sepamos quién nos está llamando.
+
+---
+	Bundle extras = getIntent().getExtras();
+
+	String uri = (String) extras.getSerializable("Uri");
+
+	TextView text = (TextView) findViewById(R.id.incoming_sip);
+	text.setText(uri);
+	
+	String[] sipArray = uri.split(":");
+	String sipUri = "";
+	if (sipArray.length > 1) sipUri = sipArray[1];
+	else sipUri = sipArray[0];
+	
+	Integer idContact = controlcontacts.getId(sipUri);
+	
+	if (!idContact.equals("")){
+		ImageView imageCall = (ImageView) findViewById(R.id.image_call);
+		Bitmap bm = controlcontacts.getPhoto(idContact);
+		if (bm != null) {
+			imageCall.setImageBitmap(bm);
+		}
+	}
+---
+
+	Funcionamiento del vibrador para simular la llamada.
+
+---
+	Vibrator vibrator;
+	vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+	long[] pattern = { 0, 1000, 2000, 3000 };
+
+	vibrator.vibrate(pattern, 1);
+---
+
+	Aceptar una llamada. Cancelaríamos la vibración, aceptaríamos la llamada con <<<aceptCall()>>> y finalizaríamos la actividad.
+
+---
+	vibrator.cancel();
+	if (controller != null){
+		try {
+			controller.aceptCall();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	finish();
+---
+
+	Para rechazar la llamada sería igual pero usando:
+
+---
+	controller.reject();
+---
+
+
