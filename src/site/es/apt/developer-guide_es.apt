@@ -362,6 +362,26 @@ Gestión de {preferencias}
 
 * {Media}
 
+	En las preferencias del media deberemos dejar configurar los siguientes datos:
+
+	* <<Codec de Vídeo>>: serán los codecs soportados por la aplicación. Por ejemplo:
+
+		* H263
+
+		* MPEG4
+
+		* H264
+
+	* <<Tamaño del Video>>: será la resolución del vídeo que se puede soportar.
+
+	* <<Codec de Audio>>: serán los codec soportados por la aplicación. Por ejemplo:
+
+		* AMR
+
+		* MP2
+		
+		* AAC
+		
 Gestión de emisión y recepción de llamadas
 
 	Tanto para la emisión como para la recepción de llamadas podemos tener dos actividades que nos representen que un contacto nos está llamando o bien que le estamos llamando nosotros.
