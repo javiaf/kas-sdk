@@ -1,0 +1,27 @@
+   ------
+   Kurento Android SDK media management internals
+   ------
+   ------
+   Date
+   ------
+   
+Kurento Android SDK media internals
+
+* Introduction
+  
+  Kurento Android SDK requires large amount of resources in terms of CPU time,
+  memory and bandwidth. Resources that are quite limited in mobile platforms.
+  This requires a careful design of process algorithms to achieve objective:
+  To relay audio and video on time with best possible quality.
+  
+  Several algorithms has to be implemented to handle different aspects of media
+  management
+  
+      * Frame adaptation buffer: 
+      * Optimal codec configuration
+      
+
+* Frame adaptation buffer
+      
+* Optimal codec configuration
+
