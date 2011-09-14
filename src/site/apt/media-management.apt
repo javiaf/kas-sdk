@@ -17,8 +17,15 @@ Kurento Android SDK media internals
   Several algorithms has to be implemented to handle different aspects of media
   management
   
-      * Frame adaptation buffer: 
-      * Optimal codec configuration
+      * Frame adaptation buffer: Video conferencing applications require extremely
+      	low latencies and hence a strict jitter control. The adaptation buffer
+      	provides a trade-off between latency and video continuity while adjusting
+      	bandwidth to interface capabilities.
+      	
+      * Optimal codec configuration: Video quality can be enhanced with a proper
+        codec parameterization based in available bandwidth, target frame rate
+        and frame size requested by user application. This algorithm is intended
+        to select the best initialization parameters to improve performance
       
 
 * Frame adaptation buffer

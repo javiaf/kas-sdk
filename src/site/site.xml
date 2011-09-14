@@ -14,6 +14,7 @@
 			<item name="Download" href="./download.html"/>
 		</menu>
 		<menu name="Documentation">
+			<item name="Media management" href="./media-management.html"/>
 			<item name="Developer's guide" href="./developer-guide.html"/>
 			<item name="SDK reference guide" href="./reference-guide.html"/>
 			<item name="License" href="./license.html"/>
