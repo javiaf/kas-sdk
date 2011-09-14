@@ -8,7 +8,7 @@
 	<packaging>jar</packaging>
 
 	<name>kurento-android-docs</name>
-	<url>http://maven.apache.org</url>
+	<url>http://repository.kurento.com/site/kurento-android-docs</url>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -26,6 +26,9 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-site-plugin</artifactId>
 				<version>2.2</version>
+				<configuration>
+					<locales>en,es</locales>
+				</configuration>
 				<dependencies>
 					<dependency>
 						<groupId>org.apache.maven.wagon</groupId>
@@ -42,7 +45,7 @@
 	<distributionManagement>
 		<site>
 			<id>maven-site</id>
-			<url>scp://repository.kurento.com/var/www/site/kurento-android-docs/${project.version}</url>
+			<url>scp://repository.kurento.com/var/www/kurento/site/kurento-android-docs/${project.version}</url>
 		</site>
 	</distributionManagement>
 

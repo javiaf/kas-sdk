@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Kurento Android SDK">
+	<bannerLeft>
+		<name>Proyecto Kurento Android</name>
+		<src>http://maven.apache.org/images/apache-maven-project.png</src>
+		<href>http://repository.kurento.com/site/kurento-android-docs/${project.version}</href>
+	</bannerLeft>
+	<body>
+		<links>
+			<item name="Kurento" href="http://www.kurento.com/" />
+		</links>
+		<menu name="Kurento Android">
+			<item name="Codigo Fuente" href="./source_es.html" />
+			<item name="Descargas" href="./download_es.html"/>
+		</menu>
+		<menu name="Documentación">
+			<item name="Guía de desarrollo" href="./developer-guide_es.html"/>
+			<item name="Guía de referencia SDK" href="./reference-guide_es.html"/>
+			<item name="Licencia" href="./license_es.html"/>
+		</menu>
+
+	</body>
+</project>
