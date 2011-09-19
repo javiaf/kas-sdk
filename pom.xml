@@ -9,7 +9,12 @@
 
 	<name>kurento-android-docs</name>
 	<url>http://repository.kurento.com/site/kurento-android-docs</url>
-
+	
+	<properties>
+		<project.build.sourceEncoding>UTF-8 </project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+	</properties>
+	
 	<build>
 		<plugins>
 
@@ -19,6 +24,7 @@
 				<version>2.2</version>
 				<configuration>
 					<locales>en,es</locales>
+					<encoding>UTF-8</encoding>
 				</configuration>
 				<dependencies>
 					<dependency>
