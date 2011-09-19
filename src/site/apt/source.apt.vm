@@ -7,18 +7,34 @@
   
 Kurento Android SDK
 
-  Following projects contain Kurento Android SDK source code
- 
-   * <<{{{https://repository.kurento.com/site/tk-sipua/${tkSipUaVersion}}SIP User Agent API}}>>: Defines the SIP User Agent API
- 
-   * <<{{{https://repository.kurento.com/site/tk-android-sipua/${tkAndroidSipUaVersion}}SIP User Agent for Android}}>>: Implements a SIP User Agent for the Android platform 
+  Source code can be classified in two groups: API and libraries
+  
+   * API code includes all source code exposing services to applications. It consist of the following
+   projects
+  
+  	 * <<{{{https://www.kurento.com/site/kas-sipua}SIP User Agent API}}>>: Defines the SIP User Agent API
+  
+  	 * <<{{{https://www.kurento.com/site/kc-mscontrol} Media Control API}}>>: Defines JSR309 like control
+  	 interface for media management.
+  	 
+  	 * <<{{{https://www.kurento.com/site/kas-mscontrol} Android Media Control API}}>>: Extends kc-mediacontrol
+  	 with Android specific components
+  	
+   * Libraries include projects that perform the actual tasks.
+     
+     * <<{{{https://www.kurento.com/site/kas-sipuai-impl}SIP User Agent for Android}}>>: Implements a SIP User 
+       Agent for the Android platform based in kas-sipua
 
-   * <<{{{https://repository.kurento.com/site/tk-mediaspec/${tkMediaSpecVersion}}Media Spec}}>>: Utility library intended to manage SDP messages
+     * <<{{{https://repository.kurento.com/site/kas-media}Android Media}}>>: Implements media core functionalities
 
-   * <<{{{https://repository.kurento.com/site/tk-android-media/${tkAndroidMediaVersion}}Android Media}}>>: Implements media core functionalities
+     * <<{{{https://repository.kurento.com/site/kc-mediaspec}Media Spec}}>>: Utility library intended 
+       to manage SDP message negotiation
    
 Applications
 
-   * <<{{{https://repository.kurento.com/site/tk-android-softphone/${tkAndroidSoftPhoneVersion}}Kurento Softphone}}>>: This is a video soft phone application that uses Kurento Android SDK
+	Kurento applications are mainly intended for test purposes and feature demonstrators.
+
+   * <<{{{https://www.kurento.com/site/kas-softphone}K-Phone}}>>: This is a video soft phone application
+	that uses Kurento Android SDK
    
    

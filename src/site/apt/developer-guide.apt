@@ -5,5 +5,41 @@
    Date
    ------
 
+Kurento Android SDK developer's guide
 
-	TODO: Translate developer-guide
+* Introduction
+
+	Kurento Android SDK is a VoIP library that supports video.
+	This guide introduce developers the Kurento Android API, so they
+	can incorporate video conferencing capabilities to their applications.
+	
+	In general, any communication software must deal with two aspects in order to provide
+	connectivity between two remote peers.
+	
+		* <<Control Plane>>: It must provide mechanism to request and receive call 
+		request from remote peers. And must also be able to negotiate terms of
+		media according to both sides capabilities. Within VoIP networks this
+		aspect is managed through SIP and SDP protocols. 
+		
+		Kurento Android SDK wraps protocol complexity and provides a simple API designed with the
+		telephone model in mind. Developers will handle intuitive concepts like:
+		dial, hangug, ringing, etc.
+				
+		* <<User Plane>>: Other fundamental aspect in communication is the actual
+		relay of media. This is in fact the pipe for user information. Kurento
+		Android SDK manages media capture (camera and microphone) and display (surface,
+		spaker). And provides the features to relay media to remote peers through
+		a networt interface.
+		
+		Kurento Android Media Control API is designed with the same philosophy as 
+   	    {{{http://www.jcp.org/en/jsr/detail?id=309}JSR309 Media Server Control API}}.
+    	This API defines multiple  components for media transmission and process and provides a common
+        interface, called <Joinable>, that facilitates creation of arbitrarily complex networks
+        for media delivery. JSR309 is (as stated in the title) intended for Media Servers.
+        It defines the concept of MediaGroup as a point of media termination within the 
+        reception device. This termination points can be either a PLAYER or a RECORER to
+        connect the relay elements with the storage devices. This approach does not suits
+        well when termination points are client devices that interacts with cameras or
+        screens. For that reason Kurento Android SDK defines a new API with the same
+        philosophy, but more adapted to a mobile terminating point
+        

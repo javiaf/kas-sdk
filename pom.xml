@@ -10,15 +10,6 @@
 	<name>kurento-android-docs</name>
 	<url>http://repository.kurento.com/site/kurento-android-docs</url>
 
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<tkSipUaVersion>1.0.0-SNAPSHOT</tkSipUaVersion>
-		<tkMediaSpecVersion>1.0.0-SNAPSHOT</tkMediaSpecVersion>
-		<tkAndroidSipUaVersion>1.0.0-SNAPSHOT</tkAndroidSipUaVersion>
-		<tkAndroidMediaVersion>0.0.1-SNAPSHOT</tkAndroidMediaVersion>
-		<tkAndroidSoftPhoneVersion>1.0.0-SNAPSHOT</tkAndroidSoftPhoneVersion>
-	</properties>
-
 	<build>
 		<plugins>
 

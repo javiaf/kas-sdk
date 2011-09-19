@@ -1,46 +1,59 @@
------
+   ------
+   Kurento Android SDK
+   ------
+   ------
+   Date
+   ------
+
 Kurento Android SDK
------
 
-Introduction
+* Introduction
 
-  Kurento Android SDK enables easy integration of conversational video conferencing
-  capabilities within Android applications. It implements SIP User Agent and a media
-  stack, providing a comprehensive API for call management and media control. 
+  Kurento Android SDK is  library enabling easy integration of conversational video conferencing
+  capabilities within Android applications. It implements SIP User Agent to interact with
+  VoIP networks and a media stack, providing a comprehensive API for call management and media control. 
+  
+[./images/kurento-android-docs-stack.png] Kurento Android SDK stack
    
- 		 MOSTRAR UNA IMAGEN DE BLOQUES DE LA PILA
-  
+   Kurento Android SDK provides basic building blocks to interact with media devices: camera, screen,
+   speaker and microphone, but does not limit the model of use. It is possible to build a soft-phone or
+   a video soft-phone, but it is also possible to create application suited to specific requirements like
+   the examples below:
     
-Kurento Android SDK
+    * <<Broadcast application>>: Android application to broadcast video into CDNs.
+    * <<Multi conference applications>>: Connects multiple users within a muiltimedia multiconference
+    * <<Field Application>>: Join multimedia with data from sensors o location or similar 
+    
+* Kurento Android SDK
 
-  Kurento Android SDK is an Android Library that can be easily added to projects. The 
-  API covers two main areas:
+  Kurento Android SDK API, as any other communication suite, covers two main areas:
   
-    * <<SIP User Agent>>: Provides call control capabilities for incoming or 
-      outgoing calls. 
+    * <<Control Plane>>: Provides call control capabilities for incoming or 
+      outgoing calls. This is a SIP User Agent implementing UAS and UAC
+      procedures: contact registering, call handling, etc.
     
-    		FIGURA ASOCIADA AL API SIP
-    
-    * <<Media control>>: Provides basic media blocks connecting media devices (camera
-      , speaker, etc.) to IP networks. Building blocks provides transcodification
-      capabilities and bit rate adaptation to bandwidth and user configuration
-      
-      Media Control API is designed with the same philosophy as 
-      {{{http://www.jcp.org/en/jsr/detail?id=309}JSR309 Media Server Control API}}.
-      This API defines multiple  components for media transmission and process and provides a common
+    * <<Media control>>: Provides basic multimedia functions interconnecting media devices (camera
+      , speaker, etc.) to IP networks. Media Control API is designed with the same philosophy as 
+      {{{http://www.jcp.org/en/jsr/detail?id=309}JSR309 Media Server Control API}}, that
+      defines multiple  components for media handling and provides a common
       interface, called <Joinable>, that facilitates creation of arbitrarily complex networks
       for media delivery. JSR309 is (as stated in the title) intended for Media Servers.
       It defines the concept of MediaGroup as a point of media termination within the 
       reception device. This termination points can be either a PLAYER or a RECORER to
       connect the relay elements with the storage devices. This approach does not suits
-      well when termination points are client devices that interacts with cameras or
-      screens. For that reason Kurento Android SDK defines a new API with the same
-      philosophy, but more adapted to a mobile terminating point
-      		
-      		FIGURA ASOCIADA AL CONTROL DE MEDIA
-      		
+      well when termination points like cameras or screens. For that reason Kurento
+      Android SDK defines a new API with the same philosophy, but more adapted to a mobile 
+      terminating point
+      		      		
   Detalied information about Kurento Android SDK usage can be found in the 
   {{{./developer-guide.html}Kurento Android SDK developer's guide}}
    
+* Resources & Community
 
-
+	Kurento Android SDK is part of {{{http://www.kurento.com}Kurento}}. An End-to-End
+	media suite that also includes a {{{http://www.kurento.com/kurento/kms}media server}}
+    compatible with the {{{http://www.mobicents.org}Mobicents Sip Servlet (MSS)}}
+    
+    Kurento is intended to be an open initiative and most of its software will be 
+    released as open source software. Available resources can be found at the 
+    {{{community web page}http://code.google.com/p/kurento/}}
