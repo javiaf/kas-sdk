@@ -4,6 +4,284 @@
    ------
    Date
    ------
+ 
+
+Guía de desarrollo
+
+* SIP
+
+	Variables que se deberán definir. Estas variables se irán utilizando a lo largo de los ejemplos.
+
+---
+	private UA ua;
+	private SipEndPoint endPoint;
+	private SipEndPointEvent pendingEndPointEvent;
+	private CallListener callListener;
+	private MediaSessionAndroid mediaSession;
+	private SipCall currentCall;
+	private SipCall incomingCall;
+---
+
+	Inicialización de todos los componentes. Una vez se ha hecho la configuración correctamente, se realiza un registro contra el servidor SIP correspondiente.
+
+---
+	Parameters params = new ParametersImpl();
+	params.put(MediaSessionAndroid.AUDIO_CODECS, audioCodecs);
+	params.put(MediaSessionAndroid.VIDEO_CODECS, videoCodecs);
+	params.put(MediaSessionAndroid.LOCAL_ADDRESS, localAddress);
+	params.put(MediaSessionAndroid.CONNECTION_TYPE, connectionType);
+	
+	mediaSession = MSControlFactory.createMediaSession(params);
+	UaFactory.setMediaSession(mediaSession);
+
+	SipConfig sipConfig = new SipConfig();
+	sipConfig.setLocalAddress(localAddress.getHostAddress());
+	sipConfig.setLocalPort(6060);
+	sipConfig.setProxyAddress(proxyIP);
+	sipConfig.setProxyPort(proxyPort);
+
+	if (ua != null) {
+		ua.terminate();
+	}
+
+	ua = UaFactory.getInstance(sipConfig);
+	endPoint = ua.registerEndPoint(localUser, localRealm, null, 3600, this);
+---
+
+	Finalizar la conexión SIP.
+
+---
+	if (ua != null)
+		ua.terminate();
+
+---
+
+	Para recibir los eventos cuando se realiza un registro contra un servidor SIP, se debe implementar la interfaz <<<SipEndPointListener>>>. Este interfaz representa un método encargado de recibir eventos del tipo <<<SipEndPointEvent>>>:
+	
+	*<<<onEvent()>>>
+
+		*** <<<onEvent()>>>
+
+	La implementación de este método deberá ser capaz de tratar los siguientes eventos:
+		
+		* <<<INCOMING_CALL>>>, la recepción de este evento significa que alguien nos está realizando una llamada.
+	
+		* <<<REGISTER_USER_SUCESSFUL>>>, la recepción de este evento significa que el registro con los parámetros de configuración de conexión son correctos y hemos podido registrarnos en el servidor. 
+
+		* <<<REGISTER_USER_FAIL>>>, la recepción de este evento significa al contrario que el evento anterior que el registro ha sido incorrecto. 
+		
+		* <<<REGISTER_USER_NOT_FOUND>>>, la recepción de este evento significa que el usuario no existe y el registro ha sido incorrecto.
+
+
+---
+@Override
+public void onEvent(SipEndPointEvent event) {
+	SipEventType eventType = event.getEventType();
+	if (SipEndPointEvent.INCOMING_CALL.equals(eventType)) {
+		this.pendingEndPointEvent = event;
+		// Procesar el evento.
+	}
+	if (SipEndPointEvent.REGISTER_USER_SUCESSFUL.equals(eventType)) {
+		this.pendingEndPointEvent = event;
+		// Procesar el evento.
+	}
+	if (SipEndPointEvent.REGISTER_USER_FAIL.equals(eventType)) {
+		this.pendingEndPointEvent = event;
+		// Procesar el evento.
+	}
+	if (SipEndPointEvent.REGISTER_USER_NOT_FOUND.equals(eventType)) {
+		this.pendingEndPointEvent = event;
+		// Procesar el evento.
+	}
+}
+---
+	
+
+	Realizar una llamada saliente. Indicaremos el contacto al que queremos realizar la llamada.
+	
+---
+currentCall = endPoint.dial(remoteURI, this);
+---
+	
+	Además, cuando estamos realizando una llamada también podremos cancelar la llamada antés de que ésta se establezca:
+	
+---
+currentCall.cancel(); 
+---	
+
+
+	Para recibir los eventos cuando se realiza una llamada, se debe implementar la interfaz <<<SipCallListener>>>. Este interfaz representa un método encargado de recibir eventos del tipo <<<SipCallEvent>>>:
+	
+	*<<<onEvent()>>>
+
+		*** <<<onEvent()>>>
+
+	La implementación de este método deberá ser capaz de tratar los siguientes eventos:
+
+		* <<<CALL_SETUP>>>, la recepción de este evento significa que la llamada ha sido establecida.
+	
+		* <<<CALL_TERMINATE>>>, la recepción de este evento significa que la llamada ha sido terminada por alguno de los usuarios.
+		
+		* <<<CALL_REJECT>>>, la recepción de este evento significa que la llamada ha sido rechazada por el contacto.
+			
+		* <<<CALL_CANCEL>>>, la recepción de este evento significa que el usuario que ha realizado la llamada la ha cancelado antes de que haya sido establecida.
+		
+		* <<<CALL_ERROR>>>, la recepción de este evento signifca que no se ha podido localizar al contacto solicitado.
+
+
+---
+@Override
+public void onEvent(SipCallEvent event) {
+	SipEventType eventType = event.getEventType();
+
+	if (SipCallEvent.CALL_SETUP.equals(eventType)) {
+		currentCall = event.getSource();
+		// Procesar el evento.
+	} else if (SipCallEvent.CALL_TERMINATE.equals(eventType)) {
+		// Procesar el evento.
+	} else if (SipCallEvent.CALL_REJECT.equals(eventType)) {
+		// Procesar el evento.
+	} else if (SipCallEvent.CALL_ERROR.equals(eventType)) {
+		// Procesar el evento.
+	}
+}
+---
+
+
+	Cuando recibimos un evento del tipo <<<SipEndPointEvent.INCOMING_CALL>>>, querrá decir que nos están realizando una llamada, podremos:
+	
+		* Aceptar la llamada:
+	
+---
+this.pendingEndPointEvent = event;
+incomingCall = pendingEndPointEvent.getCallSource();
+incomingCall.accept();
+---
+
+		* Rechazar la llamada:
+		
+---
+this.pendingEndPointEvent = event;
+incomingCall = pendingEndPointEvent.getCallSource();
+incomingCall.reject();
+---
+
+	Una vez la llamada está establecida se podrá terminar con la llamada:
+	
+---
+currentCall.hangup();
+---
+	
+	
+* Gestión del media (Audio y Vídeo)
+
+	Una vez que se ha establecido una llamada es el momento de establecer los flujos de media (audio y vídeo).
+	
+* {Audio}
+
+ 	Se deberán crear los componentes de audio, tanto para la emisión como para la recepción. Para poder crear los componentes de audio usaremos uno de los métodos de <<<MediaSessionAndroid>>>.
+
+		** <<<createMediaComponent>>>, le indicaremos el tipo de componente que necesitamos, si es de emisión o de recepción, además de el altavoz por el cual queremos recibir.
+		 
+			* Un componente de recepción de audio y se reproducirá por el altavoz externo:
+
+---
+Parameters params = new ParametersImpl();
+params.put(MediaComponentAndroid.STREAM_TYPE, AudioManager.STREAM_MUSIC);
+audioRecorderComponent = mediaSession.createMediaComponent(
+	MediaComponentAndroid.AUDIO_RECORDER, 
+	params);
+---	
+
+			* Un componente de emisión de audio:
+			
+---
+audioPlayerComponent = mediaSession.createMediaComponent(
+	MediaComponentAndroid.AUDIO_PLAYER,
+	Parameters.NO_PARAMETER);
+---
+
+	* Una vez que hemos creado los componentes de audio correctamente, debemos definir como será cada componente, sí de emisión o de recepción y hacerlos empezar.
+	 
+		* Componente de recepción de audio.
+
+---
+audioRecorderComponent.join(Direction.RECV, nc.getJoinableStream(StreamType.audio));
+audioRecorderComponent.start();
+---
+
+		* Componente de emisión de audio.
+		
+---
+audioPlayerComponent.join(Direction.SEND, nc.getJoinableStream(StreamType.audio));
+audioPlayerComponent.start();
+---
+
+	Para parar los componentes de audio:
+	
+---
+audioRecorderComponent.stop();
+audioPlayerComponent.stop();
+---
+
+* {Vídeo}
+
+	La creación de los componentes de media son muy parecidos a los de audio. También usaremos uno de los métodos de <<<MediaSessionAndroid>>>. En este caso deberemos añadir algunos parámetros más como el <<SurfaceView>> (será la superficie donde se mostrará el vídeo recibido), el ancho y el largo de la pantalla del dispositivo. 
+	
+	* Componente de recepción de vídeo, añadiendo su <<SurfaceView>>, la altura y anchura de la pantalla del dispositivo:
+
+---
+Parameters params = new ParametersImpl();
+params.put(MediaComponentAndroid.VIEW_SURFACE,
+		(View) findViewById(R.id.video_receive_surface));
+params.put(MediaComponentAndroid.DISPLAY_WIDTH, dm.widthPixels);
+params.put(MediaComponentAndroid.DISPLAY_HEIGHT,
+		dm.heightPixels);
+videoRecorderComponent = mediaSession.createMediaComponent(
+		MediaComponentAndroid.VIDEO_RECORDER, params);
+---
+
+	* Componente de emisión, añadiendo su <<SurfaceView>> y la orientación del dispositivo:
+
+---
+Parameters params = new ParametersImpl();
+params.put(MediaComponentAndroid.PREVIEW_SURFACE,
+		(View) findViewById(R.id.video_capture_surface));
+params.put(MediaComponentAndroid.DISPLAY_ORIENTATION,
+		Orientation);
+videoPlayerComponent = mediaSession.createMediaComponent(
+		MediaComponentAndroid.VIDEO_PLAYER, params);
+---
+
+	Una vez que el componente se ha definido correctamente, podemos definir de qué tipo es y la acción que queremos realizar:
+	
+		* Componente de recepción de vídeo:
+
+---
+videoRecorderComponent.join(Direction.RECV, nc.getJoinableStream(StreamType.video));
+videoRecorderComponent.start();
+---
+
+		* Componente de emisión de vídeo:
+	
+---
+videoPlayerComponent.join(Direction.SEND, nc.getJoinableStream(StreamType.video));
+videoPlayerComponent.start();
+---	
+
+	Para detener los componentes de vídeo:
+
+---
+videoRecorderComponent.stop();
+videoPlayerComponent.stop();
+---
+
+
+
+
+
+
+
 
 
 Crear una aplicación en Android
@@ -1289,184 +1567,10 @@ Ejemplos
 	handler.sendMessage(msg);
 ---
 
-* Controller
-
-	Variables que deberán ser generales. Estas variables se irán utilizando a lo largo de los ejemplos.
-
----
-	private UA ua = null;
-	private SipEndPoint endPoint = null;;
-	private SipEndPointEvent pendingEndPointEvent;
-	private SipCall currentCall;
-
-	private CallListener callListener;
-
-	private MediaSessionAndroid mediaSession;
----
-
-	Inicialización de todos los componentes. A partir de la configuración de la aplicación principal se rellenan los datos importantes para la configuración de SIP. Una vez se ha hecho la configuración correctamente, se realiza un registro contra el servidor SIP correspondiente.
-
----
-public void initUA(ArrayList<AudioCodecType> audioCodecs,
-			ArrayList<VideoCodecType> videoCodecs, InetAddress localAddress,
-			ConnectionType connectionType, String proxyIP, int proxyPort, String localUser,
-			String localRealm) throws Exception {
-
-		Parameters params = new ParametersImpl();
-		params.put(MediaSessionAndroid.AUDIO_CODECS, audioCodecs);
-		params.put(MediaSessionAndroid.VIDEO_CODECS, videoCodecs);
-		params.put(MediaSessionAndroid.LOCAL_ADDRESS, localAddress);
-		params.put(MediaSessionAndroid.CONNECTION_TYPE, connectionType);
-		
-		mediaSession = MSControlFactory.createMediaSession(params);
-		UaFactory.setMediaSession(mediaSession);
-
-		SipConfig sipConfig = new SipConfig();
-		sipConfig.setLocalAddress(localAddress.getHostAddress());
-		sipConfig.setLocalPort(6060);
-		sipConfig.setProxyAddress(proxyIP);
-		sipConfig.setProxyPort(proxyPort);
-
-		if (ua != null) {
-			ua.terminate();
-		}
-
-		ua = UaFactory.getInstance(sipConfig);
-
-		register(localUser, localRealm);
-	}
----
-
-	Realizar el registro contra el servidor.
-
----
-	private void register(String localUser, String localRealm) throws Exception {
-		endPoint = ua.registerEndPoint(localUser, localRealm, null, 3600, this);
-	}
----
-
-	Facilitar si seguimos registrados. Si el <<<endPoint>>> es <<<null>>> significa que no nos hemos registrado aún.
-
----
-	public boolean isRegister() {
-		return (endPoint != null);
-	}	
----
 
 
-	Finalizar la conexión SIP.
 
----
-	public void finishUA() throws Exception {
-		if (ua != null)
-			ua.terminate();
-	}
----
 
-	Implementación de la interfaz <<<SipCallListener>>>. <<Controller>> ya sabe a quien tiene que llamar cuando se use <<<callListener>>> ya que se ha definido en el servicio principal.
-
----
-	@Override
-	public void onEvent(SipCallEvent event) {
-		SipEventType eventType = event.getEventType();
-	
-		if (SipCallEvent.CALL_SETUP.equals(eventType)) {
-			currentCall = event.getSource();
-			if (callListener != null) {
-				callListener.callSetup(currentCall.getNetworkConnection(null));
-			}
-		} else if (SipCallEvent.CALL_TERMINATE.equals(eventType)) {
-			if (callListener != null)
-				callListener.callTerminate();
-		} else if (SipCallEvent.CALL_REJECT.equals(eventType)) {
-			if (callListener != null)
-				callListener.callReject();
-		} else if (SipCallEvent.CALL_ERROR.equals(eventType)) {
-			Log.d(LOG_TAG, "Call Error");
-		}
-	}
----
-
-	Implementación de la interfaz <<<SipEndPointListener>>>.
-
----
-	@Override
-	public void onEvent(SipEndPointEvent event) {
-		SipEventType eventType = event.getEventType();
-		if (SipEndPointEvent.INCOMING_CALL.equals(eventType)) {
-			this.pendingEndPointEvent = event;
-			try {
-				if (callListener != null)
-					callListener.incomingCall(event.getCallSource().getRemoteUri());
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		if (SipEndPointEvent.REGISTER_USER_SUCESSFUL.equals(eventType)) {
-			this.pendingEndPointEvent = event;
-			try {
-				if (callListener != null)
-					callListener.registerUserSucessful();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		if (SipEndPointEvent.REGISTER_USER_FAIL.equals(eventType)) {
-			this.pendingEndPointEvent = event;
-			try {
-				if (callListener != null)
-					callListener.registerUserFailed();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-	}
----
-
-	Implementación de la interfaz <<<Iphone>>>.
-
----
-	@Override
-	public void aceptCall() throws Exception {
-		SipCall sipCall = pendingEndPointEvent.getCallSource();
-		sipCall.addListener(this);
-		sipCall.accept();
-	}
-
-	@Override
-	public void reject() throws Exception {
-		pendingEndPointEvent.getCallSource().reject();
-	}
-
-	@Override
-	public void call(String remoteURI) throws Exception {
-		currentCall = endPoint.dial(remoteURI, Direction.DUPLEX, this);
-	}
-
-	@Override
-	public void hang() {
-		if (currentCall != null)
-			try {
-				currentCall.hangup();
-			} catch (ServerInternalErrorException e) {
-				e.printStackTrace();
-			}
-	}
----
-
-	Implementación de la interfaz <<<CallNotifier>>>. Se supondrá que sólo existe un <<listener>>.
-
----
-	@Override
-	public void addListener(CallListener listener) {
-		callListener = listener;
-	}
-
-	@Override
-	public void removeListener(CallListener listener) {
-		callListener = null;
-	}
----
 
 
 

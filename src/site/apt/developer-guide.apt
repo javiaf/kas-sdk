@@ -5,5 +5,196 @@
    Date
    ------
 
+Create a application Android
 
-	TODO: Translate developer-guide
+* File configuration {AndroidManifesxt.xml}
+
+
+* Activities
+
+
+
+* {{Services}}
+
+	** {{Principal service}}
+
+
+	** {{Service for to active call}}
+
+
+
+* Controller
+
+
+
+** SipEndPointListener
+
+*** <<<onEvent()>>>
+
+
+
+** SipCallListener
+
+*** <<<onEvent()>>>
+
+
+
+** IPhone 
+
+*** <<<aceptCall()>>>
+
+
+*** <<<reject()>>>
+
+
+*** <<<call(String remoteURI)>>>
+
+
+*** <<<hang()>>>
+
+
+
+** CallNotifier
+
+
+
+{Principal Activity}
+
+* File XML
+
+
+
+* OnCreate
+
+
+
+* OnNewIntent
+
+
+
+* OnResume
+
+
+
+* Contacts
+
+
+
+* {Control of network}
+
+
+
+* Control message
+
+
+* Make a {call}
+
+
+* Menu
+
+
+* Finish the application
+
+
+
+{Services}
+
+* {Principal service}
+
+** {CallListener}
+
+
+
+* {Service for to active call}
+
+
+Management {preferences}
+
+* {Connection}
+
+
+* {Media}
+
+
+Emission and reception management of call
+
+* {Emission} of call
+
+
+* {Reception} of call
+
+
+{Media management} ({Video} and {Audio})
+
+* {Activity}
+
+* {Video}
+
+* {Audio}
+
+
+Other classes for help
+
+* {ApplicationContext}
+
+
+* Get ip
+
+
+* Get data for contacts
+
+
+Examples
+
+* AndroidManifest.xml
+
+* Application
+
+* Services
+
+** {{Principal service}}
+
+
+** {{Service for to active call}}
+
+* Controller
+
+* Management contacts
+
+* Management call
+
+** Emission call
+
+** Reception call
+
+
+
+
+
+
+Call management
+
+* Sip User Agent initialization
+
+* Call management
+
+	* Setup a call
+	
+	* Hangup a call
+
+* Incoming call
+
+Media management
+
+* Media Stack initialization
+
+* Display video stream reception
+
+* Stream camera video
+
+* Play audio reception
+
+Example
+
+Simplest application with code snippets
+
