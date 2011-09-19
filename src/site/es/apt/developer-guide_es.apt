@@ -10,28 +10,26 @@ Guía de desarrollo
 
 * Introducción
 
-	En esta guía de desarrollo se describirá cómo se debe utilizar Kurento Android SDK, viendo como se realiza su integración en una aplicación Android. 
+	En esta guía de desarrollo proporciona la información necesaria para el desarrollo con
+	Kurento Android SDK y su integración en aplicaciones Android. 
 	
-	La guía está diferenciada en 3 grandes apartados:
+	La guía consta de 3 grandes apartados:
 	
-		* Control Plane. Se describirán los apartados necesarios para crear una pila SIP, cómo poder registrar los usuarios, cómo realizar llamadas salientes o entrantes, etc...
+		* <<Control Plane>>. Describe los detalles de manejo del <Agente de usuario SIP>, incluendo: el registro de contactos y
+		 la gestión de llamadas salientes o entrantes.
 		
-		* User Plane. Se describirá cómo se debe gestionar el media durante una llamada activa, cómo se configuran los parámetros necesarios para manejar tanto el audio como el vídeo.
+		* <<User Plane>>. Muestra los mecanismos disponibles para construir una red de distribución de media asociada a una llamada,
+		Se proporcionan los detalles de configuran del núcleo de media, así como los componentes básicos que permiten conectar los
+		dispositivos multimedia a redes para la transmisión y recepción de audio y vídeo.
 		
-		* Creación de una aplicación Android. Se indicarán los pasos necesarios y recomendables para crear una aplicación en Android usando Kurento Android SDK.
+		* <<Aplicaciones Android>>. Se indican los pasos necesarios para crear una aplicación en Android que incorpore Kurento Android SDK.
 	
 * Control Plane
 
-	Las funciones del Control Plane para redes de VoIP son llevadas a cabo por el protocolo SIP. Kurento Android SDK incorpora una pila JAIN SIP que implementa las siguientes características:
+	La función de Control está contituida por un Agente SIP que proporciona 
+	conectividad con redes redes de VoIP. Presenta la arquitectura que se muestra en la siguiente figura
 
-	* <<Resgitro de usuarios>>: Implementa un método de REGISTRO con soporte para Autenticación Implícita. Esta característica ha sido probada contra Mobicents y OpenSips.
-
-	* <<UAC>>: Implementa el flujo de llamadas salientes, permitiendo a las aplicaciones iniciar llamadas a usuarios remotos.
-
-	* <<UAS>>: Implementa el flujo de llamadas entrantes, permitiendo a las aplicaciones recibir llamadas de usuarios remotos.
-	 
-     
-	Para la utilización de Kurento Android SDK es necesario tener algunos conocimientos sobre algunas de las clases que se van a utilizar durante el desarrollo de cualquier aplicación. Para ello, a continuación se va hacer una breve descripción de éstos:
+[ Diagrama de clases del agente SIP]
 
 	* UA. FALTA EXPLICACIÓN
 
@@ -48,35 +46,72 @@ Guía de desarrollo
 	* SipConfig. FALTA EXPLICACIÓN
 
 	
-* Inicialización de la pila SIP.
+* Inicialización del Agente SIP.
 
-	La pila SIP se debe crear y destruir cada vez que existan ciertos cambios en la configuración de la aplicación, cómo pueden ser, un cambio en la interfaz de red, el cambio de usuario o de proxy SIP, etc... Actualmente cuando se crea la pila SIP tan sólo se podría escuchar por una sola interfaz de red.
+	El Agente de Usuario debe ser inicializado al arrancar la aplicación. Presta a servicio a uno o más puntos de terminación SIP y
+	gestiona todas las llamadas: entrantes y salientes. Debe ser reiniciado solo cuando se produzcan cambios 
+	relevantes en el entorno, como por ejemplo, un cambio de IP, de interfaz activo, del proxy o similar
+	
+	Internamente dispone de una pila SIP que gestiona el intercambio de mensajes entre con los agentes remotos remoto. Kurento Android SDK
+	utiliza para este propósito la implementación {{{http://java.net/projects/jsip}JAIN-SIP}}
 
-	Para la inicialización de la pila SIP es necesario recoger los siguientes parámetros de la configuración de la aplicación, para poder así crear un objeto <<<MediaSessionAndroid>>> y asignárselo más tarde al objeto <<<UaFactory>>>.
+	La inicialización del Agente de Usuario SIP requiere la configuración de dos grupos de parámetros
+	
+	* <<Configuración SIP>>: Establece la configuración requerida para conectarse a una red de VoIP. Consta de
+	los parámestros que se muestran en la siguiente tabla
+	
+	
+*--------*-----------*----*--------*----------------------------------------------------------------*
+| Nomnre | Presencia |tipo|Rango   | Descripción                                                    |
+*--------*-----------*----*--------*----------------------------------------------------------------+
+| LocalAddress| M | String | NA    | Establece la dirección IP que usará la pila SIP. Si la dirección IP|
+|             |   |        |       | no se corresponde con un interfaz activo se genera una excepción   |
+*--------*-----------*----*--------*----------------------------------------------------------------+
+| LocalPort   | O | Integer| 1-2^16| Establece el puerto local en el que la pila SIP escucha y envía mensajes|
+*--------*-----------*----*-------*----------------------------------------------------------------+
+| ProxyAddress| M | String | NA    | Define la dirección del proxy SIP. Esta es también la dirección|
+|             |   |        |       |usada como REGISTRAR SIP                                        |
+*--------*-----------*----*-------*----------------------------------------------------------------+
+| ProxyPort| M | String |  1-2^16  | Define el puerto del proxy SIP al que se enviarán los mensajes SIP|
+*--------*-----------*----*-------*----------------------------------------------------------------+
+Parámetros de configuración SIP
 
-		* Interfaz de red (NET_IF). Sí la interfaz es WIFI o 3G.
 
-		* Dirección de red (LOCAL_ADDRESS).
+	* <<Configuración de media>>: Permite disponer de la información relevante de media, necesaria en el proceso
+	 de negociación de llamadas. La tabla siguiente muestra la lista de parámetros configurables
 
-		* Máximo ancho de banda (MAX_BANDWIDTH). FALTA EXPLICACIÓN
- 
-		* Dirección de la llamada (STREAMS_MODES). Sólo envío, sólo recepción o envío/recepción.
 
-		* Codecs de Audio (AUDIO_CODECS). FALTA EXPLICACIÓN
-
-		* Codecs de Video (VIDEO_CODECS). FALTA EXPLICACIÓN
-
-		* Tamaño de los frames (FRAME_SIZE). FALTA EXPLICACIÓN
-
-		* Máximo frame rate (MAX_FRAME_RATE). FALTA EXPLICACIÓN
- 
-		* Tamaño entre dos frames (GOP_SIZE). FALTA EXPLICACIÓN
-
-		* Máximo tamaño de cola de frames (FRAMES_QUEUE_SIZE). FALTA EXPLICACIÓN
-
-	En el siguiente ejemplo se muestra como se recogen los parámetros y se crea un objeto <<<MediaSessionAndroid>>>, una vez creado se asigna a <<<UaFactory>>> para después crear un objeto <<<UA>>>.
-
----
+*--------*-----------*----*-------*----------------------------------------------------------------*
+| <<Nombre>> | Presencia |Tipo|Rango  | Descripción                                                    |
+*--------*-----------*----*-------*----------------------------------------------------------------+
+| NET_IF |  M        |ENUM|WIFI/3G|Establece el interfaz a través del cual se recibirá y enviará media.                |
+|        |           |    |       |este interfaz suele ser el activo y coincide con el interfaz SIP |
+*--------------*-----------*----*-------*----------------------------------------------------------------+
+|LOCAL_ADDRESS |           |	|       |                                                                |
+*--------------*-----------*----*-------*----------------------------------------------------------------+
+|MAX_BANDWIDTH |           |	|       |                                                                |
+*--------------*-----------*----*-------*----------------------------------------------------------------+
+|STREAM_MODE   |           |	|       |                                                                |
+*--------------*-----------*----*-------*----------------------------------------------------------------+
+|AUDIO_CODECS   |           |	|       |                                                                |
+*--------------*-----------*----*-------*----------------------------------------------------------------+
+|VIDEO_CODECS   |           |	|       |                                                                |
+*--------------*-----------*----*-------*----------------------------------------------------------------+
+|FRAME_SIZE   |           |	|       |                                                                |
+*--------------*-----------*----*-------*----------------------------------------------------------------+
+|MAX_FRAME_RATE   |           |	|       |                                                                |
+*--------------*-----------*----*-------*----------------------------------------------------------------+
+|GOP_SIZE   |           |	|       |                                                                |
+*--------------*-----------*----*-------*----------------------------------------------------------------+
+|FRAMES_QUEUE_SIZE   |           |	|       |                                                                |
+*--------------*-----------*----*-------*----------------------------------------------------------------+
+Parámetros de configuración de media
+	
+	
+	La inicialización del agente SIP requiere en primer lugar parametrizar la factoría de media <<MSControlFactory>>, tal y como se
+	muestra en el siguiente fragmento de código. 
+	
++---
 	Parameters params = new ParametersImpl();
 	params.put(MediaSessionAndroid.NET_IF, netIF);
 	params.put(MediaSessionAndroid.LOCAL_ADDRESS, localAddress);
@@ -90,33 +125,37 @@ Guía de desarrollo
 	params.put(MediaSessionAndroid.MAX_FRAME_RATE, maxFR);
 	params.put(MediaSessionAndroid.GOP_SIZE, gopSize);
 	params.put(MediaSessionAndroid.FRAMES_QUEUE_SIZE, maxQueueSize);
++---	
 
-	mediaSession = MSControlFactory.createMediaSession(params);
-	UaFactory.setMediaSession(mediaSession);
----
-
-	Para seguir la inicialización, debemos inicializar un objeto <<<SipConfig>>>, que también se le asignará a <<<UaFactory>>>. 
-
-	Es importante comprobar si el objeto <<<ua>>> existe o no, ya que si existe y estamos en la inicialización, debemos finalizarlo para crear uno nuevo con los nuevos valores de configuración. Por último, obtenemos el objeto <<<ua>>> usando el objeto <<<SipConfig>>> que acabamos de definir.
-
----
+	Tambien es necesario configurar la factoría de Agentes de Usuario SIP, tal y como se indica a continuación
+	
++---
 	SipConfig sipConfig = new SipConfig();
 	sipConfig.setLocalAddress(localAddress.getHostAddress());
 	sipConfig.setLocalPort(6060);
 	sipConfig.setProxyAddress(proxyIP);
 	sipConfig.setProxyPort(proxyPort);
++---
 
-	if (ua != null) {
-		ua.terminate();
-	}
+	Una vez las factorías están configuradas, se instancia un objeto <<MediaSession>> que se pasa como parámetro
+	para instanciar un Agente de Usuario SIP
+
++---
+	mediaSession = MSControlFactory.createMediaSession(params);
+	UaFactory.setMediaSession(mediaSession);
+	
 	ua = UaFactory.getInstance(sipConfig);
----
++---
 
-	Para finalizar la pila SIP como se ha podido ver en el ejemplo anterior simplemente hay que realizar lo siguiente:
-
----
-	ua.terminate();
----
+	Es importante resaltar que un cambio en los parámetros de media requiere la instanciación de un nuevo MediaSession y por lo 
+	tanto una reinicialización del agente de usuario.
+	
+	Para finalizar el Agente de Usuario, bien porque la aplicación ha termiando, o porque resulta necesaria una reconfiguración se ejecuta 
+	el código que se muestra a continuación
+	
++---
+ 	ua.terminate();
++---
 
 
 * Registro / Des-registro
