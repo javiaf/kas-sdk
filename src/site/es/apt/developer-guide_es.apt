@@ -28,11 +28,11 @@ Guía de desarrollo
 
 	La función de Control está constituida por un Agente SIP que proporciona conectividad con redes de VoIP. Presenta la arquitectura que se muestra en la siguiente figura.
 
-[ Diagrama de clases del agente SIP]
+[../images/diagrama-control-plane.png]
 
-	* <<UA>>. FALTA EXPLICACIÓN
+	* <<UA>>. Este objeto será el que se encarga de toda la gestión del protocolo SIP. Será el encargado de enviar, recibir, procesar los mensajes SIP que se envíen por la red. Será capaz de poner en contacto a varios contactos (<<<SipEndPoint>>>).
 
-	* <<SipEndPoint>>. FALTA EXPLICACIÓN
+	* <<SipEndPoint>>. Este objeto es la representación de una <<<sipuri>>>, es decir, de un contacto. Será el encargado de realizar las tareas convencionales de una llamada, aceptarlas, realizarlas, cancelarlas, etc ...
 
 	* <<SipEndPointEvent>>. Este objeto nos servirá para conocer los eventos que serán recibidos después de realizar un registro en un servidor SIP. Para poder recibir los eventos que representa es necesario implementar la interfaz <<<SipEndPointListener>>> y suscribirse al objeto <<<SipEndPoint>>> del cual queremos recibir dichos eventos. Esta suscripción se hace al realizar el registro del usuario.
 
@@ -158,7 +158,7 @@ public void onEvent(SipCallEvent event) {
 *--------*-----------*----*-------*----------------------------------------------------------------+
 | ProxyPort| M | String |  1-2^16  | Define el puerto del proxy SIP al que se enviarán los mensajes SIP|
 *--------*-----------*----*-------*----------------------------------------------------------------+
-Parámetros de configuración SIP.
+Parámetros de configuración SIP. (M: Obligatorio; O: Opcional)
 
 
 	* <<Configuración de media>>: Permite disponer de la información relevante de media necesaria en el proceso
@@ -193,7 +193,7 @@ Parámetros de configuración SIP.
 *--------------*-----------*----*-------*----------------------------------------------------------------+
 |FRAMES_QUEUE_SIZE   |     O      |Integer	|   NA    | Establece el número de frames más recientes de la cámara que se almacenan en el buffer utilizado para gestionar el frame rate. |
 *--------------*-----------*----*-------*----------------------------------------------------------------+
-Parámetros de configuración de media
+Parámetros de configuración de media. (M: Obligatorio; O: Opcional)
 	
 	
 	La inicialización del agente SIP requiere en primer lugar parametrizar la factoría de media <<MSControlFactory>>, tal y como se
@@ -226,7 +226,7 @@ Parámetros de configuración de media
 +---
 
 	Una vez las factorías están configuradas, se instancia un objeto <<MediaSession>> que se pasa como parámetro
-	para instanciar un Agente de Usuario SIP
+	para instanciar un Agente de Usuario SIP.
 
 +---
 	mediaSession = MSControlFactory.createMediaSession(params);
@@ -252,15 +252,15 @@ Parámetros de configuración de media
 
 	Una vez que la pila SIP está inicializada y tenemos nuestro objeto <<<ua>>> creado correctamente, una de las acciones que podemos hacer es registrar a un usuario contra un servidor. El registro en el servidor puede ser con autenticación o sin ella. Dependerá del servidor y de la aplicación que se esté realizando los valores que se introduzcan en la llamada a <<<registerEndPoint(String user, String realm, String password, int expires, SipEndPointListener handler)>>>:
 
-	* user: Usuario con el que se realizará el registro.
+	* <<user>>: Usuario con el que se realizará el registro.
 
-	* realm: Dominio con el que el usuario realizará el registro.
+	* <<realm>>: Dominio con el que el usuario realizará el registro.
 
-	* password: Password con el que el usuario realizará el registro.
+	* <<password>>: Password con el que el usuario realizará el registro.
 
-	* expires: Tiempo en el cual no realizará otro registro.
+	* <<expires>>: Tiempo en el cual no realizará otro registro.
 
-	* handler: Clase que se encargará de implementar la interfaz <<<SipEndPointListener>>>.
+	* <<handler>>: Clase que se encargará de implementar la interfaz <<<SipEndPointListener>>>.
 
 	El registro nos devolverá un objeto del tipo <<<SipEndPoint>>> con el cual podremos realizar llamadas. Además la clase que tenga que implementar la interfaz, empezará a recibir los eventos correspondientes.
 
@@ -332,27 +332,25 @@ incomingCall.reject();
 	
 * Terminar una llamada
 
-	Una vez la llamada está establecida se podrá terminar con la llamada, usando el objeto <<<SipCall>>> que se definió cuando se realizó la llamada se puede terminar usando:
+	Una vez la llamada está establecida se podrá terminar con la llamada, usando el objeto <<<SipCall>>> que se definió cuando se realizó la llamada:
 	
 +---
 currentCall.hangup();
 +---
 
-* User Plane (VER LA EXPLICACIÓN MEJOR CON MIGUEL)
+* User Plane
 	
-		Descripción core basado en ffmpeg. AMPLIAR LA DESCRICIÓN
-		
-		
+	Mediante el User Plane podremos definir y construir una red de distribución de media que este asociada a una llamada. Para esto se debe configurar el media, configurar los componentes para conectarse a los dispositivos multimedia y éstos a la red para poder realizar transmisión y recepción de audio y vídeo.
+
 * Inicialización del media
 
-	explicación los parámetros nuevos y como se integra con el useragent, y el netkconnection, todos los frames, todos los nuevos cambios, interfaz, codecx....
-Verlo con Miguel.
+	La inicialización del media se tendrá que llevar a cabo una vez que la llamada ha sido establecida. Como se ha comentado en un apartado anterior, sabremos que la llamada se ha establecido correctamente porque se ha recibido un evento  <<<SipCallEvent.CALL_SETUP>>>. A través de la recepción de este evento podremos recuperar el <<<NetworkConnection>>> que se ha configurado durante la negociación de la llamada. Este <<<NetworkConnection>>> nos servirá para poder conocer los puntos de conexión del media en la red y la configuración que se utilizará de cada parte del media (audio y vídeo).
 
-	Una vez que se ha establecido una llamada es el momento de establecer los flujos de media (audio y vídeo).
+	En el apartado de inicialización de la pila SIP, cuando creamos la factoría de media <<MSControlFactory>> aparecen los parámetros necesarios para que según avance la negociación del media se termine configurando el <<<NetworkConnection>>>.
 	
-	Como se genera el NC, como recupero datos, etc.. y accedo a la negociación de la llamada( Hablar con miguel).
+	Una vez que se ha establecido una llamada es el momento de establecer los flujos de media (audio y vídeo). Para ello habrá que crear para cada flujo un componente que serán objetos de la clase <<<MediaComponentAndroid>>>.
 	
-* {Audio}
+* {Componente de audio}
 
  	Se deberán crear los componentes de audio, tanto para la emisión como para la recepción. Para poder crear los componentes de audio usaremos uno de los métodos de <<<MediaSessionAndroid>>>.
 
@@ -376,7 +374,7 @@ audioPlayerComponent = mediaSession.createMediaComponent(
 	Parameters.NO_PARAMETER);
 +---
 
-	* Una vez que hemos creado los componentes de audio correctamente, debemos definir como será cada componente, sí de emisión o de recepción y hacerlos empezar.
+	* Una vez que hemos creado los componentes de audio correctamente, debemos definir como será cada componente, sí de emisión o de recepción y hacerlos empezar. Necesitaremos acceder a la configuración del <<<NetworkConnection>>> para recuperar el tipo de <<<stream>>> que queremos reproducir, en este caso serán <<<StreamType.audio>>>.
 	 
 		* Componente de recepción de audio.
 
@@ -399,9 +397,9 @@ audioRecorderComponent.stop();
 audioPlayerComponent.stop();
 +---
 
-* {Vídeo}
+* {Componente de vídeo}
 
-	La creación de los componentes de media son muy parecidos a los de audio. También usaremos uno de los métodos de <<<MediaSessionAndroid>>>. En este caso deberemos añadir algunos parámetros más como el <<SurfaceView>> (será la superficie donde se mostrará el vídeo recibido), el ancho y el largo de la pantalla del dispositivo. 
+	La creación de los componentes de media son muy parecidos a los de audio. También usaremos uno de los métodos de <<<MediaSessionAndroid>>>. En este caso deberemos añadir algunos parámetros más como el <<SurfaceView>> (será la superficie donde se mostrará el vídeo recibido), el ancho y el largo de la pantalla del dispositivo. Necesitaremos acceder a la configuración del <<<NetworkConnection>>> para recuperar el tipo de <<<stream>>> que queremos reproducir, en este caso serán <<<StreamType.video>>>.
 	
 	* Componente de recepción de vídeo, añadiendo su <<SurfaceView>>, la altura y anchura de la pantalla del dispositivo:
 
@@ -458,6 +456,10 @@ Crear una aplicación en Android
 	A partir de este apartado se van a dar algunas recomendaciones y pasos a seguir para poder realizar una aplicación en Android que incorpore Kurento Android SDK. Se comentarán temas como la configuración de los ficheros .xml, las actividades y servicios necesarios, la gestión de las preferencias y, por último, como realizar la gestión del media, tanto del audio como del vídeo.
 
 	En la parte final del apartado se podrán encontrar algunos ejemplos de código a seguir.
+
+	En el siguiente diagrama se puede observar un diagrama general de las actividades, servicios y componentes que son necesarios para realizar una aplicación.
+
+[../images/diagrama-tk-softphone.png]
 
 * Configuración del fichero {AndroidManifest.xml}
 	
