@@ -36,11 +36,10 @@ License Grant
            reproduce and use the <Software> internally, complete and unmodified, for
            the sole purposes of designing, developing, testing and running <Programs>.
 
-           Kurento also grants you a non-exclusive, non-transferable, royalty-free
-           limited license to reproduce and distribute the <Runtime Library>, directly
-           or indirectly through your licensees, distributors, resellers, or OEMs,
-           electronically or in physical form or pre-installed inside <Terminals>,
-           provided that:
+           Kurento also grants you a non-exclusive, non-transferable, limited license
+           to reproduce and distribute the <Runtime Library>, directly or indirectly
+           through your licensees, distributors, resellers, or OEMs, electronically or
+           in physical form or pre-installed inside <Terminals>, provided that:
 
         [[a]] the <Software> and any proprietary legends or notices are complete and
               unmodified;
