@@ -17,7 +17,7 @@
 
     1. Definitions: 
 
-       **Software** means the Kurento Android Software Development 
+       [<<Software>>] means the Kurento Android Software Development 
     Kit (SDK) in binary form, any other machine readable materials including, but not
     limited to, libraries, source files, header files, and data files,
     any updates or error corrections provided by Kurento, and any user
@@ -25,12 +25,12 @@
     by Kurento under this Agreement, and any subsequent versions that Kurento
     makes available to you.
 
-       **Program** means Android Applications developed and compiled using the Kurento KAS.
+       [<<Program>>] means Android Applications developed and compiled using the Kurento KAS.
 
-       **Runtime Library** means the parts of the Kurento Android SDK
+       [<<Runtime Library>>] means the parts of the Kurento Android SDK
     code that get bundled inside the Programs
 
-       *Terminal* means a device running the Android Operating System, such as a phone, tablet or other kind of appliances
+       [<<Terminal>>] means a device running the Android Operating System, such as a phone, tablet or other kind of appliances
 
     2. License Grant: Subject to the terms and conditions of this Agreement
     Kurento grants you a non-exclusive, non-transferable,
