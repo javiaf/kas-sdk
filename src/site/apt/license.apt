@@ -23,7 +23,7 @@ License Grant
                       that Kurento makes available to you.
 
        [<<Program>>] means Android Applications developed and compiled using the
-                     Kurento KAS.
+                     Kurento Android SDK (KAS).
 
        [<<Runtime Library>>] means the parts of the Kurento Android SDK code that get
                              bundled inside the Programs
