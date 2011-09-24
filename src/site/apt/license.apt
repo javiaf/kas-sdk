@@ -71,7 +71,7 @@ License Grant
 
     [[4]]. Limitation of Liability. (no son responsables de daños causados por el software)
 
-    [[5]]. Third Party Code. The Kurento Android SDK and the KAS Runtime Library
+    [[5]]. Third Party Code. The <<Software>> and the <<Runtime Library>>
     contain third party code, subject to the following licenses:
 
         * LGPL v3.0 for some ffmpeg libraries
