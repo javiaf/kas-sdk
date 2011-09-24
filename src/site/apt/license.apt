@@ -74,10 +74,11 @@ License Grant
     [[5]]. Third Party Code. The <<Software>> and the <<Runtime Library>>
     contain third party code, subject to the following licenses:
 
-        * LGPL v3.0 for some ffmpeg libraries
+        * LGPL v3.0 for some ffmpeg codecs and libraries
 
         * Apache License v2.0 for the opencore-amr codec
 
     The corresponding licenses can be found under the LICENSE file in the SDK
-    distribution
+    distribution, and any mandatory notices related to those packages in the
+    corresponding NOTCE file.
 
