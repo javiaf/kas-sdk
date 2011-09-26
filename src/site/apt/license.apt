@@ -69,7 +69,9 @@ License Grant
            can be used only as associated to the redistribution of the <<Runtime
            Library>>, and no permission is granted beyond this usage.
 
-    [[4]]. Limitation of Liability. (no son responsables de daños causados por el software)
+    [[4]]. Limitation of Liability. To the extent allowable under the applicable laws
+           Kurento will not be held responsible of any damages caused by the use of
+           <<Software>>.
 
     [[5]]. Third Party Code. The <<Software>> and the <<Runtime Library>>
     contain third party code, subject to the following licenses:
