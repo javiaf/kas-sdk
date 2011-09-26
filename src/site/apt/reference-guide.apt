@@ -9,8 +9,14 @@ Kurento Android SDK reference guide
 
 	Kurento Android SDK API consist of the following components
 	
-	* <<SIP User Agent API>>: Javadoc documentation regarding call handling
+	* <<Control Plane API>>: Javadoc documentation for call handling
+
+ 		** {{{../kas-sipua/apidocs/index.html}<<SIP User Agent API>>}}: kas-sipua
+
+		** {{{../kas-sipua-impl/apidocs/index.html}<<SIP User Agent Factory API>>}}: kas-sipua-impl
 	
-	* <<General media control API>>: Javadoc documentation associated to generic media management
-	
-	* <<Android specific media control API>>: Javadoc documentation on specific Android media modules
+	* <<User Plane API>>: Javadoc documentacion for media management
+
+		** {{{../kc-mscontrol/apidocs/index.html}<<General media control API>>}}: Control of general media components
+		
+		** {{{../kas-mscontrol/apidocs/index.html}<<Android specific media control API>>}}: Android specific media control functions 
