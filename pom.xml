@@ -9,12 +9,12 @@
 
 	<name>kurento-android-docs</name>
 	<url>http://repository.kurento.com/site/kurento-android-docs</url>
-	
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8 </project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 	</properties>
-	
+
 	<build>
 		<plugins>
 
@@ -38,6 +38,15 @@
 		</plugins>
 
 	</build>
+
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-plugin-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</reporting>
 
 	<distributionManagement>
 		<site>
