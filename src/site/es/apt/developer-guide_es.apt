@@ -32,14 +32,14 @@ Control Plane
 
 ** <<UA>>
 
-	Este objeto será el que se encarga de toda la gestión del protocolo SIP. Será el encargado de enviar, recibir, procesar los mensajes SIP que se envíen por la red. Será capaz de comunicar a varios contactos (<<<SipEndPoint>>>).
+	Este objeto se encarga de toda la gestión del protocolo SIP. Envía, recibe, procesa los mensajes SIP que se envíen por la red. Es capaz de comunicar a varios contactos (<<<SipEndPoint>>>).
 
 
 *** <<<registerEndPoint(String user, String realm, String password, int expires, SipEndPointListener handler)>>>
 
-	Mediante este método se registra un usuario al servidor que se hay definido en la configuración del objeto <<<ua>>>. Además, se le indica quién se encargará de recibir los eventos que se puedan generar. 
+	Mediante este método se registra un usuario al servidor que se haya definido en la configuración del objeto <<<ua>>>. Además, se le indica quién se encargará de recibir los eventos que se puedan generar. 
 
-	El parámetro <<<expires>>> servirá para definir el tiempo máximo de cada registro, además de poder des-registrar al usuario estableciendo ese valor a 0.
+	El parámetro <<<expires>>> indica el tiempo máximo de cada registro, además se puede des-registrar al usuario estableciendo ese valor a 0.
 
 ***<<<terminate()>>>
 
@@ -47,15 +47,15 @@ Control Plane
 
 **  <<SipEndPoint>>. 
 
-	Este objeto es la representación de una <<<sipuri>>>, es decir, de un contacto. Será el encargado de realizar las tareas convencionales de una llamada, aceptarlas, realizarlas, cancelarlas, etc ...
+	Este objeto es la representación de una <<<sipuri>>>, es decir, de un contacto. Es el encargado de realizar las tareas convencionales de una llamada, aceptarlas, realizarlas, cancelarlas, etc ...
 
 ***<<<dial(String remoteParty, SipCallListener callController)>>>
 
-	Mediante este método se realiza una llamada a un contacto. Mediante el parámetro <<<remoteParty>>> se estable la <<<sipuri>>> del contacto al que queremos llamar. Además, se le indica quién se encargará de recibir los eventos que se puedan generar. Esto generará un mensaje del protocolo SIP enviando una invitación para establecer una comunicación.
+	Mediante este método se realiza una llamada a un contacto. Mediante el parámetro <<<remoteParty>>> se establece la <<<sipuri>>> del contacto al que queremos llamar. Además, se le indica quién se encargará de recibir los eventos que se puedan generar. Esto generará un mensaje del protocolo SIP enviando una invitación para establecer una comunicación.
 
 **  <<SipEndPointEvent>>. 
 
-	Este objeto nos servirá para conocer los eventos que serán recibidos después de realizar un registro en un servidor SIP. Para poder recibir los eventos que representa es necesario implementar la interfaz <<<SipEndPointListener>>> y suscribirse al objeto <<<SipEndPoint>>> del cual queremos recibir dichos eventos. Esta suscripción se hace al realizar el registro del usuario.
+	Este objeto nos permite conocer los eventos que serán recibidos después de realizar un registro en un servidor SIP. Para poder recibir los eventos que representa es necesario implementar la interfaz <<<SipEndPointListener>>> y suscribirse al objeto <<<SipEndPoint>>> del cual queremos recibir dichos eventos. Esta suscripción se hace al realizar el registro del usuario.
 
 		***<<<SipEndPointListener>>>
 	
@@ -69,7 +69,7 @@ Control Plane
 
 			* <<<REGISTER_USER_SUCESSFUL>>>, la recepción de este evento significa que el registro con los parámetros de configuración de conexión son correctos y estamos registrados. 
 
-			* <<<REGISTER_USER_FAIL>>>, la recepción de este evento significa, al contrario que el evento anterior que el registro ha sido incorrecto. 
+			* <<<REGISTER_USER_FAIL>>>, la recepción de este evento significa, al contrario que el evento anterior, que el registro ha sido incorrecto. 
 	
 			* <<<REGISTER_USER_NOT_FOUND>>>, la recepción de este evento significa que el usuario no existe y el registro ha sido incorrecto.
 
@@ -99,7 +99,7 @@ public void onEvent(SipEndPointEvent event) {
 
 **  <<SipCall>>. 
 
-	La definición de este objeto nos permitirá ser capaces de realizar operaciones en la llamada una vez establecida. Recoger información de la llamada y del media que se ha establecido en la negociación. 
+	Este objeto nos permite gestionar la llamada una vez creada. Además de gestionarla, podremos recoger información del media que se ha establecido en la negociación. 
 
 ***<<<accept()>>>
 
@@ -107,7 +107,7 @@ public void onEvent(SipEndPointEvent event) {
 
 ***<<<reject()>>>
 
-	Mediante este método se rechará una llamada entrante. Esto generará un mensaje del protocolo SIP rechazando la llamada.
+	Mediante este método se rechazará una llamada entrante. Esto generará un mensaje del protocolo SIP rechazando la llamada.
 
 ***<<<hangup()>>>
 
@@ -127,7 +127,7 @@ public void onEvent(SipEndPointEvent event) {
 
 **  <<SipCallEvent>>.
 
-	Este objeto nos servirá para conocer los eventos que serán recibidos durante el establecimiento de una llamada. Para poder recibir los eventos que representa es necesario implementar la interfaz <<<SipCallListener>>> y suscribirse al objeto <<<SipCall>>> del cual queremos recibir dichos eventos.
+	Este objeto nos permite conocer los eventos que serán recibidos durante el establecimiento de una llamada. Para poder recibir los eventos que representa es necesario implementar la interfaz <<<SipCallListener>>> y suscribirse al objeto <<<SipCall>>> del cual queremos recibir dichos eventos.
 
 		*** <<<SipCallListener>>>. 
 
@@ -168,7 +168,7 @@ public void onEvent(SipCallEvent event) {
 
 ** <<SipConfig>>. 
 
-	La definición de un objeto de esta clase será necesario para la inicialización de la pila SIP. Recibirá los parámetros de la configuración de red.
+	La definición de un objeto de esta clase es necesario para la inicialización de la pila SIP. Recibe los parámetros de la configuración de red.
 
 ** <<MSControlFactory>>. 
 
@@ -176,7 +176,7 @@ public void onEvent(SipCallEvent event) {
 
 **  <<MediaSessionAndroid>>. 
 
-	Un objeto de esta clase actúa como factoría para generar objetos <<<MediaComponentAndroid>>>. Se creará un <<<MediaComponentAndroid>>> concreto en base a la configuración y los parámetros pasados en el método <<<createMediaComponent>>>. Un objeto de esta clase se asignará a <<<UAFactory>>> mediante el método estático <<<setMediaSession>>> y a través de este objeto se construirá un <<<NetworkConnection>>>.
+	Un objeto de esta clase actúa como factoría para generar objetos <<<MediaComponentAndroid>>>. Se crea un <<<MediaComponentAndroid>>> concreto en base a la configuración y los parámetros pasados en el método <<<createMediaComponent>>>. Un objeto de esta clase se asigna a <<<UAFactory>>> mediante el método estático <<<setMediaSession>>> y a través de este objeto se construye un <<<NetworkConnection>>>.
 
 ***<<<createMediaComponent(Configuration<MediaComponent> predefinedConfig, Parameters params)>>>
 
@@ -214,7 +214,7 @@ public void onEvent(SipCallEvent event) {
 *--------*-----------*----*-------*----------------------------------------------------------------+
 | ProxyPort| M | String |  1-2^16  | Define el puerto del proxy SIP al que se enviarán los mensajes SIP|
 *--------*-----------*----*-------*----------------------------------------------------------------+
-Parámetros de configuración SIP. (M: Obligatorio; O: Opcional)
+(M: Obligatorio; O: Opcional)
 
 
 	* <<Configuración de media>>: Permite disponer de la información relevante de media necesaria en el proceso
@@ -248,7 +248,7 @@ Parámetros de configuración SIP. (M: Obligatorio; O: Opcional)
 *--------*-----------*----*-------*---------------*-------------------------------------------------+
 |FRAMES_QUEUE_SIZE   |     O      |Integer	|   NA    | 2 | Establece el número de frames más recientes de la cámara que se almacenan en el buffer utilizado para gestionar el frame rate |
 *--------*-----------*----*-------*---------------*-------------------------------------------------+
-Parámetros de configuración de media. (M: Obligatorio; O: Opcional)
+(M: Obligatorio; O: Opcional)
 	
 	
 	La inicialización del agente SIP requiere en primer lugar parametrizar la factoría de media <<MSControlFactory>>, tal y como se
@@ -333,7 +333,7 @@ ua.terminate();
 
 ** Registro
 
-	Una vez que la pila SIP está inicializada y tenemos nuestro objeto <<<ua>>> creado correctamente, una de las acciones que podemos hacer es registrar a un usuario contra un servidor. El registro en el servidor puede ser con autenticación o sin ella. Dependiendo del servidor y de la aplicación que se esté realizando, así serán los valores que se introduzcan en la llamada a <<<registerEndPoint(String user, String realm, String password, int expires, SipEndPointListener handler)>>>:
+	Una vez que la pila SIP está inicializada y tenemos nuestro objeto <<<ua>>> creado correctamente, podemos registrar un usuario contra un servidor. El registro en el servidor puede ser con autenticación o sin ella. Dependiendo del servidor y de la aplicación que se esté realizando, así serán los valores que se introduzcan en la llamada a <<<registerEndPoint(String user, String realm, String password, int expires, SipEndPointListener handler)>>>:
 
 	* <<user>>: Usuario con el que se realizará el registro.
 
@@ -341,7 +341,7 @@ ua.terminate();
 
 	* <<password>>: Password con el que el usuario realizará el registro.
 
-	* <<expires>>: Tiempo en el cual no realizará otro registro.
+	* <<expires>>: Tiempo en el cual no se realizará otro registro.
 
 	* <<handler>>: Clase que se encargará de implementar la interfaz <<<SipEndPointListener>>>.
 
@@ -351,7 +351,8 @@ ua.terminate();
 endPoint = ua.registerEndPoint(localUser, localRealm, localPassword, expires, this);
 +---
 
-	Como ha explicado cuando se realiza un registro contra un servidor SIP, para recibir los eventos que esto provoca se debe implementar la interfaz <<<SipEndPointListener>>>. 	
+	Como ha explicado, cuando se realiza un registro contra un servidor SIP, para poder recibir los eventos se debe implementar la interfaz <<<SipEndPointListener>>>. 	
+
 ** Des-registro
 
 	Si por cualquier motivo se desea dejar de recibir llamadas o la aplicación ha finalizado deberemos des-registrar el contacto del servidor. Para realizar esta operación deberemos establecer el parámetro <<<expires>>> con un valor 0.
@@ -365,7 +366,7 @@ endPoint = ua.registerEndPoint(localUser, localRealm, localPassword, expires, th
 
 ** Realizar una llamada
 
-	Realizar una llamada saliente. Indicaremos el contacto al que queremos realizar la llamada mediante una <<<sipuri>>>, que estará formado por el nombre de usuario y el dominio, por ejemplo: <<<user@dominio.es>>>. La llamada se realizará mediante el objeto <<<endPoint>>> de la clase <<<SipEndPoint>>> que hemos obtenido cuando hemos realizado el registro del usuario. Además, le indicaremos la clase que implementará la interfaz <<<SipCallListener>>>. Con esto obtendremos un objeto de la clase <<<SipCall>>>.
+	Para realizar una llamada saliente indicamos el contacto al que queremos realizar la llamada mediante una <<<sipuri>>>, que estará formado por el nombre de usuario y el dominio, por ejemplo: <<<user@dominio.es>>>. La llamada se realiza mediante el objeto <<<endPoint>>> de la clase <<<SipEndPoint>>> que hemos obtenido cuando hemos realizado el registro del usuario. Además, le indicamos la clase que implementará la interfaz <<<SipCallListener>>>. Con esto obtendremos un objeto de la clase <<<SipCall>>>.
 	
 +---
 currentCall = endPoint.dial(remoteURI, this);
@@ -412,7 +413,7 @@ incomingCall.reject();
 	
 * Terminar una llamada
 
-	Una vez la llamada está establecida se podrá terminar finalizar con ella, usando el objeto <<<SipCall>>> que se definió cuando se realizó la llamada:
+	Una vez la llamada está establecida se podrá finalizar, usando el objeto <<<SipCall>>> que se definió cuando se realizó la llamada:
 	
 +---
 currentCall.hangup();
@@ -428,8 +429,7 @@ User Plane
 
 	Este <<<MediaSession>>> se utilizará en <<<UaFactory>>> para crear un <<<ua>>>, el cual internamente creará un <<<NetworkConnection>>> en base a la configuración anterior.
 
-	
-	La inicialización del media en sí tiene lugar una vez establecida la llamada, en la cual se determinan las características definitivas del audio y del vídeo y se inicializa la pila de media interna encargada de toda la gestión como la codificación, el envío por la red, etc... gestionado todo ello por el <<<NetworkConnection>>> creado internamente por la pila SIP.
+	La inicialización del media en sí tiene lugar una vez establecida la llamada, en la cual se determinan las características definitivas del audio y del vídeo. Se inicializa la pila de media interna encargada de toda la gestión como la codificación, el envío por la red, etc... gestionado todo ello por el <<<NetworkConnection>>> creado internamente por la pila SIP.
 
 	Como se ha comentado en un apartado anterior, sabremos que la llamada se ha establecido correctamente porque se ha recibido un evento <<<SipCallEvent.CALL_SETUP>>>, a través del cual podemos acceder al <<<NetworkConnection>>> que ha resultado tras la llamada:
 
@@ -449,7 +449,7 @@ currentCall.getMediaTypesModes();
 	
 * {Componente de audio}
 
- 	Se deberán crear los componentes de audio, tanto para la emisión como para la recepción. Para poder crear los componentes de audio usaremos uno de los métodos de <<<MediaSessionAndroid>>>.
+ 	Se deben crear los componentes de audio, tanto para la emisión como para la recepción. Para poder crear los componentes de audio usaremos un método de <<<MediaSessionAndroid>>>.
 
 		** <<<createMediaComponent>>>, le indicaremos el tipo de componente que necesitamos, si es de emisión o de recepción, además de el altavoz por el cual queremos recibir.
 		 
@@ -496,7 +496,7 @@ audioPlayerComponent.stop();
 
 * {Componente de vídeo}
 
-	La creación de los componentes de media son muy parecidos a los de audio. También usaremos uno de los métodos de <<<MediaSessionAndroid>>>. En este caso deberemos añadir algunos parámetros más como el <<SurfaceView>> (será la superficie donde se mostrará el vídeo recibido), el ancho y el largo de la pantalla del dispositivo. Necesitaremos acceder a la configuración del <<<NetworkConnection>>> para recuperar el tipo de <<<stream>>> que queremos reproducir, en este caso serán <<<StreamType.video>>>.
+	La creación de los componentes de media son muy parecidos a los de audio. También se usa un método de <<<MediaSessionAndroid>>>. En este caso deberemos añadir algunos parámetros más como el <<SurfaceView>> (será la superficie donde se mostrará el vídeo recibido), el ancho y el largo de la pantalla del dispositivo. Necesitaremos acceder a la configuración del <<<NetworkConnection>>> para recuperar el tipo de <<<stream>>> que queremos reproducir, en este caso serán <<<StreamType.video>>>.
 	
 	* Componente de recepción de vídeo, añadiendo su <<SurfaceView>>, la altura y anchura de la pantalla del dispositivo:
 
@@ -553,7 +553,7 @@ videoPlayerComponent.stop();
 
 Crear una aplicación en Android
 
-	A partir de este apartado se van a dar algunas recomendaciones y pasos a seguir para poder realizar una aplicación en Android que incorpore Kurento Android SDK. Se comentarán temas como la configuración de los ficheros .xml, las actividades y servicios necesarios, la gestión de las preferencias y, por último, como realizar la gestión del media, tanto del audio como del vídeo.
+	A partir de este apartado se van a dar algunas recomendaciones y pasos a seguir para poder realizar una aplicación en Android que incorpore Kurento Android SDK. Se comentarán temas como la configuración de los ficheros .xml, las actividades y servicios necesarios, la gestión de las preferencias y, por último, cósmo realizar la gestión del media, tanto del audio como del vídeo.
 
 	En la parte final del apartado se podrán encontrar algunos ejemplos de código a seguir.
 
@@ -600,7 +600,7 @@ android:launchMode="singleTop" \>
 				
 		Cada una de las actividades que vayan a ser lanzadas dentro de la aplicación deben ser definidas en este fichero. Para más información sobre la configuración del fichero AndroidManifest.xml se pueden consultar en la {{{http://developer.android.com/guide/topics/manifest/manifest-intro.html}guía de desarrollo de Android}}.
 
-		Por último, en la configuración de la actividad principal deberá incluirse un apartado llamado <<{{{http://developer.android.com/guide/topics/manifest/intent-filter-element.html}intent-filter}}>> que nos servirá para cuando un usuario quiera realizar una llamada desde los contactos según el "scheme" que nosotros elijamos, en este caso se busca que cuando un usuario tenga guardado un contacto con datos como "sip:juan@server.net"> se abra nuestra actividad:
+		Por último, en la configuración de la actividad principal deberá incluirse un apartado llamado <<{{{http://developer.android.com/guide/topics/manifest/intent-filter-element.html}intent-filter}}>> que nos servirá para cuando un usuario quiera realizar una llamada desde los contactos según el "scheme" que nosotros elijamos, en este caso se busca qué cuando un usuario tenga guardado un contacto con datos como <<<"sip:juan@server.net">>> se abra nuestra actividad:
 		
 +---
 <intent-filter>
@@ -888,7 +888,7 @@ Gestión de {preferencias}
 
 	En las preferencias del media deberemos dejar configurar los siguientes datos:
 
-	* <<Máximo ancho de banda>>
+	* <<Máximo ancho de banda>>: establece el ancho de banda máximo que se utilizará para la emisión de media (audio y vídeo).
 
 	* <<Codec de Vídeo>>: serán los codecs soportados por la aplicación. Por ejemplo:
 
@@ -896,17 +896,15 @@ Gestión de {preferencias}
 
 		* MPEG4
 
-		* H264
-
 	* <<Tamaño del Vídeo>>: será la resolución del vídeo que se puede soportar.
 
 	* <<Dirección de la llamada>>: sólo envío, sólo recepción o envío/recepción.
 
-	* <<Máximo frame rate>>
+	* <<Máximo frame rate>>: establece el máximo frame rate que se utilizará en la emisión del vídeo.
 
-	* <<Tamaño entre dos I-frames>>
+	* <<Tamaño entre dos I-frames>>: establece el tamaño del "group of pictures". Si es 0 sólo se emite I-frames.
 
-	* <<Máximo número de frames>>
+	* <<Máximo número de frames>>: establece el número de frames más recientes de la cámara que se almacenan en el buffer utilizado para gestionar el frame rate.
 
 	* <<Codec de Audio>>: serán los codec soportados por la aplicación. Por ejemplo:
 
