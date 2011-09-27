@@ -12,6 +12,7 @@
 		<menu name="Kurento Android" href="./index.html">
 			<item name="Source code" href="./source.html" />
 			<item name="Download" href="./download.html"/>
+			 <item name="Test Plan" href="testplan.html"/>
 		</menu>
 		<menu name="Documentation">
 			<item name="Developer's guide" href="./developer-guide.html"/>

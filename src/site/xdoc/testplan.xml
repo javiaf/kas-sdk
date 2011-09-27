@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://maven.apache.org/XDOC/2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+
+	<properties>
+		<title>Test Plan</title>
+	</properties>
+
+	<body>
+
+		<!-- The body of the document contains a number of sections -->
+		<section name="Test plan">
+			<table>
+				<tr>
+					<td>
+						<center>
+							<b>Test</b>
+						</center>
+					</td>
+					<td>
+						<center>
+							<b>Status</b>
+						</center>
+					</td>
+				</tr>
+
+				<tr>
+					<td>Register user</td>
+					<td bgcolor="#00FF00">Ok</td>
+				</tr>
+
+				<tr>
+					<td>Unregister user</td>
+					<td bgcolor="#00FF00">Ok</td>
+				</tr>
+				<tr>
+					<td>Create audio component</td>
+					<td bgcolor="#00FF00">Ok</td>
+				</tr>
+
+				<tr>
+					<td>Create video component</td>
+					<td bgcolor="#00FF00">Ok</td>
+				</tr>
+								<tr>
+					<td>Connect audio component to network connection</td>
+					<td bgcolor="#00FF00">Ok</td>
+				</tr>
+				
+				<tr>
+					<td>Connect video component to network connection</td>
+					<td bgcolor="#00FF00">Ok</td>
+				</tr>
+				<tr>
+					<td>Make a call</td>
+					<td bgcolor="#00FF00">Ok</td>
+				</tr>
+
+
+				<tr>
+					<td>Receive a call</td>
+					<td bgcolor="#00FF00">Ok</td>
+				</tr>
+
+				<tr>
+					<td>Reject a call</td>
+					<td bgcolor="#00FF00">Ok</td>
+				</tr>
+
+				<tr>
+					<td>Cancel a call</td>
+					<td bgcolor="#00FF00">Ok</td>
+				</tr>
+
+				<tr>
+					<td>Hang up a call</td>
+					<td bgcolor="#00FF00">Ok</td>
+				</tr>
+
+
+
+
+
+			</table>
+
+		</section>
+
+	</body>
+
+</document>
