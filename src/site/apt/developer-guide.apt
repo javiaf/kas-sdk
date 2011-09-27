@@ -18,73 +18,60 @@ Introduction
 Provides details of core configuration average, as the building blocks that allow connection of
 multimedia devices to networks for the transmission and reception of audio and video.
 
-* <<Aplicaciones Android>>. Are the steps needed to create an application that incorporates Kurento Android Android SDK.
+		* <<Application Android>>. Are the steps needed to create an application that incorporates Kurento Android Android SDK.
 
-
-	En esta guía de desarrollo se proporciona la información necesaria para el desarrollo con
-	Kurento Android SDK y su integración en aplicaciones Android. 
-	
-	La guía consta de 3 grandes apartados:
-	
-		* <<Control Plane>>. Describe los detalles de manejo del <Agente de usuario SIP>, incluyendo: el registro de contactos y
-		 la gestión de llamadas salientes o entrantes.
-		
-		* <<User Plane>>. Muestra los mecanismos disponibles para construir una red de distribución de media asociada a una llamada.
-		Se proporcionan los detalles de configuración del núcleo de media, así como los componentes básicos que permiten conectar los
-		dispositivos multimedia a redes para la transmisión y recepción de audio y vídeo.
-		
-		* <<Aplicaciones Android>>. Se indican los pasos necesarios para crear una aplicación en Android que incorpore Kurento Android SDK.
-	
 Control Plane
 
-	La función de Control está constituida por un Agente SIP que proporciona conectividad con redes de VoIP. Presenta la arquitectura que se muestra en la siguiente figura.
+	Control function is formed by a SIP Agent that supports connectivity with VoIP networks. Presents the architecture shown in the figure below.
 
-[../images/diagrama-control-plane.png]
+[images/diagrama-control-plane.png]
 
-* Conceptos
+* Concepts
 
 ** <<UA>>
 
-	Este objeto se encarga de toda la gestión del protocolo SIP. Envía, recibe, procesa los mensajes SIP que se envíen por la red. Es capaz de comunicar a varios contactos (<<<SipEndPoint>>>).
+	This object is responsible for all management of the SIP protocol. Send, receive, process SIP messages for to sent by the network. This object can communicate to multiple contacts (<<<SipEndPoint>>>).
 
 
 *** <<<registerEndPoint(String user, String realm, String password, int expires, SipEndPointListener handler)>>>
 
-	Mediante este método se registra un usuario al servidor que se haya definido en la configuración del objeto <<<ua>>>. Además, se le indica quién se encargará de recibir los eventos que se puedan generar. 
+	This method registers a user to the server that is defined in the configuration of the object <<<ua>>>. Furthermore, it tells who is responsible for receiving events generated.
 
-	El parámetro <<<expires>>> indica el tiempo máximo de cada registro, además se puede des-registrar al usuario estableciendo ese valor a 0.
+	The parameter <<<expires>>> indicates the maximum time for each register, also you can unregister the user by setting this value to 0.
 
 ***<<<terminate()>>>
 
-	Mediante este método se finaliza la pila SIP, además el usuario se des-registra del servidor.
-
+	This method ends the SIP stack, furthermore the user unregister the server.
+	
 **  <<SipEndPoint>>. 
 
-	Este objeto es la representación de una <<<sipuri>>>, es decir, de un contacto. Es el encargado de realizar las tareas convencionales de una llamada, aceptarlas, realizarlas, cancelarlas, etc ...
+	This object is the representation of a <<<sipuri>>>, a contact. It is responsible for conventional tasks of a call, accept,  cancel, reject ...
 
 ***<<<dial(String remoteParty, SipCallListener callController)>>>
 
-	Mediante este método se realiza una llamada a un contacto. Mediante el parámetro <<<remoteParty>>> se establece la <<<sipuri>>> del contacto al que queremos llamar. Además, se le indica quién se encargará de recibir los eventos que se puedan generar. Esto generará un mensaje del protocolo SIP enviando una invitación para establecer una comunicación.
+	This method makes a call to a contact. Using the parameter <<<remoteParty>>>  to configurate <<<sipuri>>>, it's the contact you want to call. 
+	Furthermore, it tells who is responsible for receiving events that may be generated. This will generate a message of SIP protocol that  send an invitation for communication.
 
 **  <<SipEndPointEvent>>. 
 
-	Este objeto nos permite conocer los eventos que serán recibidos después de realizar un registro en un servidor SIP. Para poder recibir los eventos que representa es necesario implementar la interfaz <<<SipEndPointListener>>> y suscribirse al objeto <<<SipEndPoint>>> del cual queremos recibir dichos eventos. Esta suscripción se hace al realizar el registro del usuario.
-
+	This object provides events that are received after making a register in a SIP server. To receive events is necessary to implement the interface <<<SipEndPointListener>>> and 
+	subscribe to object <<<SipEndPoint>>> which we want to receive such events. This subscription is done when the user is register.
+	
 		***<<<SipEndPointListener>>>
 	
-			Este interfaz representa un método encargado de recibir eventos del tipo <<<SipEndPointEvent>>>:
+			This interface represents a method for receiving events of type <<<SipEndPointEvent>>>:
 	
 			*<<<onEvent()>>>
 
-		La implementación de este método deberá ser capaz de tratar los siguientes eventos:
+		The implementation of this method should be able to handle the following events:
 		
-			* <<<INCOMING_CALL>>>, la recepción de este evento significa que alguien nos está realizando una llamada.
+			* <<<INCOMING_CALL>>>, this event means that someone is making call to us.
 
-			* <<<REGISTER_USER_SUCESSFUL>>>, la recepción de este evento significa que el registro con los parámetros de configuración de conexión son correctos y estamos registrados. 
+			* <<<REGISTER_USER_SUCESSFUL>>>, this event means that the register with the connection settings are correct and we are registered. 
 
-			* <<<REGISTER_USER_FAIL>>>, la recepción de este evento significa, al contrario que el evento anterior, que el registro ha sido incorrecto. 
+			* <<<REGISTER_USER_FAIL>>>, this event signifies that registration was incorrect.
 	
-			* <<<REGISTER_USER_NOT_FOUND>>>, la recepción de este evento significa que el usuario no existe y el registro ha sido incorrecto.
+			* <<<REGISTER_USER_NOT_FOUND>>>, this event means that the user does not exist and the register has been wrong.
 
 
 +---
@@ -93,72 +80,73 @@ public void onEvent(SipEndPointEvent event) {
 	SipEventType eventType = event.getEventType();
 	if (SipEndPointEvent.INCOMING_CALL.equals(eventType)) {
 		this.pendingEndPointEvent = event;
-		// Procesar el evento.
+		// Process the event.
 	}
 	if (SipEndPointEvent.REGISTER_USER_SUCESSFUL.equals(eventType)) {
 		this.pendingEndPointEvent = event;
-		// Procesar el evento.
+		// Process the event.
 	}
 	if (SipEndPointEvent.REGISTER_USER_FAIL.equals(eventType)) {
 		this.pendingEndPointEvent = event;
-		// Procesar el evento.
+		// Process the event.
 	}
 	if (SipEndPointEvent.REGISTER_USER_NOT_FOUND.equals(eventType)) {
 		this.pendingEndPointEvent = event;
-		// Procesar el evento.
+		// Process the event.
 	}
 }
 +---
 
 **  <<SipCall>>. 
 
-	Este objeto nos permite gestionar la llamada una vez creada. Además de gestionarla, podremos recoger información del media que se ha establecido en la negociación. 
-
+	This object handles the call once created. In addition to managing it, we may collect information from the media that has been established in the negotiation.
+	
 ***<<<accept()>>>
 
-	Mediante este método se aceptará una llamada entrante. Esto generará un mensaje del protocolo SIP aceptando la llamada.
+	This method accepts an incoming call. This generates a SIP message accepting the call.
 
 ***<<<reject()>>>
 
-	Mediante este método se rechazará una llamada entrante. Esto generará un mensaje del protocolo SIP rechazando la llamada.
+	This method rejects an incoming call. This generates a SIP message of rejecting the call.
 
 ***<<<hangup()>>>
 
-	Mediante este método se terminará una llamada. Esto generará un mensaje del protocolo SIP terminando la llamada.
+	This method ends a call. This generates a SIP message of ending the call.
 
 ***<<<cancel()>>>
 
-	Mediante este método se cancelará la invitación a establecer una comunicación. Esto generará un mensaje del protocolo SIP cancelando la llamada.
-
+	This method cancels the invitation to establish a connection. This will generate a SIP message canceling the call.
+	
 ***<<<getNetworkConnection(JoinableStream.StreamType media)>>>
 
-	Mediante este método se podrá obtener el <<<NetworkConnection>>> que se ha generado en la configuración de la pila SIP.	
+	This method can obtain the <<<NetworkConnection>>> that has been generated in the SIP stack configuration.	
 	
 ***<<<getMediaTypesModes()>>>
 
-	Mediante este método se podrá conocer el sentido de la comunicación (sólo envío, sólo recepción, envío/recepción) de cada extremo de la comunicación.
+	This method can know the direction of the communication (send only, receive only, send / receive) from each stream of the communication.
 
 **  <<SipCallEvent>>.
 
-	Este objeto nos permite conocer los eventos que serán recibidos durante el establecimiento de una llamada. Para poder recibir los eventos que representa es necesario implementar la interfaz <<<SipCallListener>>> y suscribirse al objeto <<<SipCall>>> del cual queremos recibir dichos eventos.
-
+	This object lets us know the events that will be received during the establishment of a call. To receive events is necessary to implement the interface <<<SipCallListener>>> 
+	and subscribe to object <<<SipCall>>> which we want to receive such events.
+	
 		*** <<<SipCallListener>>>. 
 
-			Este interfaz representa un método encargado de recibir eventos del tipo <<<SipCallEvent>>>:
+			This interface represents a method for receiving events of type <<<SipCallEvent>>>:
 	
 			*<<<onEvent()>>>
 
-		La implementación de este método deberá ser capaz de tratar los siguientes eventos:
+		The implementation of this method should be able to handle the following events:
 
-			* <<<CALL_SETUP>>>, la recepción de este evento significa que la llamada ha sido establecida.
+			* <<<CALL_SETUP>>>, this event means that the call has been established.
 
-			* <<<CALL_TERMINATE>>>, la recepción de este evento significa que la llamada ha sido terminada por alguno de los usuarios.
+			* <<<CALL_TERMINATE>>>, this event means that the call has been terminated by any user.
 	
-			* <<<CALL_REJECT>>>, la recepción de este evento significa que la llamada ha sido rechazada por el contacto.
+			* <<<CALL_REJECT>>>, this event means that the call has been rejected by the contact.
 		
-			* <<<CALL_CANCEL>>>, la recepción de este evento significa que el usuario que ha realizado la llamada la ha cancelado antes de que haya sido establecida.
+			* <<<CALL_CANCEL>>>, this event means that the user who made the call has been canceled before it has been established.
 	
-			* <<<CALL_ERROR>>>, la recepción de este evento significa que no se ha podido localizar al contacto solicitado.
+			* <<<CALL_ERROR>>>, this event means that has not been able to locate the requested contact
 
 
 +---
@@ -168,104 +156,103 @@ public void onEvent(SipCallEvent event) {
 
 	if (SipCallEvent.CALL_SETUP.equals(eventType)) {
 		currentCall = event.getSource();
-		// Procesar el evento.
+		// Process the event.
 	} else if (SipCallEvent.CALL_TERMINATE.equals(eventType)) {
-		// Procesar el evento.
+		// Process the event.
 	} else if (SipCallEvent.CALL_REJECT.equals(eventType)) {
-		// Procesar el evento.
+		// Process the event.
 	} else if (SipCallEvent.CALL_ERROR.equals(eventType)) {
-		// Procesar el evento.
+		// Process the event.
 	}
 }
 +---
 
 ** <<SipConfig>>. 
 
-	La definición de un objeto de esta clase es necesario para la inicialización de la pila SIP. Recibe los parámetros de la configuración de red.
+	The definition of an object of this class is required for the initialization of the SIP stack. Get the parameters of the network configuration.
 
 ** <<MSControlFactory>>. 
 
-	Es la factoría principal que ofrece un método estático para crear <<<MediaSessionAndroid>>>.
+	It is the main factory provides a static method to create <<<MediaSessionAndroid>>>.
 
 **  <<MediaSessionAndroid>>. 
 
-	Un objeto de esta clase actúa como factoría para generar objetos <<<MediaComponentAndroid>>>. Se crea un <<<MediaComponentAndroid>>> concreto en base a la configuración y los parámetros pasados en el método <<<createMediaComponent>>>. Un objeto de esta clase se asigna a <<<UAFactory>>> mediante el método estático <<<setMediaSession>>> y a través de este objeto se construye un <<<NetworkConnection>>>.
-
+	An object of this class acts as a factory to create object <<<MediaComponentAndroid>>>. This creates a <<<MediaComponentAndroid>>> based on the particular configuration and 
+	the parameters passed into the method <<<createMediaComponent>>>. An object of this class is assigned to <<<UAFactory>>> using the static method <<<setMediaSession>>> through 
+	this object and builds a <<<NetworkConnection>>>.
+	
 ***<<<createMediaComponent(Configuration<MediaComponent> predefinedConfig, Parameters params)>>>
 
-	Mediante este método se crean los componentes de media (audio y vídeo).
+	This method creates the components of media (audio and video).
 	
 ** <<MediaComponentAndroid>>. 
 
-	Un objeto de esta clase definirá un componente de media concreto, según los parámetros de configuración.	
+	An object of this class define a particular media component, according to the settings.
 
-* Inicialización del Agente SIP.
+* SIP Agent initialization.
 
-	El Agente de Usuario debe ser inicializado al arrancar la aplicación. Presta servicio a uno o más puntos de terminación SIP y
-	gestiona todas las llamadas: entrantes y salientes. Debe ser reiniciado solo cuando se produzcan cambios 
-	relevantes en el entorno, como por ejemplo, un cambio de IP, de interfaz activo, del proxy o similar.
+	The User Agent must be initialized to start the application. Serves one or more SIP termination points and manages all calls: 
+	incoming and outgoing calls. Must be restarted only when significant changes occur, such as an IP change, active interface, 
+	the proxy or similar.
 	
-	Internamente dispone de una pila SIP que gestiona el intercambio de mensajes entre los agentes remotos. Kurento Android SDK
-	utiliza para este propósito la implementación {{{http://java.net/projects/jsip}JAIN-SIP}}
+	Internally it have a SIP stack that handles the exchange of messages between remote agents. Kurento Android SDK used for this purpose 
+	the implementation {{{http://java.net/projects/jsip}JAIN-SIP}}
 
-	La inicialización del Agente de Usuario SIP requiere la configuración de dos grupos de parámetros:
+	The initialization of the SIP user agent configuration requires two sets of parameters:
 	
-	* <<Configuración SIP>>: Establece la configuración requerida para conectarse a una red de VoIP. Consta de
-	los parámetros que se muestran en la siguiente tabla.
+	* <<Configuration SIP>>: Sets the configuration required to connect to a VoIP network. It consists of the parameters shown in the next table.
 	
 	
 *--------*-----------*----*--------*----------------------------------------------------------------*
-| Nomnre | Presencia |tipo|Rango   | Descripción                                                    |
+| <<Name>> | <<M/O>> |<<Type>>|<<Range>>    | <<Description>>                                                    |
 *--------*-----------*----*--------*----------------------------------------------------------------+
-| LocalAddress| M | String | NA    | Establece la dirección IP que usará la pila SIP. Si la dirección IP|
-|             |   |        |       | no se corresponde con un interfaz activo se genera una excepción   |
+| LocalAddress| M | String | NA    | Sets the IP address used by the SIP stack. If the IP address does not |
+|             |   |        |       | correspond to an active interface, then it generate an exception  |
 *--------*-----------*----*--------*----------------------------------------------------------------+
-| LocalPort   | O | Integer| 1-2^16| Establece el puerto local en el que la pila SIP escucha y envía mensajes|
+| LocalPort   | O | Integer| 1-2^16| Sets the local port where the SIP stack send and heard the messages|
 *--------*-----------*----*-------*----------------------------------------------------------------+
-| ProxyAddress| M | String | NA    | Define la dirección del proxy SIP. Esta es también la dirección|
-|             |   |        |       |usada como REGISTRAR SIP                                        |
+| ProxyAddress| M | String | NA    | Set the SIP proxy address. This is also the address used |
+|             |   |        |       |as a SIP REGISTER                           |
 *--------*-----------*----*-------*----------------------------------------------------------------+
-| ProxyPort| M | String |  1-2^16  | Define el puerto del proxy SIP al que se enviarán los mensajes SIP|
+| ProxyPort| M | String |  1-2^16  | Set the SIP proxy port that SIP messages are sent|
 *--------*-----------*----*-------*----------------------------------------------------------------+
-(M: Obligatorio; O: Opcional)
+(M: Mandatory; O: Optional)
 
 
-	* <<Configuración de media>>: Permite disponer de la información relevante de media necesaria en el proceso
-	 de negociación de llamadas. La tabla siguiente muestra la lista de parámetros configurables:
+	* <<Configuration of media>>: It provides relevant information required of media in the process of negotiating calls. 
+	The following table lists the parameters:
 
 
 *--------*-----------*----*-------*--------------*--------------------------------------------------*
-| <<Nombre>> | Presencia |Tipo|Rango  | Valor Por Defecto | Descripción                                                    |
+| <<Basic parameters>> | <<M/O>> | <<Type>> | <<Range>> | <<Default value>> | <<Description>> |
 *--------*-----------*----*-------*---------------*-------------------------------------------------+
-| NET_IF |  M        |ENUM|WIFI/3G| 3G | Establece el interfaz a través del cual se recibirá y enviará media.  Este interfaz suele ser el activo y coincide con el interfaz SIP               |
+| NET_IF |  M | NetIF | [WIFI, MOBILE] | | Indicate if the network interface is WIFI or MOBILE. |
 *--------*-----------*----*-------*---------------*-------------------------------------------------+
-|LOCAL_ADDRESS |   M        |Address|NA |  | Establece la dirección IP del dispositivo|
+| LOCAL_ADDRESS | M | InetAddress | NA | |Indicate the local IP address.|
 *--------*-----------*----*-------*---------------*-------------------------------------------------+
-|MAX_BANDWIDTH |   O        |Integer| NA |  384kbs |  Establece el ancho de banda máximo que se utilizará para la emisión de media (audio y vídeo) |
+| MAX_BANDWIDTH | O | Integer | NET_IF.MOBILE:\ [150000,\ 384000]\ | NET_IF.MOBILE:\ 384000\ | Indicate the max bandwidth will be used in bps(bits per second). |
+|				|	|		  | NET_IF.WIFI:\ [150000,\ 1500000]	| NET_IF.WIFI:\ 1500000  |																	|	
 *--------*-----------*----*-------*---------------*-------------------------------------------------+
-|STREAMS_MODES   |    O       |ENUM| SENDONLY|  SENDRECV| Establece por cada stream de media el sentido de la comunicación (sólo envío, sólo recepción, envío/recepción)|
-|	|	|					|RECVONLY| | 	 |
-|	|	|					|SENDRECV |  | 	 |
+| STREAMS_MODES | O | Map\<MediaType,\ Mode\> | [SENDRECV, SENDONLY, RECVONLY] | SENDRECV | Indicate the mode of each media stream.|
 *--------*-----------*----*-------*---------------*-------------------------------------------------+
-|AUDIO_CODECS   |O|List| AMR/MP2 |  AMR/MP2  | Establece los codecs de audio que se utilizarán para la comunicación. Si no se establece se seleccionarán todos los disponibles |
+| AUDIO_CODECS   | O | List\<AudioCodectype\> | [AMR, MP2] | [AMR, MP2] |Indicate the audio codecs supported. |
 *--------*-----------*----*-------*---------------*-------------------------------------------------+
-|VIDEO_CODECS   |O|List| H263/MPEG4|H263/MPEG4  | Establece los codecs de vídeo que se utilizarán para la comunicación. Si no se establece se seleccionarán todos los disponibles |
+| VIDEO_CODECS   | O | List\<VideoCodectype\> | [H263, MPEG4]| [H263, MPEG4] |	Indicate the video codecs supported. |
 *--------*-----------*----*-------*---------------*-------------------------------------------------+
-| <<Parámetros Avanzados>>  |
+| <<Advanced parameters>> |
 *--------*-----------*----*-------*---------------*-------------------------------------------------+
-|FRAME_SIZE   | O |Integer	| NA| 352x288 | Establece el tamaño del vídeo  |
+| FRAME_SIZE | O | Dimension | NA | 352x288 | Indicate the frame size in pixels (width x height).  |
 *--------*-----------*----*-------*---------------*-------------------------------------------------+
-|MAX_FRAME_RATE   |    O       |Integer|  NA | 15 | Establece el máximo frame rate que se utilizará en la emisión del vídeo |
+| MAX_FRAME_RATE | O |Integer|  [1, MAX_INT] | 15 |Indicate the max frame rate will be used. |
 *--------*-----------*----*-------*---------------*-------------------------------------------------+
-|GOP_SIZE   |     O      |Integer|   NA    | 6 | Establece el tamaño del "group of pictures". Si es 0 sólo se emite I-frames  |
+| GOP_SIZE | O |Integer| [0, MAX_INT] | 6 | Indicate the max number of frames in a group of pictures, or 0 for intra_only.  |
 *--------*-----------*----*-------*---------------*-------------------------------------------------+
-|FRAMES_QUEUE_SIZE   |     O      |Integer	|   NA    | 2 | Establece el número de frames más recientes de la cámara que se almacenan en el buffer utilizado para gestionar el frame rate |
+| FRAMES_QUEUE_SIZE | O | Integer | [2, MAX_INT] | 2 | Indicate the number of frames will be buffered from the camera. |
 *--------*-----------*----*-------*---------------*-------------------------------------------------+
-(M: Obligatorio; O: Opcional)
+(M: Mandatory; O: Optional)
 	
 	
-	La inicialización del agente SIP requiere en primer lugar parametrizar la factoría de media <<MSControlFactory>>, tal y como se
-	muestra en el siguiente fragmento de código. 
+	The initialization of the SIP agent first requires factory parameterize the mean <<MSControlFactory>>, as shown in the following snippet.
 	
 +---
 Parameters params = new ParametersImpl();
@@ -311,7 +298,7 @@ int maxQueueSize = 2;
 params.put(MediaSessionAndroid.FRAMES_QUEUE_SIZE, maxQueueSize);
 +---	
 
-	También es necesario configurar la factoría de Agentes de Usuario SIP, tal y como se indica a continuación.
+	Also need to set the factory in SIP User Agents, as follows.
 	
 +---
 SipConfig sipConfig = new SipConfig();
@@ -321,8 +308,7 @@ sipConfig.setProxyAddress(proxyIP);
 sipConfig.setProxyPort(proxyPort);
 +---
 
-	Una vez las factorías están configuradas, se instancia un objeto <<MediaSession>> que se pasa como parámetro
-	para instanciar un Agente de Usuario SIP.
+	Once the factories are set up, you instantiate an object <<MediaSession>> passed as parameter to instantiate a SIP User Agent.
 
 +---
 mediaSession = MSControlFactory.createMediaSession(params);
@@ -331,81 +317,78 @@ UaFactory.setMediaSession(mediaSession);
 ua = UaFactory.getInstance(sipConfig);
 +---
 
-	Es importante resaltar que un cambio en los parámetros de media requiere la instanciación de un nuevo <<<MediaSession>>> y por lo 
-	tanto una reinicialización del agente de usuario.
+	It is important to note that a change in media parameters required to instantiate a new <<<MediaSession>>> and so reset both a user agent.
 	
-	Para finalizar el Agente de Usuario, bien porque la aplicación ha terminado, o porque resulta necesaria una reconfiguración se ejecuta 
-	el código que se muestra a continuación
+	To finalize the User Agent, either because the application is finished, or because it is necessary to reconfigure, the code that  runs is
 	
 +---
 ua.terminate();
 +---
 
 
-* Control de registro
+* Register control
 
-** Registro
+** Register
 
-	Una vez que la pila SIP está inicializada y tenemos nuestro objeto <<<ua>>> creado correctamente, podemos registrar un usuario contra un servidor. El registro en el servidor puede ser con autenticación o sin ella. Dependiendo del servidor y de la aplicación que se esté realizando, así serán los valores que se introduzcan en la llamada a <<<registerEndPoint(String user, String realm, String password, int expires, SipEndPointListener handler)>>>:
+	Once the SIP stack is initialized and have our object <<<ua>>> created successfully, a user can register into a server. Registration in the server can be authenticated or not. Depending on the server and the application being made, so will the values ​​you enter in the call to <<<registerEndPoint(String user, password, String String int expires, realm, SipEndPointListener handler)>>>:
 
-	* <<user>>: Usuario con el que se realizará el registro.
+	* <<user>>: User registration.
 
-	* <<realm>>: Dominio con el que el usuario realizará el registro.
+	* <<realm>>: User domain to register.
 
-	* <<password>>: Password con el que el usuario realizará el registro.
+	* <<password>>: User password for registration.
 
-	* <<expires>>: Tiempo en el cual no se realizará otro registro.
+	* <<expires>>: Time until the next register.
 
-	* <<handler>>: Clase que se encargará de implementar la interfaz <<<SipEndPointListener>>>.
+	* <<handler>>: Class that is responsible for implementing the interface <<<Sip EndPoint Listener>>>.
 
-	El registro nos devolverá un objeto del tipo <<<SipEndPoint>>> con el cual podremos realizar llamadas. Además la clase que tenga que implementar la interfaz, empezará a recibir los eventos correspondientes.
+	The register will return an object of type <<<SipEndPoint>>> with which we can make calls. Furthermore the class has to implement the interface will begin to receive the corresponding events.
 
 +---
 endPoint = ua.registerEndPoint(localUser, localRealm, localPassword, expires, this);
 +---
 
-	Como ha explicado, cuando se realiza un registro contra un servidor SIP, para poder recibir los eventos se debe implementar la interfaz <<<SipEndPointListener>>>. 	
+** Unregister
 
-** Des-registro
-
-	Si por cualquier motivo se desea dejar de recibir llamadas o la aplicación ha finalizado deberemos des-registrar el contacto del servidor. Para realizar esta operación deberemos establecer el parámetro <<<expires>>> con un valor 0.
+	If for any reason wish to stop receiving calls or the application has finished, we will unregister the contact  on the server. Set the parameter <<<expires>>> with a value of 0.
 
 +---
 expires = 0;
 endPoint = ua.registerEndPoint(localUser, localRealm, localPassword, expires, this);
 +---
 
-* Llamadas salientes
+* Outgoing calls
 
-** Realizar una llamada
+** Make calls
 
-	Para realizar una llamada saliente indicamos el contacto al que queremos realizar la llamada mediante una <<<sipuri>>>, que estará formado por el nombre de usuario y el dominio, por ejemplo: <<<user@dominio.es>>>. La llamada se realiza mediante el objeto <<<endPoint>>> de la clase <<<SipEndPoint>>> que hemos obtenido cuando hemos realizado el registro del usuario. Además, le indicamos la clase que implementará la interfaz <<<SipCallListener>>>. Con esto obtendremos un objeto de la clase <<<SipCall>>>.
+	To make an outgoing call indicated the contact you want to make the call with an <<<sipuri>>>, which will consist of the username and domain, for example: <<<user@dominio.es>>> . The call is made by the object <<<endpoint>>> of class <<<SipEndPoint>>> that we obtained when we have completed the registration of the user. Furthermore, we tell the class that implements the interface <<<SipCallListener>>>. This returns an object of class <<<SipCall>>>.
 	
 +---
 currentCall = endPoint.dial(remoteURI, this);
 +---
 
-	Para recibir los eventos que se provocan cuando se realiza una llamada se debe implementar la interfaz <<<SipEndPointListener>>>. 
+	For events that occurs when a call is made it, must implement the interface <<<SipEndPointListener>>>.
 
-** Cancelar una llamada
+** Cancel calls
 
-	Podremos realizar una cancelación de la llamada antes de que ésta se establezca. Para ello, usaremos un objeto de la clase <<<SipCall>>> que se ha creado cuando hemos iniciado la llamada saliente.
+	We may cancel a call before it is established. We will use an object of class <<<SipCall>>> that is created when we started the outgoing call.
 	
 +---
 currentCall.cancel(); 
 +---	
 
-* Llamadas entrantes
+* Incoming calls
 
-	Cómo se ha explicado anteriormente, cuando se realiza el registro, también se indica la clase que implementará <<<SipEndPointListener>>>. Esto es necesario para poder recibir algunos eventos, entre ellos, el evento <<<SipEndPointEvent.INCOMING_CALL>>>. Cuando recibamos este evento podremos:
+	When you register, it also indicates the class that implements <<<SipEndPointListener>>>. This is necessary to receive some events, including the event <<<SipEndPointEvent.INCOMING_CALL>>>. 
+	When we receive this event:
 
-	* Aceptar una llamada.
+	* Accept call.
 
-	* Rechazar una llamada.
+	* Reject call.
 
-** Aceptar una llamada
+** Accept call
 
-	Para aceptar la llamada, usaremos el método <<<accept()>>> de la clase <<<SipCall>>>.
+	To accept the call, we use the method <<<accept()>>> of the class <<<SipCall>>>.
 
 +---
 this.pendingEndPointEvent = event;
@@ -414,9 +397,9 @@ incomingCall.accept();
 +---
 
 
-** Rechazar una llamada
+** Reject call
 
-	Para rechazar la llamada, usaremos el método <<<reject()>>> de la clase <<<SipCall>>>.
+	To reject the call, we use the method <<<reject()>>> of the class <<<SipCall>>>.
 	
 +---
 this.pendingEndPointEvent = event;
@@ -424,9 +407,9 @@ incomingCall = pendingEndPointEvent.getCallSource();
 incomingCall.reject();
 +---
 	
-* Terminar una llamada
+* Finish call
 
-	Una vez la llamada está establecida se podrá finalizar, usando el objeto <<<SipCall>>> que se definió cuando se realizó la llamada:
+	Once the call is established can be finished using the object <<<SipCall>>> that are set when you called:
 	
 +---
 currentCall.hangup();
@@ -434,39 +417,39 @@ currentCall.hangup();
 
 User Plane
 	
-	Mediante el User Plane podremos definir y construir una red de distribución de media que este asociada a una llamada. Para esto se debe configurar el media, configurar los componentes para conectarse a los dispositivos multimedia y éstos a la red para poder realizar transmisión y recepción de audio y vídeo.
+	With Plane User can define and build a network of media distribution that is associated with a call. For this you must configure the media, configure the components to connect to multimedia devices to the network and these to perform transmission and reception of audio and video.
 
-* Inicialización del media
+* Initialization media
 
-	La inicialización del media requiere una previa configuración que se realiza a partir de una serie de parámetros que se utilizan para crear un <<<MediaSession>>> con unas ciertas características. Para ello utilizamos el método <<<createMediaSession()>>> de la factoría <<MSControlFactory>> como se ha comentado anteriormente en el apartado de inicialización del Control Plane.
+	Initialization of media requires prior configuration is made from a series of parameters that are used to create a <<<MediaSession>>> with a certain characteristics. We use the method <<<createMediaSession()>>> from the factory <<MSControlFactory>> as mentioned above in the initialization section of Control Plane.
 
-	Este <<<MediaSession>>> se utilizará en <<<UaFactory>>> para crear un <<<ua>>>, el cual internamente creará un <<<NetworkConnection>>> en base a la configuración anterior.
+	This <<<MediaSession>>> be used in <<<UaFactory>>> to create a <<<ua>>> which internally create a <<<NetworkConnection>>> based on the previous configuration.
 
-	La inicialización del media en sí tiene lugar una vez establecida la llamada, en la cual se determinan las características definitivas del audio y del vídeo. Se inicializa la pila de media interna encargada de toda la gestión como la codificación, el envío por la red, etc... gestionado todo ello por el <<<NetworkConnection>>> creado internamente por la pila SIP.
+	Initialization of media itself takes place once the call, which determines the final characteristics of audio and video. It initializes the internal media stack that is responsible for all management and encoding, sending over the network ... all managed by the <<<NetworkConnection>>> created internally by the SIP stack.
 
-	Como se ha comentado en un apartado anterior, sabremos que la llamada se ha establecido correctamente porque se ha recibido un evento <<<SipCallEvent.CALL_SETUP>>>, a través del cual podemos acceder al <<<NetworkConnection>>> que ha resultado tras la llamada:
+	As mentioned in a previous section, we know that the call has been set correctly because it has received an event <<<SipCallEvent.CALL_SETUP>>>, through which we can access the <<<NetworkConnection>>> that are obtained after the call:
 
 +---
 SipCall currentCall = event.getSource();
 currentCall.getNetworkConnection(null);
 +---
-	y al modo de cada stream de media, es decir por cada stream de media si es SENDONLY, RECVONLY o SENDRECV:
+	and direction of each media stream, ie for each stream media if is SENDONLY, RECVONLY o SENDRECV:
 
 +---
 currentCall.getMediaTypesModes();
 +---
 
-	A partir de los modos de cada streams podremos crear los componentes de media concretos (utilizando el <<<MediaSession>>> creado en la fase de configuración) que se engancharán al <<<NetworConnection>>> obtenido, concretamente al stream de audio o de vídeo de éste último según corresponda.
+	From each stream direction can create particular media components (using the <<<MediaSession>>> created in the configuration) that is connected to <<<NetworConnection>>> obtained, specifically the audio stream or video of the latter.
 
-	Por último, con la llamada establecida es el momento de establecer los flujos de media (audio y vídeo). Para ello habrá que crear para cada flujo un componente que serán objetos de la clase <<<MediaComponentAndroid>>>.
+	Finally, with the established call is the time to establish media streams (audio and video). This will be created for each media component to be objects of class <<<MediaComponentAndroid>>>.
 	
-* {Componente de audio}
+* {Audio Components}
 
- 	Se deben crear los componentes de audio, tanto para la emisión como para la recepción. Para poder crear los componentes de audio usaremos un método de <<<MediaSessionAndroid>>>.
+ 	You must create audio components for both the emission and reception. To create the audio components will use a method of <<<MediaSessionAndroid>>>.
 
-		** <<<createMediaComponent>>>, le indicaremos el tipo de componente que necesitamos, si es de emisión o de recepción, además de el altavoz por el cual queremos recibir.
+		** <<<createMediaComponent>>>, we indicate the type of component you need, if emission or reception, as well as the speaker for which we receive.
 		 
-			* Un componente de recepción de audio y se reproducirá por el altavoz externo:
+			* A receiving component and audio plays through the external speaker:
 
 +---
 Parameters params = new ParametersImpl();
@@ -476,7 +459,7 @@ audioRecorderComponent = mediaSession.createMediaComponent(
 	params);
 +---	
 
-			* Un componente de emisión de audio:
+			* An audio output component:
 			
 +---
 audioPlayerComponent = mediaSession.createMediaComponent(
@@ -484,34 +467,34 @@ audioPlayerComponent = mediaSession.createMediaComponent(
 	Parameters.NO_PARAMETER);
 +---
 
-	* Una vez que hemos creado los componentes de audio correctamente, debemos definir como será cada componente, sí de emisión o de recepción y hacerlos empezar. Necesitaremos acceder a la configuración del <<<NetworkConnection>>> para recuperar el tipo de <<<stream>>> que queremos reproducir, en este caso serán <<<StreamType.audio>>>.
+	* Once you've created the audio components, we must define each component as it will, if of emission or reception and make them start. We will need access to the configuration <<<NetworkConnection>>> to retrieve the type of <<<stream>>> we want to play, in this case will be <<<StreamType.audio>>>.
 	 
-		* Componente de recepción de audio.
+		* Audio receiver component.
 
 +---
 audioRecorderComponent.join(Direction.RECV, nc.getJoinableStream(StreamType.audio));
 audioRecorderComponent.start();
 +---
 
-		* Componente de emisión de audio.
+		* Audio output component.
 		
 +---
 audioPlayerComponent.join(Direction.SEND, nc.getJoinableStream(StreamType.audio));
 audioPlayerComponent.start();
 +---
 
-	Para parar los componentes de audio:
+	To stop the audio components:
 	
 +---
 audioRecorderComponent.stop();
 audioPlayerComponent.stop();
 +---
 
-* {Componente de vídeo}
+* {Video compoments}
 
-	La creación de los componentes de media son muy parecidos a los de audio. También se usa un método de <<<MediaSessionAndroid>>>. En este caso deberemos añadir algunos parámetros más como el <<SurfaceView>> (será la superficie donde se mostrará el vídeo recibido), el ancho y el largo de la pantalla del dispositivo. Necesitaremos acceder a la configuración del <<<NetworkConnection>>> para recuperar el tipo de <<<stream>>> que queremos reproducir, en este caso serán <<<StreamType.video>>>.
+	The creation of the media components are very similar to the audio. It also uses a method of <<<MediaSessionAndroid>>>. In this case we add some parameters like <<SurfaceView>> (is the surface where it will display video received), the width and length of the device's screen. We will need access to the configuration <<<NetworkConnection>>> to retrieve the type of <<<stream>>> we want to play, in this case will be <<<StreamType.video>>>.
 	
-	* Componente de recepción de vídeo, añadiendo su <<SurfaceView>>, la altura y anchura de la pantalla del dispositivo:
+	* Video receiver component, adding the <<SurfaceView>>, height and width of the screen of the device:
 
 +---
 DisplayMetrics dm = new DisplayMetrics();
@@ -528,7 +511,7 @@ videoRecorderComponent = mediaSession.createMediaComponent(
 		MediaComponentAndroid.VIDEO_RECORDER, params);
 +---
 
-	* Componente de emisión, añadiendo su <<SurfaceView>> y la orientación del dispositivo:
+	* Video output component, adding the <<SurfaceView>> and the orientation of the device:
 
 +---
 Parameters params = new ParametersImpl();
@@ -540,23 +523,23 @@ videoPlayerComponent = mediaSession.createMediaComponent(
 		MediaComponentAndroid.VIDEO_PLAYER, params);
 +---
 
-	Una vez que el componente se ha definido correctamente, podemos definir de qué tipo es y la acción que queremos realizar:
+	Once the component has been set correctly, we can define what is and what action we want to do:
 	
-		* Componente de recepción de vídeo:
+		* Video receiver component:
 
 +---
 videoRecorderComponent.join(Direction.RECV, nc.getJoinableStream(StreamType.video));
 videoRecorderComponent.start();
 +---
 
-		* Componente de emisión de vídeo:
+		* Video output component:
 	
 +---
 videoPlayerComponent.join(Direction.SEND, nc.getJoinableStream(StreamType.video));
 videoPlayerComponent.start();
 +---	
 
-	Para detener los componentes de vídeo:
+	To stop the video components:
 
 +---
 videoRecorderComponent.stop();
@@ -572,7 +555,7 @@ Crear una aplicación en Android
 
 	En el siguiente diagrama se puede observar un diagrama general de las actividades, servicios y componentes que son necesarios para realizar una aplicación.
 
-[../images/diagrama-tk-softphone.png]
+[images/diagrama-tk-softphone.png]
 
 * Configuración del fichero {AndroidManifest.xml}
 	
