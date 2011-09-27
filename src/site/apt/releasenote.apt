@@ -1,0 +1,22 @@
+   ------
+   Kurento Android SDK
+   ------
+   ------
+   Date
+   ------
+   
+Release note
+
+	* This platform has been tested in:
+	
+		* Samsung Galaxy II
+		
+		* Samsung Galaxy I
+		
+		* Samsung Galaxy ACE
+		
+		* HTC Desire
+		
+		* Nexus One
+				
+	* Do not use the MP2 audio codec when the network is 3G.
