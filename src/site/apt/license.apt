@@ -11,7 +11,7 @@ Copyright Statement
 
 License Grant
 
-    [[1]]. Definitions: 
+    [[1]]  Definitions: 
 
        [<<Software>>] means the Kurento Android Software Development 
                       Kit (SDK) in binary form, any other machine readable
@@ -31,7 +31,7 @@ License Grant
        [<<Terminal>>] means a device running the Android Operating System, such as a
                       phone, tablet or other kind of appliances
 
-    [[2]]. License Grant: Subject to the terms and conditions of this Agreement
+    [[2]]  License Grant: Subject to the terms and conditions of this Agreement
            Kurento grants you a non-exclusive, non-transferable, limited license to
            reproduce and use the <Software> internally, complete and unmodified, for
            the sole purposes of designing, developing, testing and running <Programs>.
@@ -65,15 +65,15 @@ License Grant
             [[ii]] your use or distribution of the <Runtime Library> in violation of
                   the terms of this Agreement or applicable law.
 
-    [[3]]. Trademarks and Logos. All trademarks and logos in the <<Runtime Library>>
+    [[3]]  Trademarks and Logos. All trademarks and logos in the <<Runtime Library>>
            can be used only as associated to the redistribution of the <<Runtime
            Library>>, and no permission is granted beyond this usage.
 
-    [[4]]. Limitation of Liability. To the extent allowable under the applicable laws
+    [[4]]  Limitation of Liability. To the extent allowable under the applicable laws
            Kurento will not be held responsible of any damages caused by the use of
            <<Software>>.
 
-    [[5]]. Third Party Code. The <<Software>> and the <<Runtime Library>>
+    [[5]]  Third Party Code. The <<Software>> and the <<Runtime Library>>
     contain third party code, subject to the following licenses:
 
         * LGPL v3.0 for some ffmpeg codecs and libraries
