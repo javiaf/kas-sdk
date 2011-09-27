@@ -547,21 +547,21 @@ videoPlayerComponent.stop();
 +---
 
 
-Crear una aplicación en Android
+Creating an Android application
 
-	A partir de este apartado se van a dar algunas recomendaciones y pasos a seguir para poder realizar una aplicación en Android que incorpore Kurento Android SDK. Se comentarán temas como la configuración de los ficheros .xml, las actividades y servicios necesarios, la gestión de las preferencias y, por último, cósmo realizar la gestión del media, tanto del audio como del vídeo.
+	From this section will give some recommendations and next steps to perform an Android application that incorporates Kurento Android SDK. They discussed issues such as configuration files .xml, activities and services required, managing preferences, and finally, how to manage the media, both audio and video.
 
-	En la parte final del apartado se podrán encontrar algunos ejemplos de código a seguir.
+	In the final section you can find some code examples to follow.
 
-	En el siguiente diagrama se puede observar un diagrama general de las actividades, servicios y componentes que son necesarios para realizar una aplicación.
+	The next diagram you can see a diagram of the activities, services and components that are necessary for an application.
 
 [images/diagrama-tk-softphone.png]
 
-* Configuración del fichero {AndroidManifest.xml}
+* Configuration file {AndroidManifest.xml}
 	
-	La configuración del fichero AndroidManifest.xml dentro de una aplicación basada en Android es muy importante, debido a que en este fichero se encuentran por un lado, definidos los permisos que deberá aceptar el usuario cuando se instale la aplicación, y por otro las actividades y los servicios de los cuales estará compuesta la aplicación.
+	Configuration file AndroidManifest.xml of an application based on Android is very important, because in this file are located, the permissions the user must agree to when installing the application, and other activities and services which shall be composed of the application.
 	
-		Algunos de los permisos necesarios son:
+		Some of the necessary permissions are:
 
 +---
 <uses-permission android:name="android.permission.VIBRATE"></uses-permission>
@@ -576,17 +576,17 @@ Crear una aplicación en Android
 <uses-permission android:name="android.permission.READ_PHONE_STATE"></uses-permission>
 +---
 			
-		Dependiendo de que tipo de aplicación se quiera implementar algunos de estos permisos no serán necesarios. Para conocer todos los permisos de los que se dispone se pueden consultar en la {{{http://developer.android.com/reference/android/Manifest.permission.html}guía de desarrollo de Android}}.
+		Depending on the application wants to implement some of these permits are not necessary. For all permissions that are available can be found in the {{{http://developer.android.com/reference/android/Manifest.permission.html}guía de desarrollo de Android}}.
 		
-		Por otro lado, también se definirán las actividades y los servicios que compondrán nuestra aplicación, como por ejemplo:
+		Also define the activities and services that make up our application, such as:
 		
-			* Un servicio se define como:
+			* A service is defined as:
 			
 +--- 
 <service android:enabled="true" android:name="com.tikal.softphone.SoftPhoneService" \>
 +---
 
-			* Una actividad se define como:
+			* An activity is defined as:
 			
 +---			
 <activity android:name="com.tikal.videocall.VideoCall" android:label="Video Call" 
@@ -594,7 +594,7 @@ android:theme="@android:style/Theme.NoTitleBar.Fullscreen" android:screenOrienta
 android:launchMode="singleTop" \>
 +---
 				
-		Cada una de las actividades que vayan a ser lanzadas dentro de la aplicación deben ser definidas en este fichero. Para más información sobre la configuración del fichero AndroidManifest.xml se pueden consultar en la {{{http://developer.android.com/guide/topics/manifest/manifest-intro.html}guía de desarrollo de Android}}.
+		Each of the activities that will be launched within the application should be defined in this file. For more information on setting AndroidManifest.xml file can be found in the  {{{http://developer.android.com/guide/topics/manifest/manifest-intro.html}guía de desarrollo de Android}}.
 
 		Por último, en la configuración de la actividad principal deberá incluirse un apartado llamado <<{{{http://developer.android.com/guide/topics/manifest/intent-filter-element.html}intent-filter}}>> que nos servirá para cuando un usuario quiera realizar una llamada desde los contactos según el "scheme" que nosotros elijamos, en este caso se busca qué cuando un usuario tenga guardado un contacto con datos como <<<"sip:juan@server.net">>> se abra nuestra actividad:
 		
@@ -607,385 +607,363 @@ android:launchMode="singleTop" \>
 <\intent-filter> 
 +---	
 	
-* Actividades
+* Activities
 
-	** {{Actividad principal}}
+	** {{Principal activity}}
 	
-	** Gestión de {{preferencias}} de {{Conexión}}
+	** Management Connection Preferences
 	
-	** Gestión de {{preferencias}} del {{Media}} 
+	** Management Media Preferences
 	
-	** Gestión de la {{Recepción}} de una llamada 
+	** Management receiving a call
 	
-	** Gestión de la {{Emisión}} de una llamada 
+	** Management emission a call
 	
-	** {{Gestión del media}} ({{Vídeo}} y {{Audio}})
+	** Management media (Video and Audio)
 
 
-* Servicios
+* Services
 
-	** {{Servicio principal}}
+	** {{Principal service}}
 	
-	** {{Servicio para una llamada activa}}
+	** {{Service to an active call}}
 
 
 * Controller
 
-	Deberá existir una clase que debe implementar varias interfaces: <<<SipEndPointListener, SipCallListener, InterfacePhone y CallNotifier>>>. A está clase la llamaremos para entender su funcionamiento <<"controller">>. Será la encargada de controlar y gestionar todos los eventos SIP que nos puedan llegar o que podamos enviar, de implementar los comportamientos normales de un teléfono como aceptar una llamada, rechazarla, etc... A esta clase se añadirán "listener" y será el <<controller>> quien les irá avisando de qué está pasando. 
+	There should be a class that must implement some interfaces: <<<SipEndPointListener, SipCallListener, CallNotifier and InterfacePhone>>>. This class might be called <<"controller">>. It will be responsible for controlling and managing all the events SIP we can get  or we can send. Also, you must implement the normal behavior of a phone as a call to accept, reject, etc ... This class will notify the listener to subscribe.
 
 ** SipEndPointListener
 
-	Cómo se ha explicado en el Control Plane, implementando esta interfaz seremos capaces de recibir algunos eventos y la aplicación deberá comportarse como se espera de ella:
+	As explained in the Control Plane, implementing this interface will be able to receive some events and the application should behave as expected of her:
 
-		* <<<INCOMING_CALL>>>, la recepción de este evento significa que alguien nos está realizando una llamada, por lo que desde la clase <<controller>> hay que notificar al <<<listener>>> que se haya agregado que está llegando una llamada. En este caso habrá que invocar a un método de un objeto de la interfaz <<<CallListener>>>, de la cual hablaremos en el {{Servicio principal}} que será quien implemente esta interfaz, llamado <<<incomingCall(String uri)>>>.  Básicamente lo que hará será levantar la actividad encargada de la recepción de llamadas.
+		* <<<INCOMING_CALL>>>, this event means that someone is making a call, so from the class <<controller>> have to notify the <<<listener>>> you have added a call is coming. In this case you must invoke a method on an object of the interface <<<CallListener>>>, which we shall discuss in the {{Principal Service}} who shall implement this interface, called <<<incomingCall (String uri )>>>. Basically what we will do is start the activity responsible for receiving calls.
 	
-		* <<<REGISTER_USER_SUCESSFUL>>>, la recepción de este evento significa que el registro con los parámetros de configuración de conexión son correctos y hemos podido registrarnos en el servidor. En este caso al igual que en el anterior, será un método de un objeto de la interfaz <<<CallListener>>> a quien tendremos que invocar, llamado <<<registerUserSucessful()>>>. Este método se encargará de hacerle saber al usuario de la aplicación que su registro ha sido correcto.
+		* <<<REGISTER_USER_SUCESSFUL>>>, this event means that the register with the connection settings are correct and have been checking on the server. In this case as in the previous one, is a method of an interface object <<<CallListener>>> who will have to invoke, called <<<registerUserSucessful()>>>. This method is responsible for sending the user to know that your registration application has been successful.
 
-		* <<<REGISTER_USER_FAIL>>>, la recepción de este evento significa, al contrario que el evento anterior, que el registro ha sido incorrecto. El método al que se llamará será <<<registerUserFailed()>>>  y se encargará de hacerle saber al usuario de la aplicación que su registro ha sido incorrecto.
+		* <<<REGISTER_USER_FAIL>>>, this event signifies that registration was incorrect. The method will be called <<<registerUserFailed()>>> and be responsible for sending the user to know that your registration application has been wrong.
 	
 
 ** SipCallListener
 
-	La implementación de este método en la clase <<controller>> deberá ser capaz de tratar los siguientes eventos, al igual que en el apartado anterior la llamada a los métodos serán de un objeto de la interfaz <<<CallListener>>> que serán implementados por el {{Servicio principal}}:
+	The implementation of this method in the class <<controller>> should be able to handle the next events, as in the previous section, the method call will be an object of the interface <<<CallListener>>> that will be implemented by the {{Principal Service}}:
 
-	* <<<CALL_SETUP>>>, la recepción de este evento significa que la llamada ha sido establecida y que por lo tanto se puede cerrar la actividad encargada de gestionar o bien la emisión de llamadas o bien la recepción de llamadas y empezar la actividad y el servicio que se encargará de gestionar el media, tanto el vídeo como el audio. Esto se hará llamando al método <<<callSetup(NetworkConnection networkConnection)>>>.
+	* <<<CALL_SETUP>>>, this event means that the call has been established and can close the activity responsible for monitoring or issuing calls or receiving calls and start the activity and service that will manage the media, both video audio. This will be done by calling <<<callSetup(NetworkConnection networkConnection)>>>.
 
-	* <<<CALL_TERMINATE>>>, la recepción de este evento significa que la llamada ha sido terminada por alguno de los usuarios, por lo tanto habrá que parar el servicio y la actividad que se encarga de gestionar una llamada activa. Esto se hará llamando al método <<<callTerminate()>>>.
+	* <<<CALL_TERMINATE>>>, this event means that the call has been terminated by any of the users, so will have to stop the service and activity that is responsible for managing a call. This will be done by calling <<<callTerminate()>>>.
 	
-	* <<<CALL_REJECT>>>, la recepción de este evento significa que la llamada ha sido rechazada por el contacto, por lo que habrá que cerrar la actividad que se encarga de gestionar la emisión de llamadas. Esto se hará llamando al método <<<callReject()>>>.
+	* <<<CALL_REJECT>>>, this event means that the call has been rejected by the contact, so you have to close the activity manages the outbound. This will be done by calling <<<callReject()>>>.
 		
  
 ** InterfacePhone 
 
-	Esta interfaz representa las acciones básicas de un teléfono:
+	This interface represents the basic actions of a phone:
 	
-		* <<<aceptCall()>>>. Aceptar una llamada entrante.
+		* <<<aceptCall()>>>. Accept an incoming call.
 
-		* <<<reject()>>>. Rechazar una llamada entrante.
+		* <<<reject()>>>. Reject an incoming call.
 
-		* <<<call(String remoteURI)>>>. Realizar una llamada saliente a un contacto.
+		* <<<call(String remoteURI)>>>. Making an outgoing call to a contact.
 
-		* <<<hang()>>>. Colgar una llamada en curso.
+		* <<<hang()>>>. Hang up a call.
 
 *** <<<aceptCall()>>>
 	
-	Este método de la clase <<controller>> se llamará desde la actividad que se encargue de la gestión de las llamadas entrantes. La implementación de este método debe recoger los datos de la llamada y llamar al método <<<accept()>>> de la clase <<<SipCall>>>. De esta manera se podrá enviar mediante el protocolo SIP que la llamada ha sido aceptada.
+	This method be called from the activity that is responsible for management of incoming calls. The implementation of this method must collect call data and call the <<<accept()>>> of the class <<<SipCall>>>.  In this way is sent via the SIP call has been accepted.
 
 *** <<<reject()>>>
 
-	Este método de la clase <<controller>> se llamará desde la actividad que se encargue de la gestión de las llamadas entrantes también. La implementación de este método debe recoger los datos de la llamada y llamará al método <<<reject()>>> de la clase <<<SipCall>>>. De esta manera se podrá enviar mediante el protocolo SIP que la llamada ha sido rechazada.
+	This method  be called from the activity that is responsible for management of incoming calls. The implementation of this method must collect call data and call the method <<<reject()>>> of the class <<<SipCall>>>. This will be sent using the SIP call has been rejected.
 
 
 *** <<<call(String remoteURI)>>>
 
-	Este método de la clase <<controller>> se llamará desde la actividad principal de la aplicación o desde la actividad que se encargue de gestionar la emisión de llamadas a partir de un contacto. Deberá tener como parámetro la Uri del contacto al que se quiere realizar la llamada. En la implementación de este método, se usará un objeto de la clase <<<SipEndPoint>>>, que será definido en el registro del usuario (se verá en el apartado que donde se registran los usuarios), usando el método <<<dial(String remoteParty, Direction direction, SipCallListener callController)>>> el cual se encargará de enviar mediante el protocolo SIP el mensaje de invitación.
+	This method is called from the main activity of the application or from the activity that is responsible for managing outbound calls from a contact. You must be at the Uri parameter of the contact you want to make the call. In implementing this method, you use an object of class <<<SipEndPoint>>>, which will be defined in the user register (be seen in the section where registered users), using the method <<<dial (String remoteParty, Direction direction, SipCallListener callController)>>> which will send through the SIP invitation message.
 
 *** <<<hang()>>>
 
-	Este método de la clase <<controller>> se llamará desde la actividad que gestione una llamada activa. La implementación de este método usará un objeto de la clase <<SipCall>> para llamar a su método <<<hang()>>> de esta manera usando el protocolo SIP se podrá enviar el mensaje de finalización de llamada.
+	This method is called from the activity that handles a call. The implementation of this method will use an object of class <<SipCall>> to call your method <<<hang()>>> in this way using the SIP protocol you can send the call completion message.
 
 
 ** CallNotifier
 
-	Este interfaz representa dos métodos para poder añadir o eliminar <<listener>> del tipo interfaz <<<CallListener>>>, como se ha comentado antes será implementado en el {{Servicio principal}}:
+	This interface represents two methods to add or delete <<listener>> interface type <<<CallListener>>>, as mentioned above will be implemented in the {{Principal Service}}:
 	
-		* <<<addListener(CallListener listener)>>>. Añadir un <<listener>>.
+		* <<<addListener(CallListener listener)>>>. Add a <<listener>>.
 
-		*<<<removeListener(CallListener listener)>>>. Eliminar un <<listener>>.
+		*<<<removeListener(CallListener listener)>>>. Delete a <<listener>>.
 
 
-{Actividad principal}
+{Principal activity}
 
-	Esta será la actividad que se abrirá cuando se quiera abrir la aplicación, debe ser la encargada de: 
+	This will be the activity that opens when you start the application, must be responsible for:
 	
-	* Poder configurar las preferencias de conexión y de media.
+	* To configure the connection and media preferences.
 
-	* Arrancar el servicio.
+	* Start the service.
 
-	* Realizar llamadas.
+	* Make calls.
 
-	* Acceder a los contactos.
+	* Access to contacts.
 
-	* Etc...
+	* Others...
 
-* Fichero XML
+* File XML
 
-	Esta actividad tendrá su propia fichero <<<xml>>> que definirá como será el interfaz de usuario. Este interfaz debería tener como mínimo:
+	This activity will have its own file <<<xml>>> which is defined as the user interface. This interface should have at least:
 
-		** Un <<<EditText>>> para poder escribir la <<<uri>>> de la persona a la que se quiere llamar sino estuviese en la agenda.
+		** A <<<EditText>>> to write the <<<uri>>> of the person you wish to call.
 
-		** Un <<<Button>>> para poder realizar una llamada al contacto que se haya escrito en el <<<EditText>>> o para poder acceder a la agenda si estuviese vacío.
+		** A <<<Button>>> to access the contacts.
 
-		** Un <<<Button>>> para poder acceder directamente a la agenda para seleccionar un contacto.
-
-	Además para facilitar al usuario se pueden añadir otros elementos como:
-	
-		** Varios  <<<TextView>>> donde se pueden mostrar los datos de configuración que se están usando.
-
-		** Un <<<TextView>>> para mostrar el estado del registro contra el servidor SIP.
-
+		** A <<<Button>>> to access the call history
 
 * onCreate
 
-	Cuando se crea la actividad uno de los pasos importantes que se debe llevar a cabo es controlar si el dispositivo tiene alguna red activa, ya que, para todas las operaciones con SIP es necesario. Por lo que sino es así, se deberá mostrar un mensaje de error al usuario y cerrar la aplicación antes de avanzar. Si el dispositivo tiene algún tipo de red activa, entonces podremos seguir adelante.
+	When you create an activity of the important steps that must be carried out is to check if the device has any active network, since for all SIP transactions is necessary. As it is, it should display an error message to the user and close the application before proceeding. If the device has any active network, then we can move forward.
 
-	La actividad se suscribirá a la entrega de mensajes que realizará el {{Servicio principal}} para así recibir los mensajes que lleguen cuando la actividad este en primer o segundo plano.
+	The activity will subscribe to the message delivery will perform the {{Princial Service}} in order to receive messages that arrive when the activity is in the foreground or background.
 
-	Una vez estamos hemos realizado la comprobación de la red, se debe recoger los datos de las preferencias para configurar los datos necesarios para el registro en el servidor SIP (usuario, dominio, servidor, puerto). También se recoge la información necesaria de la configuración del media. Si la recogida de todos estos datos son correctos, se procede a intentar el registro contra el servidor configurado en las preferencias. Según tenga éxito el registro o no, se llamarán a las funciones correspondientes con los mensajes que envíe el {{Servicio principal}}.
+	Once we have done testing the network, it must collect data on preferences to configure the data required for registration to the SIP server (user, domain, server, port). It also collects information on the configuration of the media. If the collection of these data are correct, we proceed to attempt to register against the server set in preferences. According to the registration is successful or not, it will call the corresponding functions to send messages with the {{Principal service}}.
 
 * onNewIntent
 
-	Como hemos visto en la configuración del {{AndroidManifest.xml}}, el modo de lanzar una aplicación puede ser <<<launchMode>>>. Cuando se configura de esta manera, se debe implementar este método, <<<onNewIntent>>>. Esto significa que si existe una actividad ya creada, no la volverá a crear sino que pasará directamente a este método. En esta parte, se debe comprobar de nuevo si está activa la red.
+	As seen in the setup {{AndroidManifest.xml}}, how to launch an application can be <<<launchMode>>>. When configured in this way, you must implement this method, <<<onNewIntent>>>. This means that if there is an already created, not recreate it go directly to this method. In this part, you should check again if the network is active.
 
 * onResume
 
-	En esta parte de la aplicación deberemos por un lado, suscribirnos a los cambios de estado de la red que nos ofrece Android, gracias a esto podremos controlar los cambios que existan en las interfaces de red del dispositivo y así actuar en consecuencia como se explicará en el {{Control de red}}.
+	In this part of the application we first, subscribe to changes in network status that offers Android, thanks to this we can monitor changes occurring within the device's network interfaces and so act accordingly as explained in network control.
 
-	Por otro lado, tendremos el control sobre los botones que se han definido en el fichero <<<xml>>> de configuración del interfaz. 
+	Furthermore, we have the control over the buttons that are defined in the file <<<xml>>> interface configuration.
 
-	En el botón que ha definido para realizar las llamadas, podremos tener dos casos:
+* Contacts
 
-	** Se ha rellenado la caja de texto con una <<<uri>>> y al pulsarlo se realiza la llamada contra ese contacto.
-
-	** La caja de texto está vacía y al pulsarlo se abre la agenda directamente para poder elegir un contacto.
-
-	Además tendremos el botón que nos da acceso directo a los contactos para poder elegir uno.
-
-
-* Contactos
-
-	Cuando abrimos la actividad de acceso a la agenda desde cualquiera de dos opciones anteriores y seleccionamos un contacto, al volver a la actividad en el apartado de <<<onActivityResult>>> se comprobará usando la clase de ayuda para obtener datos {{de la agenda}} si el contacto seleccionado tiene configurado una <<<uri>>> correcta. Sí es así, se realizará la {{llamada}} sino se mostrará un mensaje mostrando que el usuario no tienen configurado ninguna <<<uri>>>. 
+	When we opened the access  contacts activity and select a contact, to return to the activity in the section <<<onActivityResult>>>  be checked using the kind of help to get data from the agenda if the selected contact has set a <<<uri>>> correct. If so, the call is made.
 	
-* {Control de red}
+* {Network control}
 
-	Es importante para este tipo de aplicaciones que seamos conscientes de los cambios que existen en las interfaces de red, para poder tener el control de cambio de ip's, cortes en la red, cambio de WIFI a 3G, etc... Por lo tanto, como hemos comentado antes la actividad principal se suscribirá a los cambios que existan en este apartado del dispositivo. 
+	It is important for these applications to be aware of changes in existing network interfaces in order to have control of changing ip's, network outages, change to 3G WIFI,  ... Therefore, as mentioned before the main activity will subscribe to the changes that exist in this section of the device.
 
-	Los pasos recomendables a seguir serán:
+	Recommended steps to follow are:
 		
-		** Almacenar el tipo de interfaz que se está utilizando, WIFI o 3G. Esto nos servirá para determinar primeramente si tenemos alguna de los interfaces de red activos o no.
+		** Save the interface type being used, WiFi or 3G. This will help us determine first whether we have any active network interfaces or not.
 
-		** Una vez que sabemos que tipo de interfaz estamos usando, debemos saber también si la IP que estábamos usando es la misma o ha cambiado. Esto es importante, ya que, aunque estemos en el mismo interfaz si hemos cambiado de IP necesitaremos volver a registrarnos al servidor para que nos puedan localizar sin problemas.
+		** We must know whether the IP we were using is the same or changed. This is important because, although we are on the same interface IP changed if we need to re-register the server so that we can be reached without problems.
 
-		** Por último, si cambia el interfaz de red o la IP de nuestro dispositivo deberemos finalizar nuestro <<controller>> usando el método <<<finishUA()>>>, eliminar los datos que existan en {{<<<ApplicationContext>>>}} y además para el servicio principal. Una vez hecho esto, volveremos a crear de nuevo el <<controller>> con los nuevos datos de configuración, rellenaremos {{<<<ApplicationContext>>>}} con los datos necesarios y volveremos a intentar el registro.
+		** Finally, if you change the network interface or IP address of our device we finish our <<controller>> using the method <<<finishUA()>>>,  delete the data that exist in {{<<< ApplicationContext>>>}} and also to the main service. Once done, we will re-create the <<controller>> with the new configuration data, fill {{<<<ApplicationContext>>>}} with the necessary data and attempt to register again.
 
-* Control de mensajes
+* Message Control
 
-	Como se ha comentado antes, la aplicación se debe suscribir también a los mensajes que pueda recibir desde el servicio principal. Desde el servicio se irán enviando mensajes a la actividad como que el registro ha sido correcto, erróneo o que han aceptado la llamada y se debe cerrar la actividad de emisión de llamadas.
+	The application must also subscribe to receive messages from the principal service. Since the service will send messages to the activity and that the registration was successful, erroneous or to have accepted the call and must close the outbound activity.
 
 
-* Realización de una {llamada}
+* Management receiving a call
 
-	Tan sólo podremos realizar una llamada cuando tengamos una dirección <<<uri>>> a la que poder llamar, bien sea por obtenerla por el acceso a los contactos o por la caja de texto. Cuando se realiza la llamada, se tendrá que arrancar la actividad que se encarga de gestionar la {{Emisión}} de llamadas. Es recomendable añadirle como parámetros a esta actividad, el <<<id>>> del usuario que hemos recogido de la agenda y la <<<uri>>> del contacto al que queremos llamar. Será la nueva actividad la encargada de realizar finalmente la llamada.
+	Only we can make a call when we have an address <<<uri>>> to be able to call. When you call, you will have to start the activity that is responsible for managing the emission calls. It is advisable to add them as parameters to this activity, the <<id>> the user that we have collected from the agenda and the <<<uri>>> the contact you want to call. Will the new activity ultimately responsible for carrying the call.
 
-* Menús
+* Menu
 
-	Para acceder a las preferencias de la aplicación se deberá tener un menú desde el cual se pueda acceder a ellas. En estos menús también es recomendable añadir un apartado para salir de la aplicación.
+	To access the application preferences should have a menu from which you can access them. In these menus you should also add a clause to exit the application.
 
-* Finalización de la aplicación
+* Application termination
 	
-	La finalización de la aplicación puede venir dada por querer salir realmente de la aplicación o porque la hemos dejado corriendo en segundo plano. 
+	To finish,  you must:
 
-	Si queremos salir realmente, deberemos:
+	** Stop listening to network changes that exist in the device.
 
-	** Dejar de escuchar los cambios de red que existan en el dispositivo.
-
-	** Finalizar el <<controller>> mediante el método <<<finishUA>>>.
+	** Stop the <<controller>> using the method <<<finishUA>>>.
 	
-	** Liberar los datos guardados en {{<<<ApplicationContext>>>.}}
+	** Releasing the data stored in {{<<<ApplicationContext>>>.}}
 
-	** Finalizar el servicio principal.
+	** Finish the principal service.
 
-	Si realmente no se quiere salir sino que la aplicación a pasado a segundo plano, no se deberá hacer nada para no perder la información almacenada.
+{Services}
 
-{Servicios}
+	The creation of services is needed to control some events that can occur when the application is not in the foreground. This should create two services, one that handles all events of the SIP connection and another to manage the media during a call.
 
-	La creación de los servicios es necesaria para poder controlar ciertos eventos que pueden ocurrir cuando la aplicación no está en primer plano. Para ello se deberían crear dos servicios, uno que gestione todos los eventos de la conexión SIP y otro que gestione el media durante una llamada.
+* {Principal service}
 
-* {Servicio principal}
+	The principal application service will be responsible for handling events that may arise from SIP, therefore, is responsible for implementing the interface <<<CallListener>>>.
 
-	El servicio principal de la aplicación será el encargado de controlar los eventos que puedan surgir desde SIP, por ello, es el encargado de implementar la interfaz {{<<<CallListener>>>}}. 
+	Some of the responsibilities that will have this service are:
 
-	Algunas de las responsabilidades que tendrá este servicio son:
+	* When you start the service, you should start the notification that the application is open in the notification bar. At the time of creating the notification should be the main activity associated with this notification.
 
-	* Cuando desde la aplicación principal se arranque el servicio, debería iniciar la notificación de que la aplicación está abierta en la barra de notificaciones. A la hora de crear la notificación se debería asociar la actividad principal a esta notificación.
+	* Added using the method <<<addListener()>>> object <<controller>>, which will recover thanks to {{<<<ApplicationContext>>>}} in order to receive events. In this way from <<controller>> can call our implementation of <<<CallListener>>>.
 
-	* Agregarse mediante el método  <<<addListener()>>> del objeto <<controller>>, que recuperaremos gracias a {{<<<ApplicationContext>>>}},  para poder recibir los eventos anteriormente mencionados. De esta manera desde <<controller>> se podrá llamar a nuestra implementación de <<<CallListener>>>.
+	* When we receive a call to <<<incomingCall(String uri)>>>, the activity should be initiated to manage the incoming call. In this way it will be the user who may accept or reject the call. On the other hand, because we are using a service, each time this method is invoked and if the application is in the background make it up this activity.
 
-	* Cuando recibamos una llamada a <<<incomingCall(String uri)>>>, se deberá iniciar la actividad que gestione la recepción de llamadas. De esta manera será el usuario el que podrá aceptar o rechazar la llamada. Por otro lado, gracias a que estamos usando un servicio, cada vez que este método sea invocado y aunque la aplicación esté en segundo plano se podrá levantar dicha actividad.
+	* When we receive a call to <<<registerUserSucessful()>>> then it should be the principal activity with a message that the user is properly registered so that it can notify the user via a message.
 
-	* Cuando recibamos una llamada a <<<registerUserSucessful()>>>, se deberá indicar a la actividad principal mediante un mensaje que el usuario se ha registrado correctamente para que ésta pueda notificárselo al usuario mediante algún mensaje.
+	* When we receive a call to <<<registerUserFailed()>>> then it should be the main activity with a message that the user <<no>> correctly registered so that it can notify the user via a message.
 
-	* Cuando recibamos una llamada a <<<registerUserFailed()>>>, se deberá indicar a la actividad principal mediante un mensaje que el usuario <<no>> se ha registrado correctamente para que ésta pueda notificárselo al usuario mediante algún mensaje.
+	* When we receive a call to <<<callSetup(NetworkConnection networkConnection)>>> then it should be the main activity by a message that should stop the activity of issuing calls or receive calls as appropriate. Furthermore, you must start the service for a call.
 
-	* Cuando recibamos una llamada a <<<callSetup(NetworkConnection networkConnection)>>>, se deberá indicar a la actividad principal mediante un mensaje que debe parar la actividad de emisión de llamadas o de recepción de llamadas según sea el caso. Además, se deberá arrancar el {{Servicio para una llamada activa}}.
+	* When we receive a call to <<<callTerminate()>>>,you must stop the service for a call.
 
-	* Cuando recibamos una llamada a <<<callTerminate()>>>, se deberá para el {{Servicio para una llamada activa}}.
+	* When we receive a call to <<<callReject()>>> then it should be the main activity by a message that should stop the activity responsible for outbound calls, as only we can reject a call when we perform.
 
-	* Cuando recibamos una llamada a <<<callReject()>>>, se deberá indicar a la actividad principal mediante un mensaje que debe parar la actividad encargada de emisión de llamadas, ya que sólo nos podrán rechazar una llamada cuando la realicemos nosotros.
-
-	* Por último, cuando se finalice la aplicación el servicio será en encargado de eliminar la notificación de la barra de notificaciones y además cerrar el {{Servicio para una llamada activa}} para evitar que se quedase corriendo.
+	* Finally, when the application is finished the service will be in charge to eliminate the notification of the notification bar and also close the service.
 
 	
 **{CallListener}
 
-	Esta interfaz representa los eventos que podremos recibir desde SIP:
+	This interface represents the events that we receive from SIP:
 	
-		* <<<incomingCall(String uri)>>>. Se llamará a este método desde <<controller>> cuando recibamos una invitación de llamada.
+		* <<<incomingCall(String uri)>>>. Call this method from <<controller>> when we receive an invitation to call.
 
-		* <<<registerUserSucessful()>>>. Se llamará a este método desde <<controller>> cuando el usuario se ha registrado correctamente.
+		* <<<registerUserSucessful()>>>. Call this method from <<controller>>  when the user is successfully registered.
 
-		* <<<registerUserFailed()>>>. Se llamará a este método desde <<controller>> cuando el usuario <<no>> se ha registrado correctamente.
+		* <<<registerUserFailed()>>>. Call this method from <<controller>>  when the user <<no>> is registered correctly.
 
-		* <<<callSetup(NetworkConnection networkConnection)>>>. Se llamará a este método desde <<controller>> cuando la llamada se ha establecido correctamente por parte de los usuarios.
+		* <<<callSetup(NetworkConnection networkConnection)>>>. Call this method from <<controller>>  when the call is successfully established by the users.
 
-		* <<<callTerminate()>>>. Se llamará a este método desde <<controller>> cuando la llamada ha finalizado.
-		
-		* <<<callReject()>>>. Se llamará a este método desde <<controller>> cuando la llamada ha sido rechazada.
+		* <<<callTerminate()>>>. Call this method from <<controller>> when the call is completed.
 
-* {Servicio para una llamada activa}
+		* <<<callReject()>>>.  Call this method from <<controller>> when the call has been rejected.
 
-	Este servicio será el encargado de gestionar una llamada activa y será creado desde el servicio principal cuando se ha establecido una llamada correctamente.
+* {Service to an active call}
 
-	* Cuando se crea el servicio, uno de los primeros pasos que debe hacerse es cambiar la notificación que tenemos en la barra de notificaciones para indicar que tenemos una llamada activa, de este modo si salimos al menú principal o a la agenda, etc... podemos volver a la llamada sin problemas. La notificación estará asociada a la actividad que se encargue de mostrar el media en el dispositivo.
+	This service will be responsible for managing an active call and will be created from the principal service when a call is set correctly.
 
-	* Durante la creación del servicio, también se crearan los componentes de audio, tanto para la emisión como para la recepción. Los componentes de vídeo se crearan en la actividad encargada de mostrar el media en el dispositivo, esto es así para poder seguir enviando audio si la aplicación está en segundo plano, pero no vídeo. 
+	* When you create the service, one of the first steps to be done is to change the notification that we have in the notification bar to indicate that we have an active call, so if we go to the main menu or agenda, etc ... we can return the call without problems. Notification shall be associated with the activity that is responsible for displaying the media in the device.
 
-	* Cuando el servicio ha comenzado, y hemos creado los componentes de audio correctamente, debemos definir como será cada componente, sí de emisión o de recepción y hacerlos empezar. 
+	* During the creation of the service, also create audio components for both the emission and reception. The video components were created in the activity responsible for displaying the media in the device, this is  for sending audio to continue if the application is in the background, but no video.
 
-	* Una vez los componentes de audio han comenzado, se deberá arrancar la actividad que se encargará de mostrar el media en el dispositivo, entonces crearemos los componentes de vídeo.
+	* When the service has began, and created the audio components properly, we must define each component as it will, if emission or reception and make them start.
 
-	* Cuando se destruye el servicio, éste deberá:
+	* When the audio components have started, you must start the activity will show the media in the device, then create your video components.
 
-		** Volver a cambiar la notificación de la barra de notificaciones a la notificación principal.
+	* When the service is destroyed, it must:
 
-		** Detener los componentes de audio.
+		** Change the notification of the notification bar on the main notice.
 
-		** Avisar a la actividad que se encarga de mostrar el media en el dispositivo que debe cerrarse.
+		** Stop the audio components.
 
-Gestión de {preferencias}
+		** Tell the activity that is responsible for displaying the media in the device should be closed.
 
-* {Conexión}
+Management preferences
 
-	En las preferencias de conexión deberemos dejar configurar los siguientes datos:
+* {Connection}
+
+	In the connection preferences should allow setting the following:
 	
-	** <<Usuario>>: será el usuario con el que quedará registrado en el servidor SIP.
+	** <<User>>:  User registration.
 
-	** <<Password>>: será la password con el que quedará registrado en el servidor SIP.
+	** <<Password>>: Password user registration.
 
-	** <<Dominio>>: será el dominio con el que quedará registrado en el servidor SIP.
+	** <<Domain>>: Domain user registration.
 
-	** <<Ip del servidor SIP>>: será el servidor donde se registraran los usuarios.
+	** <<Ip Server SIP>>: Server IP  where registered users.
 
-	** <<Puerto del servidor SIP>>: será el puerto del servidor.
-
-	Con estos datos, más adelante veremos que pasos hay que seguir para registrarse en el servidor.
+	** <<Port Server SIP>>: Server Port  where registered users.
 
 * {Media}
 
-	En las preferencias del media deberemos dejar configurar los siguientes datos:
+	In the preferences of media should leave the following data set:
 
-	* <<Máximo ancho de banda>>: establece el ancho de banda máximo que se utilizará para la emisión de media (audio y vídeo).
+	* <<Maximum BandWidth>>: Indicate the max bandwidth will be used in bps(bits per second).
 
-	* <<Codec de Vídeo>>: serán los codecs soportados por la aplicación. Por ejemplo:
+	* <<Video codec>>: Indicate the video codecs supported.
 
 		* H263
 
 		* MPEG4
 
-	* <<Tamaño del Vídeo>>: será la resolución del vídeo que se puede soportar.
+	* <<Frame size>>: Indicate the frame size in pixels (width x height)
 
-	* <<Dirección de la llamada>>: sólo envío, sólo recepción o envío/recepción.
+	* <<Call direction>>: Indicate the mode of each media stream.
 
-	* <<Máximo frame rate>>: establece el máximo frame rate que se utilizará en la emisión del vídeo.
+	* <<Maximum frame rate>>: Indicate the max frame rate will be used.
 
-	* <<Tamaño entre dos I-frames>>: establece el tamaño del "group of pictures". Si es 0 sólo se emite I-frames.
+	* <<Gop size>>:Indicate the max number of frames in a group of pictures, or 0 for intra_only.
 
-	* <<Máximo número de frames>>: establece el número de frames más recientes de la cámara que se almacenan en el buffer utilizado para gestionar el frame rate.
+	* <<Queue size>>: Indicate the number of frames will be buffered from the camera.
 
-	* <<Codec de Audio>>: serán los codec soportados por la aplicación. Por ejemplo:
+	* <<Audio Codec>>: Indicate the audio codecs supported.
 
 			* AMR
 
 			* MP2
 		
-	* <<Dirección de la llamada>>: sólo envío, sólo recepción o envío/recepción.
+	* <<Call direction>>: Indicate the mode of each media stream.
 		
-Gestión de emisión y recepción de llamadas
+Management receiving and emission a call
 
-	Tanto para la emisión como para la recepción de llamadas podemos tener dos actividades que nos representen que un contacto nos está llamando o bien que le estamos llamando nosotros.
+	For both emission and reception of calls we have two activities that represent us that a contact is calling us or that we are calling us.
 
-* {Emisión} de llamadas
+* Management emission
 
-	La actividad que se encargue de la emisión de llamadas será creada cuando se haya elegido un contacto o se sepa a que contacto se quiere realizar la llamada y debería mostrar en la pantalla como mínimo:
+	The activity responsible for the issuance of calls will be created when a contact is chosen or known to contact you want to make the call and the display should show at least:
 	
-		** El nombre del contacto.
+		** The name of the contact.
 
-		** La imagen del contacto, si éste lo tuviera.
+		** The picture of the contact, if he had.
 
-		** Un botón para cancelar la llamada.
+		** A button to cancel the call.
 
-	Esta actividad no deberá hacer nada más que mostrar la interfaz para que el usuario sepa que se está realizando una llamada y que puede cancelarla. La realización de la llamada se encargará la clase <<controller>> que hemos definido anteriormente. 
+	This activity should only show the interface for the user know you are in a call and you can cancel it. The completion of the call will class <<controller>> we have defined above.
 
-	El cierre de esta actividad puede venir dada por 3 circunstancias:
+	The closure of this activity can come from three circumstances:
 
-		** El contacto rechaza la llamada.
-		
-		** El contacto acepta la llamada.
+		** Contact reject the call.
+
+		** The contact accepts the call.
+
+		** The user cancels the call.
+
+
+* Management receiving
+
+	The activity responsible for receiving calls will be created from the service control manager can get SIP events, such as an <invite> in the case of a call reception. The interface of this activity on the screen should show at least:
+
+		** The name of the contact.
+
+		** The picture of the contact, if he had.
+
+		** A button to accept the call. When pressed, they must notify <<controller>> that the call has been accepted and close the activity.
+
+		** A button to cancel the call. When pressed, they must notify <<controller>> that the call has been rejected and close the activity.
+
+		** Vibrate. When you accept or reject the call by the vibration will stop.
+
+	The closure of this activity can come from three circumstances:
+
+		** Anyone who calls you, cancel the call.
+
+		** The call is rejected.
+
+		** We accept the call.
 	
-		** El usuario cancela la llamada.
 
+Management media (Video and Audio){Gestión del media} (Vídeo y Audio)
 
-* {Recepción} de llamadas
+	The video and audio management are separated. The reason they are separated is basically that we can continue with a discussion of whether the application is in the foreground or not. Thus, the audio is handled in the service responsible for active calls and video are handled in the activity will show the media in the device, this is so not send or receive video when the device is not going to show and so do not saturate it.
 
-	La actividad que se encargue de la recepción de llamadas será creada a partir del servicio encargado de controlar los eventos SIP que puedan llegar, como sería un <invite> en el caso de una recepción de llamada. La interfaz de esta actividad debería mostrar en la pantalla como mínimo:
+* {Activity}
 
-		** El nombre del contacto.
-		
-		** La imagen del contacto, si éste lo tuviera.
+	This activity will be in charge of showing the media in the device and play audio through the speakers and pick up the audio we generate. This activity will have its own definition in a file <<<xml>>>, which will show the interface elements should be at least:
 
-		** Un botón para aceptar la llamada. Cuando se pulse, se deberá notificar a <<controller>> que la llamada se ha aceptado y cerrar la actividad.
+		* A <<<SurfaceView>>> to display the video received.
 
-		** Un botón para cancelar la llamada. Cuando se pulse, se deberá notificar a <<controller>> que la llamada se ha rechazado y cerrar la actividad.
-	
-		** Vibrar e incluso hacer sonar el sonido del dispositivo. Cuando se acepte o se rechace la llamada la vibración y/o el sonido deberá cesar.
+		* A <<<SurfaceView>>> to display the video that we sent.
 
-	Como se ha comentado anteriormente, el cierre de esta actividad puede venir dada por 3 circunstancias:
-		
-		** Quien llama cancela la llamada.
-	
-		** Se rechaza la llamada.
+		* A <<<Button>>> to hang up the call.
 
-		** Se acepta la llamada.
-	
+	We can add two more buttons for:
 
-{Gestión del media} (Vídeo y Audio)
+		* Manage the mute during a conversation.
 
-	Como se ha explicado anteriormente, la gestión de vídeo y audio están separadas. El motivo de que estén separadas es básicamente que podamos seguir con una conversación tanto si la aplicación está en primer plano como si no. De esta manera, el audio se gestiona en el servicio encargado de las llamadas activas y el vídeo se gestiona en la actividad que se encargará de mostrar el media en el dispositivo, esto es así para no enviar ni recibir vídeo cuando el dispositivo no los va a mostrar y así no saturarlo.
-
-* {La actividad}
-
-	Esta actividad será la encargada de mostrar el media en el dispositivo, además de reproducir el audio por los altavoces y recoger el audio que generamos nosotros. Esta actividad tendrá su propia definición en un fichero <<<xml>>>, donde se mostrarán los elementos que tendrá la interfaz, debería tener como mínimo:
-
-	* Un <<<SurfaceView>>> para mostrar el vídeo que recibimos.
-
-	* Un <<<SurfaceView>>> para mostrar el vídeo que enviamos.
-
-	* Un <<<Button>>> para poder colgar la llamada.
-
-	Además podemos añadir dos botones más para:
-	
-	* Gestionar el mute durante una conversación.
-	
-	* Gestionar el altavoz por el cual queremos reproducir el audio.
+		* Manage the speaker for which we want to play the audio.
 
 	
-	La creación de esta actividad viene dada porque se ha establecido una llamada correctamente, y el servicio encargado de gestionar las llamadas activas la ha lanzado. El servicio por su lado ya se ha encargado de gestionar los componentes de audio por su lado, como ya se ha explicado anteriormente. Esta actividad será la que se encargue de gestionar los componentes de vídeo, para ello cuando se crea deberá establecer cada componente asociando cada uno a su <<<SurfaceView>>> correspondiente.
+	The creation of this activity lies in that a call has been set correctly, and the service responsible for managing active calls has been launched. The service for its part has already been responsible for managing the audio components on the other hand, as explained above. This activity will be the one responsible for managing the video components to this when creating each component should be established by associating each to his <<<SurfaceView>>> corresponding.
 
-	Una vez que ya está activa la actividad, deberá arrancar esos componentes de vídeo para empezar a emitir y recibir vídeo y poder mostrarlos en cada uno de los <<<SurfaceView>>>. Como se ha comentado anteriormente, podremos tener varios botones para gestionar diferentes aspectos de la conversación. 
+	Once the activity is already active, you must boot these video components to start broadcasting and receiving video and can display in each of the <<<SurfaceView>>>. As discussed above, we have several buttons to manage different aspects of the conversation.
 
-	* Si quisiésemos terminar la llamada usaríamos el botón destinado para ello. Para poder terminar la llamada usaremos el objeto <<controller>>, que recuperaremos gracias a {{<<<ApplicationContext>>>}}, usando el método <<<hang()>>>. Y además finalizaremos la actividad para acabar con la llamada.
+	* If we wanted to end the call would use the button made ​​for them. To end the call using the object <<controller>>, which will recover thanks to <<<ApplicationContext>>>, using the method <<<hang()>>>. And end of the activity to end the call.
 
-	* Si quisiésemos poner o quitar el mute de la conversación usaremos el botón destinado para ello. Para poder realizarlo debemos parar o volver arrancar el componente de audio, que también recuperaremos gracias a {{<<<ApplicationContext>>>}}. Antes de parar o arrancarlo deberemos saber que estaba haciendo ese componente.
+	* If we wanted to add or remove the mute button will use the conversation made ​​for them. To do this we must stop or re-boot the audio component, which also recovered thanks to <<<ApplicationContext>>>. Before we started and stopped what he was doing that component.
 
 +---
 if (audioPlayerComponent.isStarted())
@@ -994,7 +972,7 @@ else
 	audioPlayerComponent.start();
 +---
 
-	* Tenemos la opción de cambiar el altavoz por el cual se reproduce el audio. Recuperaríamos el componente de audio mediante {{<<<ApplicationContext>>>}} y volveríamos a definir el tipo de componente de audio que es y el altavoz por el cual se quiere reproducir.
+	* We have the option to change the loudspeaker which reproduces the audio. Recover the audio component by <<<ApplicationContext>>> and we would define the type of audio component is and the speaker for which you want to play.
 
 +---
 if (audioRecorderComponent != null) {
@@ -1018,50 +996,48 @@ if (audioRecorderComponent != null) {
 }
 +---
 
-	* Gracias a que existe un servicio que gestiona las llamada activas, si en algún momento el usuario sale de esta actividad lo único que "perderíamos" sería el vídeo, ya que, la actividad cuando entra en <<pause>> debe detener los componentes de vídeo para no congestionar el dispositivo. Además no tiene sentido seguir enviando o recibiendo vídeo cuando no se va a visualizar.
+	* Because there is a service that manages the call, if at any time the user logs out of this activity as one who "lose" the video would be, since the activity when it comes to <<pause>> components must stop not congest video for the device. Also do not make sense to continue sending or receiving video when not viewed.
 
-	* Cuando volvamos a la actividad gracias a la notificación de la barra de notificaciones, los componentes de vídeo se deben volver a crear y para así poder volver a recibir y emitir vídeo.
+	* When we return to the activity due to the notification of the notification bar, video components must be re-created and in order to return to receive and transmit video.
 
-	* Por último, cuando se finaliza la actividad, bien porque se ha pulsado el botón para terminar la llamada o bien porque hemos recibido el mensaje desde el servicio que han colgado desde el otro lado, debemos parar los componentes de vídeo.
+	* Finally, when the activity ends, either because the button is pressed to end the call or because we have received the message from the service they have hung on the other hand, we must stop the video components.
 
+* {Video}
 
-* {Vídeo}
-
-	La creación de los componentes de vídeo se pueden ver en la sección de User Plane.
+	The creation of video components can be seen in the section on User Plane.
 
 * {Audio}
 
-	La gestión de los componentes de audio se puede ver en la sección de User Plane.
+	The creation of audio components can be seen in the section on User Plane.
 
-Otras clases de ayuda
+Other classes of help
 
-	Estas clases que se mencionan a continuación, son clases que se pueden crear para facilitar la labor de desarrollo de algunas de las funcionalidades que pueda tener la aplicación.
+	These classes listed below are classes that can be created to facilitate the task of developing some of the features that may have application.
 
-* Almacenamiento de datos para interactuar entre las clases ({ApplicationContext})
+* {ApplicationContext}
 
-	Está clase nos servirá para poder compartir algunos datos entre todas las actividades y no perder información cuando la actividad esté en segundo plano. Simplemente será una tabla Hash en la que iremos almacenando y recogiendo datos según los necesitemos.
+	This class will be useful to share some information among all the activities and not lose information when the activity is in the background. Simply be a hash table in which we will be storing and collecting data as needed.
 
 +---
 public static HashMap<String, Object> contextTable = new HashMap<String, Object>();
 +---
 
-	Desde cualquier parte de la aplicación podremos hacer:
+	From any part of the application can do:
 
-	** ApplicationContext.contextTable.put("clave", objeto), para almacenar cualquier tipo de objeto que podamos necesitar en cualquier momento.
+	** ApplicationContext.contextTable.put("key", object), to store any type of object that we need at any time.
 
 +---
 ApplicationContext.contextTable.put("controller", controller);
 +---
-	** ApplicationContext.contextTable.get(objeto), para recoger cualquier tipo de objeto que hayamos almacenado anteriormente. Deberemos hacer un casting al objeto que es.
-
+	** ApplicationContext.contextTable.get(objeto), to collect any type of object that we stored earlier. We will make the object which is casting.
 +---
 controller = (Controller) ApplicationContext.contextTable.get("controller");
 +---
 	
 
-* Obtener la ip actual
+* Get the current ip
 
-	Recoger la ip de un dispositivo Android, en muchas de las aplicaciones es algo que se puede necesitar muy a menudo, por lo que se recomienda realizar una pequeña clase que nos ayude con esta tarea. Un ejemplo de la función sería:
+	Collect ip Android device in many applications is something that may be needed very often, so it is recommended that a small class to help us with this task. An example of the function would be:
 
 +---
 public static InetAddress getLocalAddress() {
@@ -1086,62 +1062,60 @@ public static InetAddress getLocalAddress() {
 +---
 
 
-* Obtener datos de los contactos {de la agenda}
+* Get the contact details of the agenda
 
-	Para tener una mayor facilidad a la hora de obtener datos de los contactos, es recomendable crearse una clase que se encargue de ello a partir de la uri del usuario. De esta manera, podremos recoger el nombre, la foto, la música asociada a ese contacto. 
+	For contact information, you should create a class to take care of it from the uri of the user. In this way, we may collect the name, photo, music associated with that contact.
 
-	De esa manera podremos hacer consultas del estilo:
+	We query:
 
-		* <<<getName(Integer id)>>> donde obtendremos el nombre del contacto según su identificador dentro de los contactos. Esto nos servirá cuando elijamos a un contacto desde el acceso a los contactos de la aplicación.
+		* <<<getName(Integer Id)>>> where to get the contact's name as its identifier within the contacts. This will help us when we choose a contact from your contacts access to the application.
 
-		*<<<getName(Intent data)>>> donde obtendremos el nombre del contacto después de elegir el contacto directamente desde la agenda sin pasar por la aplicación.
+		* <<<getName(Intent data)>>> where to get the contact's name after choosing the contact directly from the agenda without going through the application.
 
-		*<<<getId(String sipUri)>>> donde obtendremos el id del contacto en la agenda a partir de su identificador SIP.
+		* <<<getId(String sipUri)>>> where to get the id of the contact in the phonebook from your SIP ID.
 
-		*<<<getId(Intent data)>>> donde obtendremos el id del contacto en la agenda.
+		* <<<getId(Intent data)>>> where we get the id of the contact in the phonebook.
 
-		*<<<getSip(Intent data)>>> donde obtendremos el identificador SIP después de elegir el contacto directamente desde la agenda sin pasar por la aplicación.
+		* <<<getSip(Intent data)>>> where we get the SIP identifier after selecting the contact directly from the agenda without going through the application.
 
-		*<<<getPhoto(Integer id)>>> donde obtendremos la imagen del contacto, si tiene.
+		* <<<getPhoto(Integer id)>>> where to get the contact picture, if available.
 
-
-Ejemplos
+Examples
 
 * AndroidManifest.xml
 
-	En este apartado definiremos:
+	In this section we define:
 
-		* La versión de la aplicación.
+		* The version of the application.
 
-		* Donde queremos que se instale (en este caso en la tarjeta de memoria si es posible).
+		* Where we want to install (in this case the memory card if possible).
 
-		* El paquete principal de la aplicación (com.tikal.softphone).
+		* The main application package.
 
 +---
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	package="com.tikal.softphone" android:versionCode="1"
+	package="kas.softphone" android:versionCode="1"
 	android:versionName="1.0" android:installLocation="preferExternal">
 +---
 	
-	Definimos el icono y el nombre de la aplicación.	
+	We define the icon and application name.
 
 +---
 <application android:icon="@drawable/icon" android:label="@string/app_name">
 +---
 
-	Definimos la actividad principal:
-	
-		* El nombre de la actividad (SoftPhone).
+	We define the main activity:
 
-		* El modo de lanzar la actividad (singleTask).
+		* The name of the activity (SoftPhone).
 
-		* Los <<intent-filter>> que tendrá:
-		
-			** Actividad principal (android.intent.action.MAIN)
+		* The way to launch the activity (singleTask).
 
-			** Arrancará la actividad siempre que desde los contactos se pulse uno de ellos que tenga almacenado datos <<<sip:xxx@xxxx.xxx>>>.
-		
+		* The <<intent-filter>> that have:
+
+			** Main activity (android.intent.action.MAIN)
+
+			** Start the activity from your contacts whenever you press one of them which has stored data <<<sip:xxx@xxxx.xxx>>>.
 +---
 <activity android:name="SoftPhone" android:label="@string/app_name"
 	android:launchMode="singleTask">
@@ -1159,7 +1133,7 @@ Ejemplos
 </activity>
 +---
 
-	Definición de las actividades de gestión de emisión y recepción de llamadas.
+	Definition of emission management activities and receiving calls.
 
 +---
 <activity android:name="com.tikal.media.MediaControlIncoming"
@@ -1170,7 +1144,7 @@ Ejemplos
 </activity>
 +---
 
-	Definición de la actividad que muestra el media en el dispositivo. Se añade un parámetro para que desaparezca la barra de notificaciones y esté a pantalla completa (<<<android:theme="@android:style\/Theme.NoTitleBar.Fullscreen">>>). Además, se obliga a que la orientación sea siempre horizontal (<<<android:screenOrientation="landscape">>>).
+	Defining the activity displayed by the media in the device. It adds a parameter to clear the notification bar and is full screen (<<<android:theme="@android:style\/Theme.NoTitleBar.Fullscreen">>>). In addition, it undertakes to be always horizontal orientation (<<<android:screenOrientation="landscape">>>).
 
 +---
 <activity android:name="com.tikal.videocall.VideoCall"
@@ -1179,7 +1153,7 @@ Ejemplos
 </activity>
 +---
 
-	Definición de las actividades de gestión de preferencias. En este caso la orientación es vertical.
+	Defining preferences management activities. In this case the orientation is vertical.
 
 +---
 <activity android:name="com.tikal.preferences.Connection_Preferences"
@@ -1191,22 +1165,22 @@ Ejemplos
 </activity>
 +---
 
-	Definición de los servicios que tendrá la aplicación.
+	Definition of services you will need the application.
 
 +---
 <service android:enabled="true"
-	android:name="com.tikal.softphone.SoftPhoneService" />
+	android:name="kas.softphone.SoftPhoneService" />
 <service android:enabled="true"
-	android:name="com.tikal.videocall.VideoCallService" />
+	android:name="kas.videocall.VideoCallService" />
 +---
 
-	Definición de:
+	Definition:
 
-		* Versión mínima del sistema operativo que debe tener instalado el dispositivo (<<<uses-sdk android:minSdkVersion="8" >>>).
+		* Minimum version of the operating system must have the device (<<<uses-sdk android:minSdkVersion="8">>>).
 
-		* Dependencias de hardware y software (<<<uses-feature android:name="android.hardware.camera">>>).
-	
-		* Permisos que debe aceptar el usuario (<<<uses-permission android:name="android.permission.CAMERA">>>).
+		* Hardware and software dependencies (<<<uses-feature android:name="android.hardware.camera">>>).
+
+		* Permits must accept the user (<<<uses-permission android:name="android.permission.CAMERA">>>).
 
 +---
 <uses-sdk android:minSdkVersion="8" />
@@ -1228,9 +1202,9 @@ Ejemplos
 <uses-permission android:name="android.permission.READ_PHONE_STATE"></uses-permission>
 +---
 	
-* La aplicación
+* The application
 
-	Suscripción al servicio de mensajes del servicio principal cuando se crea la actividad. De esta manera le estamos diciendo que tendremos un método <<<update>>> en el cual procesaremos  los mensajes que lleguen desde el servicio principal.
+	Subscription to the main service message when you create the activity. In this way we are saying we will have a method <<<update>>> in which processes incoming messages from the main service.
 
 +---
 SoftPhoneService.setUpdateListener(this);
@@ -1253,7 +1227,7 @@ public void update(Message message) {
 }
 +---
 
-	Cuando se recibe alguno de estos mensajes, los métodos deberán ser de la siguiente manera para darle un aviso al usuario.
+	When you receive one of these messages, methods should be as follows to give a warning to the user.
 
 +---
 public void registerSucessful() {
@@ -1267,7 +1241,7 @@ public void registerSucessful() {
 }
 +---
 
-	Suscripción a los cambios que puedan existir en la conexiones del dispositivo. Tras suscribirse hay que implementar un nuevo <<<PhoneStateListener>>> y dentro el método <<<onDataConnectionStateChanged>>>. Los pasos a seguir que tiene este método están explicados en el apartado {{Control de red}}.
+	Subscription to the changes that may exist in the device connections. After subscribing you have to implement a new <<<PhoneStateListener>>> and in the method <<<onDataConnectionStateChanged>>>. The steps of this method are explained in the Network Control section.
 
 +---
 signalManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
@@ -1372,7 +1346,7 @@ private final PhoneStateListener signalListener = new PhoneStateListener() {
 };
 +---
 
-	Inicializar los valores necesarios para poder usar el método <<<initUA>>> de <<controller>>. Este método nos devolverá <<<true>>> si toda la inicialización ha ido correctamente y además tenemos alguna interfaz de red levantada. Si no tenemos ninguna interfaz de red activa devolverá <<<false>>> además de salir de la actividad y mostrarle un mensaje al usuario.
+	Initialize the values ​​needed to use the method <<<initUA>>> of <<controller>>. This method will return <<<true>>> If all initialization has been properly and we have a network interface up. If we have no active network interface will return <<<false>>> In addition to exit the activity and show a message to the user.
 
 +---
 private boolean initControllerUAFromSettings() {
@@ -1416,7 +1390,7 @@ private boolean initControllerUAFromSettings() {
 }
 +---
 
-	Recogida de datos desde las preferencias de media.
+	Collect data from media preferences.
 
 +---
 private ArrayList<VideoCodecType> getVideoCodecsFromSettings() {
@@ -1450,7 +1424,7 @@ private ArrayList<AudioCodecType> getAudioCodecsFromSettings() {
 }
 +---
 
-	Una vez que están inicializados las variables necesarias realizamos un registro y arrancamos el servicio principal.
+	Once the necessary variables are initialized make a register and start the principal service.
 
 +---
 private void register() {
@@ -1468,7 +1442,7 @@ private void register() {
 }
 +---
 
-	Durante el método <<<register>>> aparece la llamada a <<<initUA>>>, que finalmente realizará la llamada a <<<initUA>>> de <<controller>>. Donde realmente realizamos el registro y la inicialización de las estructuras para SIP.
+	In the method <<<register>>> appears the call to <<<initUA>>> which finally made ​​the call to <<<initUA>>> of <<controller>>. Where it really make the registration and initialization of structures to SIP.
 
 +---
 private void initUA() {
@@ -1482,9 +1456,9 @@ private void initUA() {
 }
 +---
 
-	Realizar una llamada a un contacto.
-	
-		* Usando el botón para acceder a la agenda.
+	Make a call to a contact.
+
+		* Using the button to access the contacts.
 
 +---
 final Button buttonContacts = (Button) findViewById(R.id.contacts);
@@ -1504,7 +1478,8 @@ private void openContacts() {
 	startActivityForResult(intentContacts, PICK_CONTACT_REQUEST);
 }
 +---	
-		Y dentro de <<<onActivityResult(int requestCode, int resultCode, Intent data) >>> tendremos:
+
+		And within <<<onActivityResult(int requestCode, Intent resultCode, data) int>>> we have:
 
 +---
 if (requestCode == PICK_CONTACT_REQUEST) {
@@ -1528,7 +1503,7 @@ if (requestCode == PICK_CONTACT_REQUEST) {
 }
 +---
 
-		* Rellenando la caja de texto para escribir un contacto y usando el botón de la llamada.
+		* Fill in the text box to type a contact and using the call button.
 
 +---
 final Button buttonCall = (Button) findViewById(R.id.call);
@@ -1547,7 +1522,7 @@ final Button buttonCall = (Button) findViewById(R.id.call);
 });
 +---
 
-	El método <<<call>>> para realizar una llamada.
+	The method <<<call>>> to make a call.
 
 +---
 private void call(String remoteURI, Integer id) {
@@ -1569,7 +1544,7 @@ private void call(String remoteURI, Integer id) {
 }
 +---
 
-	Cuando destruimos la actividad.
+	When we destroy the activity.
 
 +---
 if (isExit) {
@@ -1590,11 +1565,11 @@ if (isExit) {
 }
 +---
 
-* Servicios
+* Services
 
-** {{Servicio principal}}
+** {{Principal service}}
 
-	La definición de una notificación en la barra de notificaciones, con el nombre <<Softphone>> y que está asociada a la clase <<SoftPhone.class>>.
+	The definition of a notification in the notification bar, with the name <<Softphone>> that is associated with class <<SoftPhone.class>>.
 
 +---
 private NotificationManager mNotificationMgr;
@@ -1624,7 +1599,7 @@ mNotif.setLatestEventInfo(this, notificationTitle, "",
 mNotificationMgr.notify(NOTIF_SOFTPHONE, mNotif);
 +---
 
-	Recoger <<controller>> de <<<ApplicationContext>>> e informar al <<controller>> que el servicio implementará <<<CallListener>>>.
+	Collect <<controller>> of <<<ApplicationContext>>> and report <<controller>> implement the service <<<CallListener>>>.
 
 +---
 Controller controller = (Controller) ApplicationContext.contextTable
@@ -1633,7 +1608,7 @@ if (controller != null)
 		controller.addListener(this);
 +---
 
-	Una posible implementación de <<<incomingCall(String uri)>>>. Arrancaremos como explicamos en la documentación la actividad que se encarga de gestionar las llamadas entrantes, añadiendo mediante <<<putExtra>>> la <<<uri>>> que nos ha llegado.
+	One possible implementation of <<<incomingCall(String uri)>>>. Then run as explained in the documentation activity that is responsible for managing incoming calls, by adding <<<putExtra>>> the <<<uri>>> that has reached us.
 
 +---
 @Override
@@ -1647,7 +1622,7 @@ public void incomingCall(String uri) {
 }
 +---
 	
-	Una posible implementación de <<<callSetup>>>. La llamada se ha establecido por lo tanto debemos avisar a la aplicación principal que debe detener la actividad que gestionar las llamadas salientes mediante un mensaje (<<<handler.sendMessage(msg)>>>). Además, debemos arrancar el servicio que se encarga de gestionar las llamadas activas.
+	One possible implementation of <<<callSetup>>>. The call has been established so we must tell the principal application should stop the activity that managing outgoing calls with a message (<<<handler.sendMessage(msg)>>>). And we must start the service that manages active calls.
 
 +---
 @Override
@@ -1666,7 +1641,7 @@ public void callSetup(NetworkConnection networkConnection) {
 }
 +---
 	
-	Método para el envío de mensajes a la aplicación que se suscriba. En este caso será la aplicación principal.
+	Method for sending messages to the application signed. In this case will be the main application.
 
 +---
 public interface ServiceUpdateUIListener {
@@ -1688,7 +1663,7 @@ private Handler handler = new Handler() {
 };
 +---
 
-	Al destruir el servicio, cancelar las notificaciones que pueda estar en la barra de notificaciones y parar el servicio que gestiona las llamadas activas.	
+	By destroying the service, cancel the notifications that may be in the notification bar and stop the service to manage active calls.
 
 +---
 mNotificationMgr.cancel(NOTIF_SOFTPHONE);
@@ -1697,9 +1672,9 @@ stopService(videoCallIntent);
 +---
 
 
-** {{Servicio para una llamada activa}}
+** {{Service to an active call}}
 
-	Recuperación de <<controller>> desde <<<ApplicationContext>>>. Creación del objeto mediaSession y de los componentes de audio. Además se añaden los objetos de los componentes de audio en el <<<ApplicationContext>>> para poder acceder a ellos desde otra parte de la aplicación.
+	Recovery <<controller>> from <<<ApplicationContext>>>. MediaSession object creation and audio components. Objects are also added audio component in the <<<ApplicationContext>>> to access them from another part of the application.
 
 +---
 Controller controller = (Controller) ApplicationContext.contextTable
@@ -1722,7 +1697,7 @@ ApplicationContext.contextTable.put("audioPlayerComponent", audioPlayerComponent
 ApplicationContext.contextTable.put("audioRecorderComponent", audioRecorderComponent);
 +---
 
-	Recuperación de <<<NetworkConnection>>> de <<<ApplicationContext>>> y configuración y arranque de los componentes de audio.
+	Recovery <<<NetworkConnection>>> of <<<ApplicationContext>>> and boot configuration and audio components.
 
 +---
 NetworkConnection nc = (NetworkConnection) ApplicationContext.contextTable
@@ -1747,7 +1722,7 @@ try {
 }
 +---
 
-	Arrancar la actividad que controlará la gestión de una llamada activa.
+	Start the activity that controls the management of a call.
 
 +---
 videoCallIntent = new Intent(this, VideoCall.class);
@@ -1755,7 +1730,7 @@ videoCallIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 startActivity(videoCallIntent);
 +---
 
-	Al destruir el servicio, cambiar la notificación de una llamada activa por el de la aplicación.
+	By destroying the service, change the notification for a call by the application.
 
 +---
 mNotificationMgr.cancel(NOTIF_VIDEOCALL);
@@ -1771,7 +1746,7 @@ mNotif.setLatestEventInfo(this, notificationTitleSoft, "",
 mNotificationMgr.notify(NOTIF_SOFTPHONE, mNotif);
 +---
 
-	Además de parar los componentes de audio.
+	Stop the audio components.
 
 +---
 if (audioPlayerComponent != null)
@@ -1781,7 +1756,7 @@ if (audioRecorderComponent != null)
 	audioRecorderComponent.stop();
 +---
 
-	Y enviar un mensaje confirmando que la llamada ha terminado. En este caso, se le enviará a la actividad que gestiona la llamada activa igual que he hemos visto en el servicio principal.
+	And send a message confirming that the call has ended. In this case, you will be sent to the activity which manages the active call as I have seen in the main service.
 
 +---
 Message msg = new Message();
@@ -1791,9 +1766,9 @@ msg.setData(b);
 handler.sendMessage(msg);
 +---
 
-* Gestión de contactos 
+* Contact Management
 
-	Posible implementación de la obtención del nombre de un contacto a partir de su <<<id>>>. La idea es realizar una consulta, parecida a una query de sql en el cual le indicamos el identificador del usuario que buscamos. Si existe, podremos devolver el nombre.
+	Possible implementation of obtaining a contact name from your <<id>>. The idea is to make an inquiry, like a sql query in which we indicate the user ID we want. If it exists, we can return the name.
 
 +---
 public String getName(Integer id) {
@@ -1815,7 +1790,7 @@ public String getName(Integer id) {
 }
 +---
 
-	Otra forma de realizar esta consulta es usando los datos que nos ofrece Android cuando accedemos desde la agenda. En este caso la consulta se realiza usando los datos del <<<Intent>>>.
+	Another way of performing this query is using the data that Android provides us when we access from the agenda. In this case the query is performed using data <<<Intent>>>.
 
 +---
 public String getName(Intent data) {
@@ -1837,7 +1812,7 @@ public String getName(Intent data) {
 }
 +---
 
-	Para recuperar el <<<id>>> de un posible contacto, buscamos mediante su <<<uri>>> dentro de los contactos que tengan algún contenido del tipo <<<CONTENT_URI>>>. Si el contacto existe se devolverá el <<<id>>>.
+	To recover the <<id>> of a possible contact, looking through his <<<uri>>> into contact with any content type <<<CONTENT_URI>>>. If the contact is returned there <<id>>.
 
 +---
 public Integer getId(String sipUri) {
@@ -1869,7 +1844,7 @@ public Integer getId(String sipUri) {
 }
 +---
 
-	Recuperación de la foto de un contacto mediante su <<<id>>>. Se buscará primero el contacto dentro de la agenda, para una vez encontrado, conseguir su fotografía usando el <<<photo_id>>>.
+	Recovery the photo  for a contact using your <<id>>. First contact will be sought on the agenda for once found, get your picture using the <<<photo_id>>>.
 
 +---
 public Bitmap getPhoto(Integer id) {
@@ -1909,11 +1884,11 @@ public Bitmap getPhoto(Integer id) {
 }
 +---
 
-* Gestión de llamadas
+* Call Management
 
-** Emisión de llamadas
+** Management emission a call
 
-	Al crear la actividad, se recuperan los datos como la <<<uri>>> y el <<<id>>> y a partir de ahí se intentan recuperar los datos y la foto del contacto que nos llama desde la agenda. Si está en la agenda se rellena el interfaz con los datos para que sepamos a quién llamamos.
+	When creating the activity data is retrieved as the <<<uri>>> and <<id>> and from there you try to retrieve the data and the photo of the contact that calls from the phonebook. If you are on the agenda is filled with data interface so we know who to call.
 
 +---
 Bundle extras = getIntent().getExtras();
@@ -1941,9 +1916,9 @@ controller.cancel();
 finish();
 +---
 
-** Recepción de llamadas
+** Management receiving a call
 
-	Al crear la actividad, se recuperan los datos como la <<<uri>>> y a partir de ahí se intentan recuperar los datos y la foto del contacto que nos llama desde la agenda. Si está en la agenda se rellena el interfaz con los datos para que sepamos quién nos está llamando.
+	When creating the activity data is retrieved as the <<<uri>>> and from there you try to retrieve the data and the photo of the contact that calls from the phonebook. If you are on the agenda is filled with data interface so we know who is calling us.
 
 +---
 Bundle extras = getIntent().getExtras();
@@ -1969,7 +1944,7 @@ if (!idContact.equals("")){
 }
 +---
 
-	Funcionamiento del vibrador para simular la llamada.
+	Operation of the vibrator to simulate the call.
 
 +---
 Vibrator vibrator;
@@ -1979,7 +1954,7 @@ long[] pattern = { 0, 1000, 2000, 3000 };
 vibrator.vibrate(pattern, 1);
 +---
 
-	Aceptar una llamada. Cancelaríamos la vibración, aceptaríamos la llamada con <<<aceptCall()>>> y finalizaríamos la actividad.
+	Accepting a call. Cancel vibration, accept the call to <<<aceptCall()>>> and end the activity.
 
 +---
 vibrator.cancel();
@@ -1993,7 +1968,7 @@ if (controller != null){
 finish();
 +---
 
-	Para rechazar la llamada sería igual pero usando:
+	To reject the call would be the same but using:
 
 +---
 controller.reject();
