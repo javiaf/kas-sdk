@@ -4,42 +4,2016 @@
    ------
    Date
    ------
+ 
 
-Kurento Android SDK developer's guide
+Introduction
 
-* Introduction
+	This guide provides required information to incorporate Kurento Android SDK (KAS)
+	to applications. Three main blocks are found through the document
 
-	Kurento Android SDK is a VoIP library that supports video.
-	This guide introduce developers the Kurento Android API, so they
-	can incorporate video conferencing capabilities to their applications.
+		* <<Control Plane>>: Describes the KAS' SIP User Agent control interface. Contains
+		detailed information regarding contact management and call handling.
+
+		* <<User Plane>>: Shows the mechanisms available to build a media distribution network associated with a call.
+Provides details of core configuration average, as the building blocks that allow connection of
+multimedia devices to networks for the transmission and reception of audio and video.
+
+* <<Aplicaciones Android>>. Are the steps needed to create an application that incorporates Kurento Android Android SDK.
+
+
+	En esta guía de desarrollo se proporciona la información necesaria para el desarrollo con
+	Kurento Android SDK y su integración en aplicaciones Android. 
 	
-	In general, any communication software must deal with two aspects in order to provide
-	connectivity between two remote peers.
+	La guía consta de 3 grandes apartados:
 	
-		* <<Control Plane>>: It must provide mechanism to request and receive call 
-		request from remote peers. And must also be able to negotiate terms of
-		media according to both sides capabilities. Within VoIP networks this
-		aspect is managed through SIP and SDP protocols. 
+		* <<Control Plane>>. Describe los detalles de manejo del <Agente de usuario SIP>, incluyendo: el registro de contactos y
+		 la gestión de llamadas salientes o entrantes.
 		
-		Kurento Android SDK wraps protocol complexity and provides a simple API designed with the
-		telephone model in mind. Developers will handle intuitive concepts like:
-		dial, hangug, ringing, etc.
+		* <<User Plane>>. Muestra los mecanismos disponibles para construir una red de distribución de media asociada a una llamada.
+		Se proporcionan los detalles de configuración del núcleo de media, así como los componentes básicos que permiten conectar los
+		dispositivos multimedia a redes para la transmisión y recepción de audio y vídeo.
+		
+		* <<Aplicaciones Android>>. Se indican los pasos necesarios para crear una aplicación en Android que incorpore Kurento Android SDK.
+	
+Control Plane
+
+	La función de Control está constituida por un Agente SIP que proporciona conectividad con redes de VoIP. Presenta la arquitectura que se muestra en la siguiente figura.
+
+[../images/diagrama-control-plane.png]
+
+* Conceptos
+
+** <<UA>>
+
+	Este objeto se encarga de toda la gestión del protocolo SIP. Envía, recibe, procesa los mensajes SIP que se envíen por la red. Es capaz de comunicar a varios contactos (<<<SipEndPoint>>>).
+
+
+*** <<<registerEndPoint(String user, String realm, String password, int expires, SipEndPointListener handler)>>>
+
+	Mediante este método se registra un usuario al servidor que se haya definido en la configuración del objeto <<<ua>>>. Además, se le indica quién se encargará de recibir los eventos que se puedan generar. 
+
+	El parámetro <<<expires>>> indica el tiempo máximo de cada registro, además se puede des-registrar al usuario estableciendo ese valor a 0.
+
+***<<<terminate()>>>
+
+	Mediante este método se finaliza la pila SIP, además el usuario se des-registra del servidor.
+
+**  <<SipEndPoint>>. 
+
+	Este objeto es la representación de una <<<sipuri>>>, es decir, de un contacto. Es el encargado de realizar las tareas convencionales de una llamada, aceptarlas, realizarlas, cancelarlas, etc ...
+
+***<<<dial(String remoteParty, SipCallListener callController)>>>
+
+	Mediante este método se realiza una llamada a un contacto. Mediante el parámetro <<<remoteParty>>> se establece la <<<sipuri>>> del contacto al que queremos llamar. Además, se le indica quién se encargará de recibir los eventos que se puedan generar. Esto generará un mensaje del protocolo SIP enviando una invitación para establecer una comunicación.
+
+**  <<SipEndPointEvent>>. 
+
+	Este objeto nos permite conocer los eventos que serán recibidos después de realizar un registro en un servidor SIP. Para poder recibir los eventos que representa es necesario implementar la interfaz <<<SipEndPointListener>>> y suscribirse al objeto <<<SipEndPoint>>> del cual queremos recibir dichos eventos. Esta suscripción se hace al realizar el registro del usuario.
+
+		***<<<SipEndPointListener>>>
+	
+			Este interfaz representa un método encargado de recibir eventos del tipo <<<SipEndPointEvent>>>:
+	
+			*<<<onEvent()>>>
+
+		La implementación de este método deberá ser capaz de tratar los siguientes eventos:
+		
+			* <<<INCOMING_CALL>>>, la recepción de este evento significa que alguien nos está realizando una llamada.
+
+			* <<<REGISTER_USER_SUCESSFUL>>>, la recepción de este evento significa que el registro con los parámetros de configuración de conexión son correctos y estamos registrados. 
+
+			* <<<REGISTER_USER_FAIL>>>, la recepción de este evento significa, al contrario que el evento anterior, que el registro ha sido incorrecto. 
+	
+			* <<<REGISTER_USER_NOT_FOUND>>>, la recepción de este evento significa que el usuario no existe y el registro ha sido incorrecto.
+
+
++---
+@Override
+public void onEvent(SipEndPointEvent event) {
+	SipEventType eventType = event.getEventType();
+	if (SipEndPointEvent.INCOMING_CALL.equals(eventType)) {
+		this.pendingEndPointEvent = event;
+		// Procesar el evento.
+	}
+	if (SipEndPointEvent.REGISTER_USER_SUCESSFUL.equals(eventType)) {
+		this.pendingEndPointEvent = event;
+		// Procesar el evento.
+	}
+	if (SipEndPointEvent.REGISTER_USER_FAIL.equals(eventType)) {
+		this.pendingEndPointEvent = event;
+		// Procesar el evento.
+	}
+	if (SipEndPointEvent.REGISTER_USER_NOT_FOUND.equals(eventType)) {
+		this.pendingEndPointEvent = event;
+		// Procesar el evento.
+	}
+}
++---
+
+**  <<SipCall>>. 
+
+	Este objeto nos permite gestionar la llamada una vez creada. Además de gestionarla, podremos recoger información del media que se ha establecido en la negociación. 
+
+***<<<accept()>>>
+
+	Mediante este método se aceptará una llamada entrante. Esto generará un mensaje del protocolo SIP aceptando la llamada.
+
+***<<<reject()>>>
+
+	Mediante este método se rechazará una llamada entrante. Esto generará un mensaje del protocolo SIP rechazando la llamada.
+
+***<<<hangup()>>>
+
+	Mediante este método se terminará una llamada. Esto generará un mensaje del protocolo SIP terminando la llamada.
+
+***<<<cancel()>>>
+
+	Mediante este método se cancelará la invitación a establecer una comunicación. Esto generará un mensaje del protocolo SIP cancelando la llamada.
+
+***<<<getNetworkConnection(JoinableStream.StreamType media)>>>
+
+	Mediante este método se podrá obtener el <<<NetworkConnection>>> que se ha generado en la configuración de la pila SIP.	
+	
+***<<<getMediaTypesModes()>>>
+
+	Mediante este método se podrá conocer el sentido de la comunicación (sólo envío, sólo recepción, envío/recepción) de cada extremo de la comunicación.
+
+**  <<SipCallEvent>>.
+
+	Este objeto nos permite conocer los eventos que serán recibidos durante el establecimiento de una llamada. Para poder recibir los eventos que representa es necesario implementar la interfaz <<<SipCallListener>>> y suscribirse al objeto <<<SipCall>>> del cual queremos recibir dichos eventos.
+
+		*** <<<SipCallListener>>>. 
+
+			Este interfaz representa un método encargado de recibir eventos del tipo <<<SipCallEvent>>>:
+	
+			*<<<onEvent()>>>
+
+		La implementación de este método deberá ser capaz de tratar los siguientes eventos:
+
+			* <<<CALL_SETUP>>>, la recepción de este evento significa que la llamada ha sido establecida.
+
+			* <<<CALL_TERMINATE>>>, la recepción de este evento significa que la llamada ha sido terminada por alguno de los usuarios.
+	
+			* <<<CALL_REJECT>>>, la recepción de este evento significa que la llamada ha sido rechazada por el contacto.
+		
+			* <<<CALL_CANCEL>>>, la recepción de este evento significa que el usuario que ha realizado la llamada la ha cancelado antes de que haya sido establecida.
+	
+			* <<<CALL_ERROR>>>, la recepción de este evento significa que no se ha podido localizar al contacto solicitado.
+
+
++---
+@Override
+public void onEvent(SipCallEvent event) {
+	SipEventType eventType = event.getEventType();
+
+	if (SipCallEvent.CALL_SETUP.equals(eventType)) {
+		currentCall = event.getSource();
+		// Procesar el evento.
+	} else if (SipCallEvent.CALL_TERMINATE.equals(eventType)) {
+		// Procesar el evento.
+	} else if (SipCallEvent.CALL_REJECT.equals(eventType)) {
+		// Procesar el evento.
+	} else if (SipCallEvent.CALL_ERROR.equals(eventType)) {
+		// Procesar el evento.
+	}
+}
++---
+
+** <<SipConfig>>. 
+
+	La definición de un objeto de esta clase es necesario para la inicialización de la pila SIP. Recibe los parámetros de la configuración de red.
+
+** <<MSControlFactory>>. 
+
+	Es la factoría principal que ofrece un método estático para crear <<<MediaSessionAndroid>>>.
+
+**  <<MediaSessionAndroid>>. 
+
+	Un objeto de esta clase actúa como factoría para generar objetos <<<MediaComponentAndroid>>>. Se crea un <<<MediaComponentAndroid>>> concreto en base a la configuración y los parámetros pasados en el método <<<createMediaComponent>>>. Un objeto de esta clase se asigna a <<<UAFactory>>> mediante el método estático <<<setMediaSession>>> y a través de este objeto se construye un <<<NetworkConnection>>>.
+
+***<<<createMediaComponent(Configuration<MediaComponent> predefinedConfig, Parameters params)>>>
+
+	Mediante este método se crean los componentes de media (audio y vídeo).
+	
+** <<MediaComponentAndroid>>. 
+
+	Un objeto de esta clase definirá un componente de media concreto, según los parámetros de configuración.	
+
+* Inicialización del Agente SIP.
+
+	El Agente de Usuario debe ser inicializado al arrancar la aplicación. Presta servicio a uno o más puntos de terminación SIP y
+	gestiona todas las llamadas: entrantes y salientes. Debe ser reiniciado solo cuando se produzcan cambios 
+	relevantes en el entorno, como por ejemplo, un cambio de IP, de interfaz activo, del proxy o similar.
+	
+	Internamente dispone de una pila SIP que gestiona el intercambio de mensajes entre los agentes remotos. Kurento Android SDK
+	utiliza para este propósito la implementación {{{http://java.net/projects/jsip}JAIN-SIP}}
+
+	La inicialización del Agente de Usuario SIP requiere la configuración de dos grupos de parámetros:
+	
+	* <<Configuración SIP>>: Establece la configuración requerida para conectarse a una red de VoIP. Consta de
+	los parámetros que se muestran en la siguiente tabla.
+	
+	
+*--------*-----------*----*--------*----------------------------------------------------------------*
+| Nomnre | Presencia |tipo|Rango   | Descripción                                                    |
+*--------*-----------*----*--------*----------------------------------------------------------------+
+| LocalAddress| M | String | NA    | Establece la dirección IP que usará la pila SIP. Si la dirección IP|
+|             |   |        |       | no se corresponde con un interfaz activo se genera una excepción   |
+*--------*-----------*----*--------*----------------------------------------------------------------+
+| LocalPort   | O | Integer| 1-2^16| Establece el puerto local en el que la pila SIP escucha y envía mensajes|
+*--------*-----------*----*-------*----------------------------------------------------------------+
+| ProxyAddress| M | String | NA    | Define la dirección del proxy SIP. Esta es también la dirección|
+|             |   |        |       |usada como REGISTRAR SIP                                        |
+*--------*-----------*----*-------*----------------------------------------------------------------+
+| ProxyPort| M | String |  1-2^16  | Define el puerto del proxy SIP al que se enviarán los mensajes SIP|
+*--------*-----------*----*-------*----------------------------------------------------------------+
+(M: Obligatorio; O: Opcional)
+
+
+	* <<Configuración de media>>: Permite disponer de la información relevante de media necesaria en el proceso
+	 de negociación de llamadas. La tabla siguiente muestra la lista de parámetros configurables:
+
+
+*--------*-----------*----*-------*--------------*--------------------------------------------------*
+| <<Nombre>> | Presencia |Tipo|Rango  | Valor Por Defecto | Descripción                                                    |
+*--------*-----------*----*-------*---------------*-------------------------------------------------+
+| NET_IF |  M        |ENUM|WIFI/3G| 3G | Establece el interfaz a través del cual se recibirá y enviará media.  Este interfaz suele ser el activo y coincide con el interfaz SIP               |
+*--------*-----------*----*-------*---------------*-------------------------------------------------+
+|LOCAL_ADDRESS |   M        |Address|NA |  | Establece la dirección IP del dispositivo|
+*--------*-----------*----*-------*---------------*-------------------------------------------------+
+|MAX_BANDWIDTH |   O        |Integer| NA |  384kbs |  Establece el ancho de banda máximo que se utilizará para la emisión de media (audio y vídeo) |
+*--------*-----------*----*-------*---------------*-------------------------------------------------+
+|STREAMS_MODES   |    O       |ENUM| SENDONLY|  SENDRECV| Establece por cada stream de media el sentido de la comunicación (sólo envío, sólo recepción, envío/recepción)|
+|	|	|					|RECVONLY| | 	 |
+|	|	|					|SENDRECV |  | 	 |
+*--------*-----------*----*-------*---------------*-------------------------------------------------+
+|AUDIO_CODECS   |O|List| AMR/MP2 |  AMR/MP2  | Establece los codecs de audio que se utilizarán para la comunicación. Si no se establece se seleccionarán todos los disponibles |
+*--------*-----------*----*-------*---------------*-------------------------------------------------+
+|VIDEO_CODECS   |O|List| H263/MPEG4|H263/MPEG4  | Establece los codecs de vídeo que se utilizarán para la comunicación. Si no se establece se seleccionarán todos los disponibles |
+*--------*-----------*----*-------*---------------*-------------------------------------------------+
+| <<Parámetros Avanzados>>  |
+*--------*-----------*----*-------*---------------*-------------------------------------------------+
+|FRAME_SIZE   | O |Integer	| NA| 352x288 | Establece el tamaño del vídeo  |
+*--------*-----------*----*-------*---------------*-------------------------------------------------+
+|MAX_FRAME_RATE   |    O       |Integer|  NA | 15 | Establece el máximo frame rate que se utilizará en la emisión del vídeo |
+*--------*-----------*----*-------*---------------*-------------------------------------------------+
+|GOP_SIZE   |     O      |Integer|   NA    | 6 | Establece el tamaño del "group of pictures". Si es 0 sólo se emite I-frames  |
+*--------*-----------*----*-------*---------------*-------------------------------------------------+
+|FRAMES_QUEUE_SIZE   |     O      |Integer	|   NA    | 2 | Establece el número de frames más recientes de la cámara que se almacenan en el buffer utilizado para gestionar el frame rate |
+*--------*-----------*----*-------*---------------*-------------------------------------------------+
+(M: Obligatorio; O: Opcional)
+	
+	
+	La inicialización del agente SIP requiere en primer lugar parametrizar la factoría de media <<MSControlFactory>>, tal y como se
+	muestra en el siguiente fragmento de código. 
+	
++---
+Parameters params = new ParametersImpl();
+
+NetIF netIF = NetIF.MOBILE;
+params.put(MediaSessionAndroid.NET_IF, netIF);
+
+InetAddress localAddress = NetworkIP.getLocalAddress();
+params.put(MediaSessionAndroid.LOCAL_ADDRESS, localAddress);
+
+int maxBW = 384000;
+params.put(MediaSessionAndroid.MAX_BANDWIDTH, maxBW);
+
+Map<MediaType, Mode> callDirection = new HashMap<MediaType, Mode>();
+callDirection.put(MediaType.VIDEO, Mode.SENDONLY);
+callDirection.put(MediaType.VIDEO, Mode.RECVONLY);
+callDirection.put(MediaType.VIDEO, Mode.SENDRECV);
+callDirection.put(MediaType.AUDIO, Mode.SENDONLY);
+callDirection.put(MediaType.AUDIO, Mode.RECVONLY);
+callDirection.put(MediaType.AUDIO, Mode.SENDRECV);
+params.put(MediaSessionAndroid.STREAMS_MODES, callDirection);
+
+ArrayList<AudioCodecType> audioCodecs = new ArrayList<AudioCodecType>();
+audioCodecs.add(AudioCodecType.AMR);
+audioCodecs.add(AudioCodecType.MP2);
+params.put(MediaSessionAndroid.AUDIO_CODECS, audioCodecs);
+
+ArrayList<VideoCodecType> videoCodecs = new ArrayList<VideoCodecType>();
+videoCodecs.add(VideoCodecType.H263);
+videoCodecs.add(VideoCodecType.MPEG4);
+params.put(MediaSessionAndroid.VIDEO_CODECS, videoCodecs);
+
+Dimension frame_size = new Dimension();
+params.put(MediaSessionAndroid.FRAME_SIZE, frame_size);
+
+int maxFR = 15;
+params.put(MediaSessionAndroid.MAX_FRAME_RATE, maxFR);
+
+int gopSize = 6;
+params.put(MediaSessionAndroid.GOP_SIZE, gopSize);
+
+int maxQueueSize = 2;
+params.put(MediaSessionAndroid.FRAMES_QUEUE_SIZE, maxQueueSize);
++---	
+
+	También es necesario configurar la factoría de Agentes de Usuario SIP, tal y como se indica a continuación.
+	
++---
+SipConfig sipConfig = new SipConfig();
+sipConfig.setLocalAddress(localAddress.getHostAddress());
+sipConfig.setLocalPort(6060);
+sipConfig.setProxyAddress(proxyIP);
+sipConfig.setProxyPort(proxyPort);
++---
+
+	Una vez las factorías están configuradas, se instancia un objeto <<MediaSession>> que se pasa como parámetro
+	para instanciar un Agente de Usuario SIP.
+
++---
+mediaSession = MSControlFactory.createMediaSession(params);
+UaFactory.setMediaSession(mediaSession);
+
+ua = UaFactory.getInstance(sipConfig);
++---
+
+	Es importante resaltar que un cambio en los parámetros de media requiere la instanciación de un nuevo <<<MediaSession>>> y por lo 
+	tanto una reinicialización del agente de usuario.
+	
+	Para finalizar el Agente de Usuario, bien porque la aplicación ha terminado, o porque resulta necesaria una reconfiguración se ejecuta 
+	el código que se muestra a continuación
+	
++---
+ua.terminate();
++---
+
+
+* Control de registro
+
+** Registro
+
+	Una vez que la pila SIP está inicializada y tenemos nuestro objeto <<<ua>>> creado correctamente, podemos registrar un usuario contra un servidor. El registro en el servidor puede ser con autenticación o sin ella. Dependiendo del servidor y de la aplicación que se esté realizando, así serán los valores que se introduzcan en la llamada a <<<registerEndPoint(String user, String realm, String password, int expires, SipEndPointListener handler)>>>:
+
+	* <<user>>: Usuario con el que se realizará el registro.
+
+	* <<realm>>: Dominio con el que el usuario realizará el registro.
+
+	* <<password>>: Password con el que el usuario realizará el registro.
+
+	* <<expires>>: Tiempo en el cual no se realizará otro registro.
+
+	* <<handler>>: Clase que se encargará de implementar la interfaz <<<SipEndPointListener>>>.
+
+	El registro nos devolverá un objeto del tipo <<<SipEndPoint>>> con el cual podremos realizar llamadas. Además la clase que tenga que implementar la interfaz, empezará a recibir los eventos correspondientes.
+
++---
+endPoint = ua.registerEndPoint(localUser, localRealm, localPassword, expires, this);
++---
+
+	Como ha explicado, cuando se realiza un registro contra un servidor SIP, para poder recibir los eventos se debe implementar la interfaz <<<SipEndPointListener>>>. 	
+
+** Des-registro
+
+	Si por cualquier motivo se desea dejar de recibir llamadas o la aplicación ha finalizado deberemos des-registrar el contacto del servidor. Para realizar esta operación deberemos establecer el parámetro <<<expires>>> con un valor 0.
+
++---
+expires = 0;
+endPoint = ua.registerEndPoint(localUser, localRealm, localPassword, expires, this);
++---
+
+* Llamadas salientes
+
+** Realizar una llamada
+
+	Para realizar una llamada saliente indicamos el contacto al que queremos realizar la llamada mediante una <<<sipuri>>>, que estará formado por el nombre de usuario y el dominio, por ejemplo: <<<user@dominio.es>>>. La llamada se realiza mediante el objeto <<<endPoint>>> de la clase <<<SipEndPoint>>> que hemos obtenido cuando hemos realizado el registro del usuario. Además, le indicamos la clase que implementará la interfaz <<<SipCallListener>>>. Con esto obtendremos un objeto de la clase <<<SipCall>>>.
+	
++---
+currentCall = endPoint.dial(remoteURI, this);
++---
+
+	Para recibir los eventos que se provocan cuando se realiza una llamada se debe implementar la interfaz <<<SipEndPointListener>>>. 
+
+** Cancelar una llamada
+
+	Podremos realizar una cancelación de la llamada antes de que ésta se establezca. Para ello, usaremos un objeto de la clase <<<SipCall>>> que se ha creado cuando hemos iniciado la llamada saliente.
+	
++---
+currentCall.cancel(); 
++---	
+
+* Llamadas entrantes
+
+	Cómo se ha explicado anteriormente, cuando se realiza el registro, también se indica la clase que implementará <<<SipEndPointListener>>>. Esto es necesario para poder recibir algunos eventos, entre ellos, el evento <<<SipEndPointEvent.INCOMING_CALL>>>. Cuando recibamos este evento podremos:
+
+	* Aceptar una llamada.
+
+	* Rechazar una llamada.
+
+** Aceptar una llamada
+
+	Para aceptar la llamada, usaremos el método <<<accept()>>> de la clase <<<SipCall>>>.
+
++---
+this.pendingEndPointEvent = event;
+incomingCall = pendingEndPointEvent.getCallSource();
+incomingCall.accept();
++---
+
+
+** Rechazar una llamada
+
+	Para rechazar la llamada, usaremos el método <<<reject()>>> de la clase <<<SipCall>>>.
+	
++---
+this.pendingEndPointEvent = event;
+incomingCall = pendingEndPointEvent.getCallSource();
+incomingCall.reject();
++---
+	
+* Terminar una llamada
+
+	Una vez la llamada está establecida se podrá finalizar, usando el objeto <<<SipCall>>> que se definió cuando se realizó la llamada:
+	
++---
+currentCall.hangup();
++---
+
+User Plane
+	
+	Mediante el User Plane podremos definir y construir una red de distribución de media que este asociada a una llamada. Para esto se debe configurar el media, configurar los componentes para conectarse a los dispositivos multimedia y éstos a la red para poder realizar transmisión y recepción de audio y vídeo.
+
+* Inicialización del media
+
+	La inicialización del media requiere una previa configuración que se realiza a partir de una serie de parámetros que se utilizan para crear un <<<MediaSession>>> con unas ciertas características. Para ello utilizamos el método <<<createMediaSession()>>> de la factoría <<MSControlFactory>> como se ha comentado anteriormente en el apartado de inicialización del Control Plane.
+
+	Este <<<MediaSession>>> se utilizará en <<<UaFactory>>> para crear un <<<ua>>>, el cual internamente creará un <<<NetworkConnection>>> en base a la configuración anterior.
+
+	La inicialización del media en sí tiene lugar una vez establecida la llamada, en la cual se determinan las características definitivas del audio y del vídeo. Se inicializa la pila de media interna encargada de toda la gestión como la codificación, el envío por la red, etc... gestionado todo ello por el <<<NetworkConnection>>> creado internamente por la pila SIP.
+
+	Como se ha comentado en un apartado anterior, sabremos que la llamada se ha establecido correctamente porque se ha recibido un evento <<<SipCallEvent.CALL_SETUP>>>, a través del cual podemos acceder al <<<NetworkConnection>>> que ha resultado tras la llamada:
+
++---
+SipCall currentCall = event.getSource();
+currentCall.getNetworkConnection(null);
++---
+	y al modo de cada stream de media, es decir por cada stream de media si es SENDONLY, RECVONLY o SENDRECV:
+
++---
+currentCall.getMediaTypesModes();
++---
+
+	A partir de los modos de cada streams podremos crear los componentes de media concretos (utilizando el <<<MediaSession>>> creado en la fase de configuración) que se engancharán al <<<NetworConnection>>> obtenido, concretamente al stream de audio o de vídeo de éste último según corresponda.
+
+	Por último, con la llamada establecida es el momento de establecer los flujos de media (audio y vídeo). Para ello habrá que crear para cada flujo un componente que serán objetos de la clase <<<MediaComponentAndroid>>>.
+	
+* {Componente de audio}
+
+ 	Se deben crear los componentes de audio, tanto para la emisión como para la recepción. Para poder crear los componentes de audio usaremos un método de <<<MediaSessionAndroid>>>.
+
+		** <<<createMediaComponent>>>, le indicaremos el tipo de componente que necesitamos, si es de emisión o de recepción, además de el altavoz por el cual queremos recibir.
+		 
+			* Un componente de recepción de audio y se reproducirá por el altavoz externo:
+
++---
+Parameters params = new ParametersImpl();
+params.put(MediaComponentAndroid.STREAM_TYPE, AudioManager.STREAM_MUSIC);
+audioRecorderComponent = mediaSession.createMediaComponent(
+	MediaComponentAndroid.AUDIO_RECORDER, 
+	params);
++---	
+
+			* Un componente de emisión de audio:
+			
++---
+audioPlayerComponent = mediaSession.createMediaComponent(
+	MediaComponentAndroid.AUDIO_PLAYER,
+	Parameters.NO_PARAMETER);
++---
+
+	* Una vez que hemos creado los componentes de audio correctamente, debemos definir como será cada componente, sí de emisión o de recepción y hacerlos empezar. Necesitaremos acceder a la configuración del <<<NetworkConnection>>> para recuperar el tipo de <<<stream>>> que queremos reproducir, en este caso serán <<<StreamType.audio>>>.
+	 
+		* Componente de recepción de audio.
+
++---
+audioRecorderComponent.join(Direction.RECV, nc.getJoinableStream(StreamType.audio));
+audioRecorderComponent.start();
++---
+
+		* Componente de emisión de audio.
+		
++---
+audioPlayerComponent.join(Direction.SEND, nc.getJoinableStream(StreamType.audio));
+audioPlayerComponent.start();
++---
+
+	Para parar los componentes de audio:
+	
++---
+audioRecorderComponent.stop();
+audioPlayerComponent.stop();
++---
+
+* {Componente de vídeo}
+
+	La creación de los componentes de media son muy parecidos a los de audio. También se usa un método de <<<MediaSessionAndroid>>>. En este caso deberemos añadir algunos parámetros más como el <<SurfaceView>> (será la superficie donde se mostrará el vídeo recibido), el ancho y el largo de la pantalla del dispositivo. Necesitaremos acceder a la configuración del <<<NetworkConnection>>> para recuperar el tipo de <<<stream>>> que queremos reproducir, en este caso serán <<<StreamType.video>>>.
+	
+	* Componente de recepción de vídeo, añadiendo su <<SurfaceView>>, la altura y anchura de la pantalla del dispositivo:
+
++---
+DisplayMetrics dm = new DisplayMetrics();
+getWindowManager().getDefaultDisplay().getMetrics(dm);
+int Orientation = getWindowManager().getDefaultDisplay().getOrientation();
+
+Parameters params = new ParametersImpl();
+params.put(MediaComponentAndroid.VIEW_SURFACE,
+		(View) findViewById(R.id.video_receive_surface));
+params.put(MediaComponentAndroid.DISPLAY_WIDTH, dm.widthPixels);
+params.put(MediaComponentAndroid.DISPLAY_HEIGHT,
+		dm.heightPixels);
+videoRecorderComponent = mediaSession.createMediaComponent(
+		MediaComponentAndroid.VIDEO_RECORDER, params);
++---
+
+	* Componente de emisión, añadiendo su <<SurfaceView>> y la orientación del dispositivo:
+
++---
+Parameters params = new ParametersImpl();
+params.put(MediaComponentAndroid.PREVIEW_SURFACE,
+		(View) findViewById(R.id.video_capture_surface));
+params.put(MediaComponentAndroid.DISPLAY_ORIENTATION,
+		Orientation);
+videoPlayerComponent = mediaSession.createMediaComponent(
+		MediaComponentAndroid.VIDEO_PLAYER, params);
++---
+
+	Una vez que el componente se ha definido correctamente, podemos definir de qué tipo es y la acción que queremos realizar:
+	
+		* Componente de recepción de vídeo:
+
++---
+videoRecorderComponent.join(Direction.RECV, nc.getJoinableStream(StreamType.video));
+videoRecorderComponent.start();
++---
+
+		* Componente de emisión de vídeo:
+	
++---
+videoPlayerComponent.join(Direction.SEND, nc.getJoinableStream(StreamType.video));
+videoPlayerComponent.start();
++---	
+
+	Para detener los componentes de vídeo:
+
++---
+videoRecorderComponent.stop();
+videoPlayerComponent.stop();
++---
+
+
+Crear una aplicación en Android
+
+	A partir de este apartado se van a dar algunas recomendaciones y pasos a seguir para poder realizar una aplicación en Android que incorpore Kurento Android SDK. Se comentarán temas como la configuración de los ficheros .xml, las actividades y servicios necesarios, la gestión de las preferencias y, por último, cósmo realizar la gestión del media, tanto del audio como del vídeo.
+
+	En la parte final del apartado se podrán encontrar algunos ejemplos de código a seguir.
+
+	En el siguiente diagrama se puede observar un diagrama general de las actividades, servicios y componentes que son necesarios para realizar una aplicación.
+
+[../images/diagrama-tk-softphone.png]
+
+* Configuración del fichero {AndroidManifest.xml}
+	
+	La configuración del fichero AndroidManifest.xml dentro de una aplicación basada en Android es muy importante, debido a que en este fichero se encuentran por un lado, definidos los permisos que deberá aceptar el usuario cuando se instale la aplicación, y por otro las actividades y los servicios de los cuales estará compuesta la aplicación.
+	
+		Algunos de los permisos necesarios son:
+
++---
+<uses-permission android:name="android.permission.VIBRATE"></uses-permission>
+<uses-permission android:name="android.permission.CAMERA"></uses-permission>
+<uses-permission android:name="android.permission.RECORD_AUDIO"></uses-permission>
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>
+<uses-permission android:name="android.permission.INTERNET"></uses-permission\>
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"></uses-permission>
+<uses-permission android:name="android.permission.WAKE_LOCK"></uses-permission>
+<uses-permission android:name="android.permission.READ_CONTACTS"></uses-permission>
+<uses-permission android:name="android.permission.WRITE_CONTACTS"></uses-permission>
+<uses-permission android:name="android.permission.READ_PHONE_STATE"></uses-permission>
++---
+			
+		Dependiendo de que tipo de aplicación se quiera implementar algunos de estos permisos no serán necesarios. Para conocer todos los permisos de los que se dispone se pueden consultar en la {{{http://developer.android.com/reference/android/Manifest.permission.html}guía de desarrollo de Android}}.
+		
+		Por otro lado, también se definirán las actividades y los servicios que compondrán nuestra aplicación, como por ejemplo:
+		
+			* Un servicio se define como:
+			
++--- 
+<service android:enabled="true" android:name="com.tikal.softphone.SoftPhoneService" \>
++---
+
+			* Una actividad se define como:
+			
++---			
+<activity android:name="com.tikal.videocall.VideoCall" android:label="Video Call" 
+android:theme="@android:style/Theme.NoTitleBar.Fullscreen" android:screenOrientation="landscape" 
+android:launchMode="singleTop" \>
++---
 				
-		* <<User Plane>>: Other fundamental aspect in communication is the actual
-		relay of media. This is in fact the pipe for user information. Kurento
-		Android SDK manages media capture (camera and microphone) and display (surface,
-		spaker). And provides the features to relay media to remote peers through
-		a networt interface.
+		Cada una de las actividades que vayan a ser lanzadas dentro de la aplicación deben ser definidas en este fichero. Para más información sobre la configuración del fichero AndroidManifest.xml se pueden consultar en la {{{http://developer.android.com/guide/topics/manifest/manifest-intro.html}guía de desarrollo de Android}}.
+
+		Por último, en la configuración de la actividad principal deberá incluirse un apartado llamado <<{{{http://developer.android.com/guide/topics/manifest/intent-filter-element.html}intent-filter}}>> que nos servirá para cuando un usuario quiera realizar una llamada desde los contactos según el "scheme" que nosotros elijamos, en este caso se busca qué cuando un usuario tenga guardado un contacto con datos como <<<"sip:juan@server.net">>> se abra nuestra actividad:
 		
-		Kurento Android Media Control API is designed with the same philosophy as 
-   	    {{{http://www.jcp.org/en/jsr/detail?id=309}JSR309 Media Server Control API}}.
-    	This API defines multiple  components for media transmission and process and provides a common
-        interface, called <Joinable>, that facilitates creation of arbitrarily complex networks
-        for media delivery. JSR309 is (as stated in the title) intended for Media Servers.
-        It defines the concept of MediaGroup as a point of media termination within the 
-        reception device. This termination points can be either a PLAYER or a RECORER to
-        connect the relay elements with the storage devices. This approach does not suits
-        well when termination points are client devices that interacts with cameras or
-        screens. For that reason Kurento Android SDK defines a new API with the same
-        philosophy, but more adapted to a mobile terminating point
-        
++---
+<intent-filter>
+	<action android:name="android.intent.action.SENDTO" \>
+	<category android:name="android.intent.category.DEFAULT" \>
+	<data android:scheme="sip" \>
+	<data android:scheme="imto" \>
+<\intent-filter> 
++---	
+	
+* Actividades
+
+	** {{Actividad principal}}
+	
+	** Gestión de {{preferencias}} de {{Conexión}}
+	
+	** Gestión de {{preferencias}} del {{Media}} 
+	
+	** Gestión de la {{Recepción}} de una llamada 
+	
+	** Gestión de la {{Emisión}} de una llamada 
+	
+	** {{Gestión del media}} ({{Vídeo}} y {{Audio}})
+
+
+* Servicios
+
+	** {{Servicio principal}}
+	
+	** {{Servicio para una llamada activa}}
+
+
+* Controller
+
+	Deberá existir una clase que debe implementar varias interfaces: <<<SipEndPointListener, SipCallListener, InterfacePhone y CallNotifier>>>. A está clase la llamaremos para entender su funcionamiento <<"controller">>. Será la encargada de controlar y gestionar todos los eventos SIP que nos puedan llegar o que podamos enviar, de implementar los comportamientos normales de un teléfono como aceptar una llamada, rechazarla, etc... A esta clase se añadirán "listener" y será el <<controller>> quien les irá avisando de qué está pasando. 
+
+** SipEndPointListener
+
+	Cómo se ha explicado en el Control Plane, implementando esta interfaz seremos capaces de recibir algunos eventos y la aplicación deberá comportarse como se espera de ella:
+
+		* <<<INCOMING_CALL>>>, la recepción de este evento significa que alguien nos está realizando una llamada, por lo que desde la clase <<controller>> hay que notificar al <<<listener>>> que se haya agregado que está llegando una llamada. En este caso habrá que invocar a un método de un objeto de la interfaz <<<CallListener>>>, de la cual hablaremos en el {{Servicio principal}} que será quien implemente esta interfaz, llamado <<<incomingCall(String uri)>>>.  Básicamente lo que hará será levantar la actividad encargada de la recepción de llamadas.
+	
+		* <<<REGISTER_USER_SUCESSFUL>>>, la recepción de este evento significa que el registro con los parámetros de configuración de conexión son correctos y hemos podido registrarnos en el servidor. En este caso al igual que en el anterior, será un método de un objeto de la interfaz <<<CallListener>>> a quien tendremos que invocar, llamado <<<registerUserSucessful()>>>. Este método se encargará de hacerle saber al usuario de la aplicación que su registro ha sido correcto.
+
+		* <<<REGISTER_USER_FAIL>>>, la recepción de este evento significa, al contrario que el evento anterior, que el registro ha sido incorrecto. El método al que se llamará será <<<registerUserFailed()>>>  y se encargará de hacerle saber al usuario de la aplicación que su registro ha sido incorrecto.
+	
+
+** SipCallListener
+
+	La implementación de este método en la clase <<controller>> deberá ser capaz de tratar los siguientes eventos, al igual que en el apartado anterior la llamada a los métodos serán de un objeto de la interfaz <<<CallListener>>> que serán implementados por el {{Servicio principal}}:
+
+	* <<<CALL_SETUP>>>, la recepción de este evento significa que la llamada ha sido establecida y que por lo tanto se puede cerrar la actividad encargada de gestionar o bien la emisión de llamadas o bien la recepción de llamadas y empezar la actividad y el servicio que se encargará de gestionar el media, tanto el vídeo como el audio. Esto se hará llamando al método <<<callSetup(NetworkConnection networkConnection)>>>.
+
+	* <<<CALL_TERMINATE>>>, la recepción de este evento significa que la llamada ha sido terminada por alguno de los usuarios, por lo tanto habrá que parar el servicio y la actividad que se encarga de gestionar una llamada activa. Esto se hará llamando al método <<<callTerminate()>>>.
+	
+	* <<<CALL_REJECT>>>, la recepción de este evento significa que la llamada ha sido rechazada por el contacto, por lo que habrá que cerrar la actividad que se encarga de gestionar la emisión de llamadas. Esto se hará llamando al método <<<callReject()>>>.
+		
+ 
+** InterfacePhone 
+
+	Esta interfaz representa las acciones básicas de un teléfono:
+	
+		* <<<aceptCall()>>>. Aceptar una llamada entrante.
+
+		* <<<reject()>>>. Rechazar una llamada entrante.
+
+		* <<<call(String remoteURI)>>>. Realizar una llamada saliente a un contacto.
+
+		* <<<hang()>>>. Colgar una llamada en curso.
+
+*** <<<aceptCall()>>>
+	
+	Este método de la clase <<controller>> se llamará desde la actividad que se encargue de la gestión de las llamadas entrantes. La implementación de este método debe recoger los datos de la llamada y llamar al método <<<accept()>>> de la clase <<<SipCall>>>. De esta manera se podrá enviar mediante el protocolo SIP que la llamada ha sido aceptada.
+
+*** <<<reject()>>>
+
+	Este método de la clase <<controller>> se llamará desde la actividad que se encargue de la gestión de las llamadas entrantes también. La implementación de este método debe recoger los datos de la llamada y llamará al método <<<reject()>>> de la clase <<<SipCall>>>. De esta manera se podrá enviar mediante el protocolo SIP que la llamada ha sido rechazada.
+
+
+*** <<<call(String remoteURI)>>>
+
+	Este método de la clase <<controller>> se llamará desde la actividad principal de la aplicación o desde la actividad que se encargue de gestionar la emisión de llamadas a partir de un contacto. Deberá tener como parámetro la Uri del contacto al que se quiere realizar la llamada. En la implementación de este método, se usará un objeto de la clase <<<SipEndPoint>>>, que será definido en el registro del usuario (se verá en el apartado que donde se registran los usuarios), usando el método <<<dial(String remoteParty, Direction direction, SipCallListener callController)>>> el cual se encargará de enviar mediante el protocolo SIP el mensaje de invitación.
+
+*** <<<hang()>>>
+
+	Este método de la clase <<controller>> se llamará desde la actividad que gestione una llamada activa. La implementación de este método usará un objeto de la clase <<SipCall>> para llamar a su método <<<hang()>>> de esta manera usando el protocolo SIP se podrá enviar el mensaje de finalización de llamada.
+
+
+** CallNotifier
+
+	Este interfaz representa dos métodos para poder añadir o eliminar <<listener>> del tipo interfaz <<<CallListener>>>, como se ha comentado antes será implementado en el {{Servicio principal}}:
+	
+		* <<<addListener(CallListener listener)>>>. Añadir un <<listener>>.
+
+		*<<<removeListener(CallListener listener)>>>. Eliminar un <<listener>>.
+
+
+{Actividad principal}
+
+	Esta será la actividad que se abrirá cuando se quiera abrir la aplicación, debe ser la encargada de: 
+	
+	* Poder configurar las preferencias de conexión y de media.
+
+	* Arrancar el servicio.
+
+	* Realizar llamadas.
+
+	* Acceder a los contactos.
+
+	* Etc...
+
+* Fichero XML
+
+	Esta actividad tendrá su propia fichero <<<xml>>> que definirá como será el interfaz de usuario. Este interfaz debería tener como mínimo:
+
+		** Un <<<EditText>>> para poder escribir la <<<uri>>> de la persona a la que se quiere llamar sino estuviese en la agenda.
+
+		** Un <<<Button>>> para poder realizar una llamada al contacto que se haya escrito en el <<<EditText>>> o para poder acceder a la agenda si estuviese vacío.
+
+		** Un <<<Button>>> para poder acceder directamente a la agenda para seleccionar un contacto.
+
+	Además para facilitar al usuario se pueden añadir otros elementos como:
+	
+		** Varios  <<<TextView>>> donde se pueden mostrar los datos de configuración que se están usando.
+
+		** Un <<<TextView>>> para mostrar el estado del registro contra el servidor SIP.
+
+
+* onCreate
+
+	Cuando se crea la actividad uno de los pasos importantes que se debe llevar a cabo es controlar si el dispositivo tiene alguna red activa, ya que, para todas las operaciones con SIP es necesario. Por lo que sino es así, se deberá mostrar un mensaje de error al usuario y cerrar la aplicación antes de avanzar. Si el dispositivo tiene algún tipo de red activa, entonces podremos seguir adelante.
+
+	La actividad se suscribirá a la entrega de mensajes que realizará el {{Servicio principal}} para así recibir los mensajes que lleguen cuando la actividad este en primer o segundo plano.
+
+	Una vez estamos hemos realizado la comprobación de la red, se debe recoger los datos de las preferencias para configurar los datos necesarios para el registro en el servidor SIP (usuario, dominio, servidor, puerto). También se recoge la información necesaria de la configuración del media. Si la recogida de todos estos datos son correctos, se procede a intentar el registro contra el servidor configurado en las preferencias. Según tenga éxito el registro o no, se llamarán a las funciones correspondientes con los mensajes que envíe el {{Servicio principal}}.
+
+* onNewIntent
+
+	Como hemos visto en la configuración del {{AndroidManifest.xml}}, el modo de lanzar una aplicación puede ser <<<launchMode>>>. Cuando se configura de esta manera, se debe implementar este método, <<<onNewIntent>>>. Esto significa que si existe una actividad ya creada, no la volverá a crear sino que pasará directamente a este método. En esta parte, se debe comprobar de nuevo si está activa la red.
+
+* onResume
+
+	En esta parte de la aplicación deberemos por un lado, suscribirnos a los cambios de estado de la red que nos ofrece Android, gracias a esto podremos controlar los cambios que existan en las interfaces de red del dispositivo y así actuar en consecuencia como se explicará en el {{Control de red}}.
+
+	Por otro lado, tendremos el control sobre los botones que se han definido en el fichero <<<xml>>> de configuración del interfaz. 
+
+	En el botón que ha definido para realizar las llamadas, podremos tener dos casos:
+
+	** Se ha rellenado la caja de texto con una <<<uri>>> y al pulsarlo se realiza la llamada contra ese contacto.
+
+	** La caja de texto está vacía y al pulsarlo se abre la agenda directamente para poder elegir un contacto.
+
+	Además tendremos el botón que nos da acceso directo a los contactos para poder elegir uno.
+
+
+* Contactos
+
+	Cuando abrimos la actividad de acceso a la agenda desde cualquiera de dos opciones anteriores y seleccionamos un contacto, al volver a la actividad en el apartado de <<<onActivityResult>>> se comprobará usando la clase de ayuda para obtener datos {{de la agenda}} si el contacto seleccionado tiene configurado una <<<uri>>> correcta. Sí es así, se realizará la {{llamada}} sino se mostrará un mensaje mostrando que el usuario no tienen configurado ninguna <<<uri>>>. 
+	
+* {Control de red}
+
+	Es importante para este tipo de aplicaciones que seamos conscientes de los cambios que existen en las interfaces de red, para poder tener el control de cambio de ip's, cortes en la red, cambio de WIFI a 3G, etc... Por lo tanto, como hemos comentado antes la actividad principal se suscribirá a los cambios que existan en este apartado del dispositivo. 
+
+	Los pasos recomendables a seguir serán:
+		
+		** Almacenar el tipo de interfaz que se está utilizando, WIFI o 3G. Esto nos servirá para determinar primeramente si tenemos alguna de los interfaces de red activos o no.
+
+		** Una vez que sabemos que tipo de interfaz estamos usando, debemos saber también si la IP que estábamos usando es la misma o ha cambiado. Esto es importante, ya que, aunque estemos en el mismo interfaz si hemos cambiado de IP necesitaremos volver a registrarnos al servidor para que nos puedan localizar sin problemas.
+
+		** Por último, si cambia el interfaz de red o la IP de nuestro dispositivo deberemos finalizar nuestro <<controller>> usando el método <<<finishUA()>>>, eliminar los datos que existan en {{<<<ApplicationContext>>>}} y además para el servicio principal. Una vez hecho esto, volveremos a crear de nuevo el <<controller>> con los nuevos datos de configuración, rellenaremos {{<<<ApplicationContext>>>}} con los datos necesarios y volveremos a intentar el registro.
+
+* Control de mensajes
+
+	Como se ha comentado antes, la aplicación se debe suscribir también a los mensajes que pueda recibir desde el servicio principal. Desde el servicio se irán enviando mensajes a la actividad como que el registro ha sido correcto, erróneo o que han aceptado la llamada y se debe cerrar la actividad de emisión de llamadas.
+
+
+* Realización de una {llamada}
+
+	Tan sólo podremos realizar una llamada cuando tengamos una dirección <<<uri>>> a la que poder llamar, bien sea por obtenerla por el acceso a los contactos o por la caja de texto. Cuando se realiza la llamada, se tendrá que arrancar la actividad que se encarga de gestionar la {{Emisión}} de llamadas. Es recomendable añadirle como parámetros a esta actividad, el <<<id>>> del usuario que hemos recogido de la agenda y la <<<uri>>> del contacto al que queremos llamar. Será la nueva actividad la encargada de realizar finalmente la llamada.
+
+* Menús
+
+	Para acceder a las preferencias de la aplicación se deberá tener un menú desde el cual se pueda acceder a ellas. En estos menús también es recomendable añadir un apartado para salir de la aplicación.
+
+* Finalización de la aplicación
+	
+	La finalización de la aplicación puede venir dada por querer salir realmente de la aplicación o porque la hemos dejado corriendo en segundo plano. 
+
+	Si queremos salir realmente, deberemos:
+
+	** Dejar de escuchar los cambios de red que existan en el dispositivo.
+
+	** Finalizar el <<controller>> mediante el método <<<finishUA>>>.
+	
+	** Liberar los datos guardados en {{<<<ApplicationContext>>>.}}
+
+	** Finalizar el servicio principal.
+
+	Si realmente no se quiere salir sino que la aplicación a pasado a segundo plano, no se deberá hacer nada para no perder la información almacenada.
+
+{Servicios}
+
+	La creación de los servicios es necesaria para poder controlar ciertos eventos que pueden ocurrir cuando la aplicación no está en primer plano. Para ello se deberían crear dos servicios, uno que gestione todos los eventos de la conexión SIP y otro que gestione el media durante una llamada.
+
+* {Servicio principal}
+
+	El servicio principal de la aplicación será el encargado de controlar los eventos que puedan surgir desde SIP, por ello, es el encargado de implementar la interfaz {{<<<CallListener>>>}}. 
+
+	Algunas de las responsabilidades que tendrá este servicio son:
+
+	* Cuando desde la aplicación principal se arranque el servicio, debería iniciar la notificación de que la aplicación está abierta en la barra de notificaciones. A la hora de crear la notificación se debería asociar la actividad principal a esta notificación.
+
+	* Agregarse mediante el método  <<<addListener()>>> del objeto <<controller>>, que recuperaremos gracias a {{<<<ApplicationContext>>>}},  para poder recibir los eventos anteriormente mencionados. De esta manera desde <<controller>> se podrá llamar a nuestra implementación de <<<CallListener>>>.
+
+	* Cuando recibamos una llamada a <<<incomingCall(String uri)>>>, se deberá iniciar la actividad que gestione la recepción de llamadas. De esta manera será el usuario el que podrá aceptar o rechazar la llamada. Por otro lado, gracias a que estamos usando un servicio, cada vez que este método sea invocado y aunque la aplicación esté en segundo plano se podrá levantar dicha actividad.
+
+	* Cuando recibamos una llamada a <<<registerUserSucessful()>>>, se deberá indicar a la actividad principal mediante un mensaje que el usuario se ha registrado correctamente para que ésta pueda notificárselo al usuario mediante algún mensaje.
+
+	* Cuando recibamos una llamada a <<<registerUserFailed()>>>, se deberá indicar a la actividad principal mediante un mensaje que el usuario <<no>> se ha registrado correctamente para que ésta pueda notificárselo al usuario mediante algún mensaje.
+
+	* Cuando recibamos una llamada a <<<callSetup(NetworkConnection networkConnection)>>>, se deberá indicar a la actividad principal mediante un mensaje que debe parar la actividad de emisión de llamadas o de recepción de llamadas según sea el caso. Además, se deberá arrancar el {{Servicio para una llamada activa}}.
+
+	* Cuando recibamos una llamada a <<<callTerminate()>>>, se deberá para el {{Servicio para una llamada activa}}.
+
+	* Cuando recibamos una llamada a <<<callReject()>>>, se deberá indicar a la actividad principal mediante un mensaje que debe parar la actividad encargada de emisión de llamadas, ya que sólo nos podrán rechazar una llamada cuando la realicemos nosotros.
+
+	* Por último, cuando se finalice la aplicación el servicio será en encargado de eliminar la notificación de la barra de notificaciones y además cerrar el {{Servicio para una llamada activa}} para evitar que se quedase corriendo.
+
+	
+**{CallListener}
+
+	Esta interfaz representa los eventos que podremos recibir desde SIP:
+	
+		* <<<incomingCall(String uri)>>>. Se llamará a este método desde <<controller>> cuando recibamos una invitación de llamada.
+
+		* <<<registerUserSucessful()>>>. Se llamará a este método desde <<controller>> cuando el usuario se ha registrado correctamente.
+
+		* <<<registerUserFailed()>>>. Se llamará a este método desde <<controller>> cuando el usuario <<no>> se ha registrado correctamente.
+
+		* <<<callSetup(NetworkConnection networkConnection)>>>. Se llamará a este método desde <<controller>> cuando la llamada se ha establecido correctamente por parte de los usuarios.
+
+		* <<<callTerminate()>>>. Se llamará a este método desde <<controller>> cuando la llamada ha finalizado.
+		
+		* <<<callReject()>>>. Se llamará a este método desde <<controller>> cuando la llamada ha sido rechazada.
+
+* {Servicio para una llamada activa}
+
+	Este servicio será el encargado de gestionar una llamada activa y será creado desde el servicio principal cuando se ha establecido una llamada correctamente.
+
+	* Cuando se crea el servicio, uno de los primeros pasos que debe hacerse es cambiar la notificación que tenemos en la barra de notificaciones para indicar que tenemos una llamada activa, de este modo si salimos al menú principal o a la agenda, etc... podemos volver a la llamada sin problemas. La notificación estará asociada a la actividad que se encargue de mostrar el media en el dispositivo.
+
+	* Durante la creación del servicio, también se crearan los componentes de audio, tanto para la emisión como para la recepción. Los componentes de vídeo se crearan en la actividad encargada de mostrar el media en el dispositivo, esto es así para poder seguir enviando audio si la aplicación está en segundo plano, pero no vídeo. 
+
+	* Cuando el servicio ha comenzado, y hemos creado los componentes de audio correctamente, debemos definir como será cada componente, sí de emisión o de recepción y hacerlos empezar. 
+
+	* Una vez los componentes de audio han comenzado, se deberá arrancar la actividad que se encargará de mostrar el media en el dispositivo, entonces crearemos los componentes de vídeo.
+
+	* Cuando se destruye el servicio, éste deberá:
+
+		** Volver a cambiar la notificación de la barra de notificaciones a la notificación principal.
+
+		** Detener los componentes de audio.
+
+		** Avisar a la actividad que se encarga de mostrar el media en el dispositivo que debe cerrarse.
+
+Gestión de {preferencias}
+
+* {Conexión}
+
+	En las preferencias de conexión deberemos dejar configurar los siguientes datos:
+	
+	** <<Usuario>>: será el usuario con el que quedará registrado en el servidor SIP.
+
+	** <<Password>>: será la password con el que quedará registrado en el servidor SIP.
+
+	** <<Dominio>>: será el dominio con el que quedará registrado en el servidor SIP.
+
+	** <<Ip del servidor SIP>>: será el servidor donde se registraran los usuarios.
+
+	** <<Puerto del servidor SIP>>: será el puerto del servidor.
+
+	Con estos datos, más adelante veremos que pasos hay que seguir para registrarse en el servidor.
+
+* {Media}
+
+	En las preferencias del media deberemos dejar configurar los siguientes datos:
+
+	* <<Máximo ancho de banda>>: establece el ancho de banda máximo que se utilizará para la emisión de media (audio y vídeo).
+
+	* <<Codec de Vídeo>>: serán los codecs soportados por la aplicación. Por ejemplo:
+
+		* H263
+
+		* MPEG4
+
+	* <<Tamaño del Vídeo>>: será la resolución del vídeo que se puede soportar.
+
+	* <<Dirección de la llamada>>: sólo envío, sólo recepción o envío/recepción.
+
+	* <<Máximo frame rate>>: establece el máximo frame rate que se utilizará en la emisión del vídeo.
+
+	* <<Tamaño entre dos I-frames>>: establece el tamaño del "group of pictures". Si es 0 sólo se emite I-frames.
+
+	* <<Máximo número de frames>>: establece el número de frames más recientes de la cámara que se almacenan en el buffer utilizado para gestionar el frame rate.
+
+	* <<Codec de Audio>>: serán los codec soportados por la aplicación. Por ejemplo:
+
+			* AMR
+
+			* MP2
+		
+	* <<Dirección de la llamada>>: sólo envío, sólo recepción o envío/recepción.
+		
+Gestión de emisión y recepción de llamadas
+
+	Tanto para la emisión como para la recepción de llamadas podemos tener dos actividades que nos representen que un contacto nos está llamando o bien que le estamos llamando nosotros.
+
+* {Emisión} de llamadas
+
+	La actividad que se encargue de la emisión de llamadas será creada cuando se haya elegido un contacto o se sepa a que contacto se quiere realizar la llamada y debería mostrar en la pantalla como mínimo:
+	
+		** El nombre del contacto.
+
+		** La imagen del contacto, si éste lo tuviera.
+
+		** Un botón para cancelar la llamada.
+
+	Esta actividad no deberá hacer nada más que mostrar la interfaz para que el usuario sepa que se está realizando una llamada y que puede cancelarla. La realización de la llamada se encargará la clase <<controller>> que hemos definido anteriormente. 
+
+	El cierre de esta actividad puede venir dada por 3 circunstancias:
+
+		** El contacto rechaza la llamada.
+		
+		** El contacto acepta la llamada.
+	
+		** El usuario cancela la llamada.
+
+
+* {Recepción} de llamadas
+
+	La actividad que se encargue de la recepción de llamadas será creada a partir del servicio encargado de controlar los eventos SIP que puedan llegar, como sería un <invite> en el caso de una recepción de llamada. La interfaz de esta actividad debería mostrar en la pantalla como mínimo:
+
+		** El nombre del contacto.
+		
+		** La imagen del contacto, si éste lo tuviera.
+
+		** Un botón para aceptar la llamada. Cuando se pulse, se deberá notificar a <<controller>> que la llamada se ha aceptado y cerrar la actividad.
+
+		** Un botón para cancelar la llamada. Cuando se pulse, se deberá notificar a <<controller>> que la llamada se ha rechazado y cerrar la actividad.
+	
+		** Vibrar e incluso hacer sonar el sonido del dispositivo. Cuando se acepte o se rechace la llamada la vibración y/o el sonido deberá cesar.
+
+	Como se ha comentado anteriormente, el cierre de esta actividad puede venir dada por 3 circunstancias:
+		
+		** Quien llama cancela la llamada.
+	
+		** Se rechaza la llamada.
+
+		** Se acepta la llamada.
+	
+
+{Gestión del media} (Vídeo y Audio)
+
+	Como se ha explicado anteriormente, la gestión de vídeo y audio están separadas. El motivo de que estén separadas es básicamente que podamos seguir con una conversación tanto si la aplicación está en primer plano como si no. De esta manera, el audio se gestiona en el servicio encargado de las llamadas activas y el vídeo se gestiona en la actividad que se encargará de mostrar el media en el dispositivo, esto es así para no enviar ni recibir vídeo cuando el dispositivo no los va a mostrar y así no saturarlo.
+
+* {La actividad}
+
+	Esta actividad será la encargada de mostrar el media en el dispositivo, además de reproducir el audio por los altavoces y recoger el audio que generamos nosotros. Esta actividad tendrá su propia definición en un fichero <<<xml>>>, donde se mostrarán los elementos que tendrá la interfaz, debería tener como mínimo:
+
+	* Un <<<SurfaceView>>> para mostrar el vídeo que recibimos.
+
+	* Un <<<SurfaceView>>> para mostrar el vídeo que enviamos.
+
+	* Un <<<Button>>> para poder colgar la llamada.
+
+	Además podemos añadir dos botones más para:
+	
+	* Gestionar el mute durante una conversación.
+	
+	* Gestionar el altavoz por el cual queremos reproducir el audio.
+
+	
+	La creación de esta actividad viene dada porque se ha establecido una llamada correctamente, y el servicio encargado de gestionar las llamadas activas la ha lanzado. El servicio por su lado ya se ha encargado de gestionar los componentes de audio por su lado, como ya se ha explicado anteriormente. Esta actividad será la que se encargue de gestionar los componentes de vídeo, para ello cuando se crea deberá establecer cada componente asociando cada uno a su <<<SurfaceView>>> correspondiente.
+
+	Una vez que ya está activa la actividad, deberá arrancar esos componentes de vídeo para empezar a emitir y recibir vídeo y poder mostrarlos en cada uno de los <<<SurfaceView>>>. Como se ha comentado anteriormente, podremos tener varios botones para gestionar diferentes aspectos de la conversación. 
+
+	* Si quisiésemos terminar la llamada usaríamos el botón destinado para ello. Para poder terminar la llamada usaremos el objeto <<controller>>, que recuperaremos gracias a {{<<<ApplicationContext>>>}}, usando el método <<<hang()>>>. Y además finalizaremos la actividad para acabar con la llamada.
+
+	* Si quisiésemos poner o quitar el mute de la conversación usaremos el botón destinado para ello. Para poder realizarlo debemos parar o volver arrancar el componente de audio, que también recuperaremos gracias a {{<<<ApplicationContext>>>}}. Antes de parar o arrancarlo deberemos saber que estaba haciendo ese componente.
+
++---
+if (audioPlayerComponent.isStarted())
+	audioPlayerComponent.stop();
+else
+	audioPlayerComponent.start();
++---
+
+	* Tenemos la opción de cambiar el altavoz por el cual se reproduce el audio. Recuperaríamos el componente de audio mediante {{<<<ApplicationContext>>>}} y volveríamos a definir el tipo de componente de audio que es y el altavoz por el cual se quiere reproducir.
+
++---
+if (audioRecorderComponent != null) {
+	audioRecorderComponent.stop();
+	audioRecorderComponent.unjoin(nc
+			.getJoinableStream(StreamType.audio));
+}
+
+Parameters params = new ParametersImpl();
+params.put(MediaComponentAndroid.STREAM_TYPE,
+		AudioManager.STREAM_VOICE_CALL);
+audioRecorderComponent = mediaSession
+		.createMediaComponent(
+				MediaComponentAndroid.AUDIO_RECORDER,
+				params);
+
+if (audioRecorderComponent != null) {
+	audioRecorderComponent.join(Direction.RECV,
+			nc.getJoinableStream(StreamType.audio));
+	audioRecorderComponent.start();
+}
++---
+
+	* Gracias a que existe un servicio que gestiona las llamada activas, si en algún momento el usuario sale de esta actividad lo único que "perderíamos" sería el vídeo, ya que, la actividad cuando entra en <<pause>> debe detener los componentes de vídeo para no congestionar el dispositivo. Además no tiene sentido seguir enviando o recibiendo vídeo cuando no se va a visualizar.
+
+	* Cuando volvamos a la actividad gracias a la notificación de la barra de notificaciones, los componentes de vídeo se deben volver a crear y para así poder volver a recibir y emitir vídeo.
+
+	* Por último, cuando se finaliza la actividad, bien porque se ha pulsado el botón para terminar la llamada o bien porque hemos recibido el mensaje desde el servicio que han colgado desde el otro lado, debemos parar los componentes de vídeo.
+
+
+* {Vídeo}
+
+	La creación de los componentes de vídeo se pueden ver en la sección de User Plane.
+
+* {Audio}
+
+	La gestión de los componentes de audio se puede ver en la sección de User Plane.
+
+Otras clases de ayuda
+
+	Estas clases que se mencionan a continuación, son clases que se pueden crear para facilitar la labor de desarrollo de algunas de las funcionalidades que pueda tener la aplicación.
+
+* Almacenamiento de datos para interactuar entre las clases ({ApplicationContext})
+
+	Está clase nos servirá para poder compartir algunos datos entre todas las actividades y no perder información cuando la actividad esté en segundo plano. Simplemente será una tabla Hash en la que iremos almacenando y recogiendo datos según los necesitemos.
+
++---
+public static HashMap<String, Object> contextTable = new HashMap<String, Object>();
++---
+
+	Desde cualquier parte de la aplicación podremos hacer:
+
+	** ApplicationContext.contextTable.put("clave", objeto), para almacenar cualquier tipo de objeto que podamos necesitar en cualquier momento.
+
++---
+ApplicationContext.contextTable.put("controller", controller);
++---
+	** ApplicationContext.contextTable.get(objeto), para recoger cualquier tipo de objeto que hayamos almacenado anteriormente. Deberemos hacer un casting al objeto que es.
+
++---
+controller = (Controller) ApplicationContext.contextTable.get("controller");
++---
+	
+
+* Obtener la ip actual
+
+	Recoger la ip de un dispositivo Android, en muchas de las aplicaciones es algo que se puede necesitar muy a menudo, por lo que se recomienda realizar una pequeña clase que nos ayude con esta tarea. Un ejemplo de la función sería:
+
++---
+public static InetAddress getLocalAddress() {
+	try {
+		for (Enumeration<NetworkInterface> en = NetworkInterface
+				.getNetworkInterfaces(); en.hasMoreElements();) {
+			NetworkInterface intf = en.nextElement();
+			for (Enumeration<InetAddress> enumIpAddr = intf
+					.getInetAddresses(); enumIpAddr.hasMoreElements();) {
+				InetAddress inetAddress = enumIpAddr.nextElement();
+				if (!inetAddress.isLoopbackAddress()
+						&& (inetAddress instanceof Inet4Address)) {
+					return inetAddress;
+				}
+			}
+		}
+	} catch (SocketException e) {
+		e.printStackTrace();
+	}
+	return null;
+}
++---
+
+
+* Obtener datos de los contactos {de la agenda}
+
+	Para tener una mayor facilidad a la hora de obtener datos de los contactos, es recomendable crearse una clase que se encargue de ello a partir de la uri del usuario. De esta manera, podremos recoger el nombre, la foto, la música asociada a ese contacto. 
+
+	De esa manera podremos hacer consultas del estilo:
+
+		* <<<getName(Integer id)>>> donde obtendremos el nombre del contacto según su identificador dentro de los contactos. Esto nos servirá cuando elijamos a un contacto desde el acceso a los contactos de la aplicación.
+
+		*<<<getName(Intent data)>>> donde obtendremos el nombre del contacto después de elegir el contacto directamente desde la agenda sin pasar por la aplicación.
+
+		*<<<getId(String sipUri)>>> donde obtendremos el id del contacto en la agenda a partir de su identificador SIP.
+
+		*<<<getId(Intent data)>>> donde obtendremos el id del contacto en la agenda.
+
+		*<<<getSip(Intent data)>>> donde obtendremos el identificador SIP después de elegir el contacto directamente desde la agenda sin pasar por la aplicación.
+
+		*<<<getPhoto(Integer id)>>> donde obtendremos la imagen del contacto, si tiene.
+
+
+Ejemplos
+
+* AndroidManifest.xml
+
+	En este apartado definiremos:
+
+		* La versión de la aplicación.
+
+		* Donde queremos que se instale (en este caso en la tarjeta de memoria si es posible).
+
+		* El paquete principal de la aplicación (com.tikal.softphone).
+
++---
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+	package="com.tikal.softphone" android:versionCode="1"
+	android:versionName="1.0" android:installLocation="preferExternal">
++---
+	
+	Definimos el icono y el nombre de la aplicación.	
+
++---
+<application android:icon="@drawable/icon" android:label="@string/app_name">
++---
+
+	Definimos la actividad principal:
+	
+		* El nombre de la actividad (SoftPhone).
+
+		* El modo de lanzar la actividad (singleTask).
+
+		* Los <<intent-filter>> que tendrá:
+		
+			** Actividad principal (android.intent.action.MAIN)
+
+			** Arrancará la actividad siempre que desde los contactos se pulse uno de ellos que tenga almacenado datos <<<sip:xxx@xxxx.xxx>>>.
+		
++---
+<activity android:name="SoftPhone" android:label="@string/app_name"
+	android:launchMode="singleTask">
+	<intent-filter>
+		<action android:name="android.intent.action.MAIN" />
+		<category android:name="android.intent.category.LAUNCHER" />
+	</intent-filter>
+
+	<intent-filter>
+		<action android:name="android.intent.action.SENDTO" />
+		<category android:name="android.intent.category.DEFAULT" />
+		<data android:scheme="sip" />
+		<data android:scheme="imto" />
+	</intent-filter>
+</activity>
++---
+
+	Definición de las actividades de gestión de emisión y recepción de llamadas.
+
++---
+<activity android:name="com.tikal.media.MediaControlIncoming"
+	android:label="Media Control Incoming">
+</activity>
+<activity android:name="com.tikal.media.MediaControlOutgoing"
+	android:label="Media Control Outgoing">
+</activity>
++---
+
+	Definición de la actividad que muestra el media en el dispositivo. Se añade un parámetro para que desaparezca la barra de notificaciones y esté a pantalla completa (<<<android:theme="@android:style\/Theme.NoTitleBar.Fullscreen">>>). Además, se obliga a que la orientación sea siempre horizontal (<<<android:screenOrientation="landscape">>>).
+
++---
+<activity android:name="com.tikal.videocall.VideoCall"
+	android:label="Video Call" android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+	android:screenOrientation="landscape" android:launchMode="singleTop" >
+</activity>
++---
+
+	Definición de las actividades de gestión de preferencias. En este caso la orientación es vertical.
+
++---
+<activity android:name="com.tikal.preferences.Connection_Preferences"
+	android:label="Connection Preferences" android:screenOrientation="portrait">
+</activity>
+
+<activity android:name="com.tikal.preferences.Video_Preferences"
+	android:label="Video Preferences" android:screenOrientation="portrait">
+</activity>
++---
+
+	Definición de los servicios que tendrá la aplicación.
+
++---
+<service android:enabled="true"
+	android:name="com.tikal.softphone.SoftPhoneService" />
+<service android:enabled="true"
+	android:name="com.tikal.videocall.VideoCallService" />
++---
+
+	Definición de:
+
+		* Versión mínima del sistema operativo que debe tener instalado el dispositivo (<<<uses-sdk android:minSdkVersion="8" >>>).
+
+		* Dependencias de hardware y software (<<<uses-feature android:name="android.hardware.camera">>>).
+	
+		* Permisos que debe aceptar el usuario (<<<uses-permission android:name="android.permission.CAMERA">>>).
+
++---
+<uses-sdk android:minSdkVersion="8" />
+
+<uses-feature android:name="android.hardware.camera"></uses-feature>
+<uses-feature android:name="android.hardware.camera" android:required="false" />
+<uses-feature android:name="android.hardware.camera.front" android:required="false" />
+<uses-feature android:name="android.hardware.camera.autofocus"></uses-feature>
+
+<uses-permission android:name="android.permission.VIBRATE"></uses-permission>
+<uses-permission android:name="android.permission.CAMERA"></uses-permission>
+<uses-permission android:name="android.permission.RECORD_AUDIO"></uses-permission>
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>
+<uses-permission android:name="android.permission.INTERNET"></uses-permission>
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+<uses-permission android:name="android.permission.WAKE_LOCK"></uses-permission>
+<uses-permission android:name="android.permission.READ_CONTACTS"></uses-permission>
+<uses-permission android:name="android.permission.WRITE_CONTACTS"></uses-permission>
+<uses-permission android:name="android.permission.READ_PHONE_STATE"></uses-permission>
++---
+	
+* La aplicación
+
+	Suscripción al servicio de mensajes del servicio principal cuando se crea la actividad. De esta manera le estamos diciendo que tendremos un método <<<update>>> en el cual procesaremos  los mensajes que lleguen desde el servicio principal.
+
++---
+SoftPhoneService.setUpdateListener(this);
++---
+
++---
+@Override
+public void update(Message message) {
+	 if (message.getData().containsKey("Register")) {
+		if (message.getData().getString("Register").equals("Sucessful")) {
+			registerSucessful();
+		} else if (message.getData().getString("Register").equals("Failed")) {
+			registerFailed();
+		}
+	} else if (message.getData().containsKey("finishActivity")) {
+		if (message.getData().getString("finishActivity").equals("MEDIA_CONTROL_OUTGOING")) {
+			finishActivity(MEDIA_CONTROL_OUTGOING);
+		}
+	}
+}
++---
+
+	Cuando se recibe alguno de estos mensajes, los métodos deberán ser de la siguiente manera para darle un aviso al usuario.
+
++---
+public void registerSucessful() {
+	SoftPhone.this.text = (TextView) findViewById(R.id.textRegister);
+	SoftPhone.this.text.setTextSize(20);
+	SoftPhone.this.text.setTextColor(Color.GREEN);
+	SoftPhone.this.text.setText("Register Sucessful");
+
+	isRegister = true;
+	ApplicationContext.contextTable.put("isRegister", isRegister);
+}
++---
+
+	Suscripción a los cambios que puedan existir en la conexiones del dispositivo. Tras suscribirse hay que implementar un nuevo <<<PhoneStateListener>>> y dentro el método <<<onDataConnectionStateChanged>>>. Los pasos a seguir que tiene este método están explicados en el apartado {{Control de red}}.
+
++---
+signalManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+signalManager.listen(signalListener,	PhoneStateListener.LISTEN_DATA_CONNECTION_STATE);
++---
+
++---
+private final PhoneStateListener signalListener = new PhoneStateListener() {
+	public void onDataConnectionStateChanged(int state) {
+		if (!isExit) {
+			ConnectivityManager ConnectManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
+			String sNetworkType = "No Activate";
+			/*
+			 * Control para sólo transmitir cuando tengamos conexión si es
+			 */
+			boolean backgroundEnabled = ConnectManager.getBackgroundDataSetting();
+			int networkType = -1;
+			NetworkInfo activeNetwork = ConnectManager.getActiveNetworkInfo();
+			if (activeNetwork != null) {
+				networkType = activeNetwork.getType();
+			}
+			boolean isAddressEqual = false;
+			boolean isNetworking = false;
+			InetAddress lAddressNew;
+			InetAddress lAddress;
+
+			switch (networkType) {
+			case ConnectivityManager.TYPE_WIFI: 
+				lAddressNew = NetworkIP.getLocalAddress();
+				lAddress = (InetAddress) ApplicationContext.contextTable.get("localAddress");
+				if (lAddress != null)
+					if (lAddressNew.equals(lAddress))
+						isAddressEqual = true;
+					else
+						isAddressEqual = false;
+				isNetworking = true;
+				break;
+			case ConnectivityManager.TYPE_MOBILE: 
+				ApplicationContext.contextTable.put("isNetworking", true);
+				lAddressNew = NetworkIP.getLocalAddress();
+				lAddress = (InetAddress) ApplicationContext.contextTable.get("localAddress");
+				if (lAddress != null)
+					if (lAddressNew.equals(lAddress))
+						isAddressEqual = true;
+					else
+						isAddressEqual = false;
+				isNetworking = true;
+				break;
+			case -1: // Disconneted
+				isNetworking = false;
+				break;
+			default:
+				break;
+			}
+
+			if (isNetworking) {
+				if (!isAddressEqual) {
+					controller = null;
+					isRegister = false;
+					ApplicationContext.contextTable.put("isRegister", isRegister);
+
+					intentService = (Intent) ApplicationContext.contextTable.get("intentService");
+					try {
+						stopService(intentService);
+					} catch (Exception e) {
+						Log.e(LOG_TAG, "stopService " + e.getMessage()
+								+ "; " + e.toString());
+					}
+					ApplicationContext.contextTable.clear();
+					if (initControllerUAFromSettings()) {
+						register();
+					}
+				}
+			} else {
+				try {
+					if ((Boolean) ApplicationContext.contextTable.get("isRegister")) {
+						if (controller != null)
+							try {
+								controller.finishUA();
+								controller = null;
+							} catch (Exception e1) {
+								e1.printStackTrace();
+							}
+						isRegister = false;
+						ApplicationContext.contextTable.put("isRegister", isRegister);
+						intentService = (Intent) ApplicationContext.contextTable.get("intentService");
+						try {
+							stopService(intentService);
+						} catch (Exception e) {
+							Log.e(LOG_TAG, "stopService " + e.getMessage()
+									+ "; " + e.toString());
+						}
+						ApplicationContext.contextTable.clear();
+					}
+				} catch (Exception e) {
+
+				}
+			}
+		}
+	}
+};
++---
+
+	Inicializar los valores necesarios para poder usar el método <<<initUA>>> de <<controller>>. Este método nos devolverá <<<true>>> si toda la inicialización ha ido correctamente y además tenemos alguna interfaz de red levantada. Si no tenemos ninguna interfaz de red activa devolverá <<<false>>> además de salir de la actividad y mostrarle un mensaje al usuario.
+
++---
+private boolean initControllerUAFromSettings() {
+	try {
+		SharedPreferences settings = PreferenceManager
+				.getDefaultSharedPreferences(getBaseContext());
+		localUser = settings.getString("LOCAL_USERNAME", "android1");
+		localRealm = settings.getString("LOCAL_DOMAIN", "urjc.es");
+		proxyIP = settings.getString("PROXY_IP", "193.147.51.17");
+		proxyPort = Integer.parseInt(settings.getString("PROXY_PORT",
+				"5060"));
+
+		this.textUser = (TextView) findViewById(R.id.textUser);
+		this.textUser.setText("User: " + localUser + "@" + localRealm);
+
+		this.textServer = (TextView) findViewById(R.id.textServer);
+		this.textServer.setText("Server: " + proxyIP + ":" + proxyPort);
+
+		ni = connManager.getActiveNetworkInfo();
+		String conType = ni.getTypeName();
+
+		if ("WIFI".equalsIgnoreCase(conType))
+			connectionType = ConnectionType.WIFI;
+		else if ("MOBILE".equalsIgnoreCase(conType))
+			connectionType = ConnectionType.MOBILE;
+
+		this.audioCodecs = getAudioCodecsFromSettings();
+		this.videoCodecs = getVideoCodecsFromSettings();
+		this.localAddress = NetworkIP.getLocalAddress();
+		ApplicationContext.contextTable.put("localAddress", localAddress);
+		return true;
+	} catch (Exception e) {
+		Toast.makeText(SoftPhone.this,
+				"SoftPhone: Please enable any network interface.",
+				Toast.LENGTH_SHORT).show();
+
+		finish();
+		return false;
+	}
+
+}
++---
+
+	Recogida de datos desde las preferencias de media.
+
++---
+private ArrayList<VideoCodecType> getVideoCodecsFromSettings() {
+	SharedPreferences settings = PreferenceManager
+			.getDefaultSharedPreferences(getBaseContext());
+
+	ArrayList<VideoCodecType> selectedVideoCodecs = new ArrayList<VideoCodecType>();
+	if (settings.getBoolean("H263_CODEC", false))
+		selectedVideoCodecs.add(VideoCodecType.H263);
+	if (settings.getBoolean("MPEG4_CODEC", false))
+		selectedVideoCodecs.add(VideoCodecType.MPEG4);
+	if (settings.getBoolean("H264_CODEC", false))
+		selectedVideoCodecs.add(VideoCodecType.H264);
+
+	return selectedVideoCodecs;
+}
+
+private ArrayList<AudioCodecType> getAudioCodecsFromSettings() {
+	SharedPreferences settings = PreferenceManager
+			.getDefaultSharedPreferences(getBaseContext());
+
+	ArrayList<AudioCodecType> selectedAudioCodecs = new ArrayList<AudioCodecType>();
+	if (settings.getBoolean("AMR_AUDIO_CODEC", false))
+		selectedAudioCodecs.add(AudioCodecType.AMR);
+	if (settings.getBoolean("MP2_AUDIO_CODEC", false))
+		selectedAudioCodecs.add(AudioCodecType.MP2);
+	if (settings.getBoolean("AAC_AUDIO_CODEC", false))
+		selectedAudioCodecs.add(AudioCodecType.AAC);
+
+	return selectedAudioCodecs;
+}
++---
+
+	Una vez que están inicializados las variables necesarias realizamos un registro y arrancamos el servicio principal.
+
++---
+private void register() {
+	if (controller == null)
+		controller = new Controller();
+	intentService = (Intent) ApplicationContext.contextTable.get("intentService");
+	if (intentService == null) {
+		intentService = new Intent(this, SoftPhoneService.class);
+		ApplicationContext.contextTable.put("intentService", intentService);
+		startService(intentService);
+	}
+
+	if (initControllerUAFromSettings())
+		initUA();
+}
++---
+
+	Durante el método <<<register>>> aparece la llamada a <<<initUA>>>, que finalmente realizará la llamada a <<<initUA>>> de <<controller>>. Donde realmente realizamos el registro y la inicialización de las estructuras para SIP.
+
++---
+private void initUA() {
+	try {
+		controller.initUA(audioCodecs, videoCodecs, localAddress,
+				connectionType, proxyIP, proxyPort, localUser, localRealm);
+		ApplicationContext.contextTable.put("controller", controller);
+	} catch (Exception e) {
+		e.printStackTrace();
+	}
+}
++---
+
+	Realizar una llamada a un contacto.
+	
+		* Usando el botón para acceder a la agenda.
+
++---
+final Button buttonContacts = (Button) findViewById(R.id.contacts);
+	buttonContacts.setOnClickListener(new OnClickListener() {
+
+		@Override
+		public void onClick(View v) {
+			try {
+				openContacts();
+			} catch (Exception e) {
+				Log.e("Error Search", e.toString());
+			}
+		}
+	});
+private void openContacts() {
+	Intent intentContacts = new Intent(Intent.ACTION_PICK, 	ContactsContract.Contacts.CONTENT_URI);
+	startActivityForResult(intentContacts, PICK_CONTACT_REQUEST);
+}
++---	
+		Y dentro de <<<onActivityResult(int requestCode, int resultCode, Intent data) >>> tendremos:
+
++---
+if (requestCode == PICK_CONTACT_REQUEST) {
+	if (resultCode == RESULT_OK) {
+		Integer id = null;
+		String sip = null;
+		String name = null;
+
+		id = controlcontacts.getId(data);
+		sip = controlcontacts.getSip(data);
+		name = controlcontacts.getName(data);
+
+		if (sip != null) {
+			Toast.makeText(SoftPhone.this, name + ", SIP:" + sip,
+					Toast.LENGTH_SHORT).show();
+			call("sip:" + sip, id);
+		} else
+			Toast.makeText(SoftPhone.this, name + ", No tiene SIP:",
+					Toast.LENGTH_SHORT).show();
+	}
+}
++---
+
+		* Rellenando la caja de texto para escribir un contacto y usando el botón de la llamada.
+
++---
+final Button buttonCall = (Button) findViewById(R.id.call);
+	buttonCall.setOnClickListener(new OnClickListener() {
+
+		@Override
+		public void onClick(View v) {
+			TextView textRemoteUri = (TextView) findViewById(R.id.textRemoteUri);
+			String remoteURI = "sip:";
+
+			remoteURI += textRemoteUri.getText().toString();
+			Integer idContact;
+			idContact = controlcontacts.getId(textRemoteUri.getText().toString());
+			call(remoteURI, idContact);
+	}
+});
++---
+
+	El método <<<call>>> para realizar una llamada.
+
++---
+private void call(String remoteURI, Integer id) {
+	if (controller != null) {
+		if (controller.getUa() == null)
+			initControllerUAFromSettings();
+		try {
+			controller.call(remoteURI);
+			Intent mediaIntent = new Intent(SoftPhone.this, MediaControlOutgoing.class);
+
+			mediaIntent.putExtra("Id", id);
+			mediaIntent.putExtra("Uri", remoteURI);
+			startActivityForResult(mediaIntent, MEDIA_CONTROL_OUTGOING);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	} else
+		notRegister();
+}
++---
+
+	Cuando destruimos la actividad.
+
++---
+if (isExit) {
+	signalManager.listen(signalListener, PhoneStateListener.LISTEN_NONE);
+	if (controller != null)
+		controller.finishUA();
+	isRegister = false;
+	ApplicationContext.contextTable.put("isRegister", isRegister);
+
+	intentService = (Intent) ApplicationContext.contextTable
+			.get("intentService");
+	try {
+		stopService(intentService);
+	} catch (Exception e) {
+		Log.e(LOG_TAG, "stopService " + e.getMessage() + "; " + e.toString());
+	}
+	ApplicationContext.contextTable.clear();
+}
++---
+
+* Servicios
+
+** {{Servicio principal}}
+
+	La definición de una notificación en la barra de notificaciones, con el nombre <<Softphone>> y que está asociada a la clase <<SoftPhone.class>>.
+
++---
+private NotificationManager mNotificationMgr;
+private final static int NOTIF_SOFTPHONE = 1;
+private final static int NOTIF_VIDEOCALL = 1;
+
+private Notification mNotif;
+private PendingIntent mNotifContentIntent;
+private Intent notifIntent;
+private String notificationTitle = "Softphone";
+private static final int IC_LEVEL_ORANGE = 0;
+
+mNotificationMgr = (NotificationManager) this
+			.getSystemService(Context.NOTIFICATION_SERVICE);
+
+mNotif = new Notification(R.drawable.icon, notificationTitle,
+		System.currentTimeMillis());
+mNotif.iconLevel = IC_LEVEL_ORANGE;
+mNotif.flags |= Notification.FLAG_ONGOING_EVENT;
+
+notifIntent = new Intent(this, SoftPhone.class);
+mNotifContentIntent = PendingIntent
+		.getActivity(this, 0, notifIntent, 0);
+mNotif.setLatestEventInfo(this, notificationTitle, "",
+		mNotifContentIntent);
+
+mNotificationMgr.notify(NOTIF_SOFTPHONE, mNotif);
++---
+
+	Recoger <<controller>> de <<<ApplicationContext>>> e informar al <<controller>> que el servicio implementará <<<CallListener>>>.
+
++---
+Controller controller = (Controller) ApplicationContext.contextTable
+			.get("controller");
+if (controller != null)
+		controller.addListener(this);
++---
+
+	Una posible implementación de <<<incomingCall(String uri)>>>. Arrancaremos como explicamos en la documentación la actividad que se encarga de gestionar las llamadas entrantes, añadiendo mediante <<<putExtra>>> la <<<uri>>> que nos ha llegado.
+
++---
+@Override
+public void incomingCall(String uri) {
+	Log.d(LOG_TAG, "Invite received");
+	Intent mediaIntent = new Intent(this, MediaControlIncoming.class);
+	mediaIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+	mediaIntent.putExtra("Uri", uri);
+	startActivity(mediaIntent);
+	
+}
++---
+	
+	Una posible implementación de <<<callSetup>>>. La llamada se ha establecido por lo tanto debemos avisar a la aplicación principal que debe detener la actividad que gestionar las llamadas salientes mediante un mensaje (<<<handler.sendMessage(msg)>>>). Además, debemos arrancar el servicio que se encarga de gestionar las llamadas activas.
+
++---
+@Override
+public void callSetup(NetworkConnection networkConnection) {
+	ApplicationContext.contextTable.put("networkConnection", networkConnection);
+	
+	Message msg = new Message();
+	Bundle b = new Bundle();
+	b.putString("finishActivity", "MEDIA_CONTROL_OUTGOING");
+	msg.setData(b);
+	handler.sendMessage(msg);
+
+	videoCallIntent = new Intent(this, VideoCallService.class);
+	videoCallIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+	startService(videoCallIntent);
+}
++---
+	
+	Método para el envío de mensajes a la aplicación que se suscriba. En este caso será la aplicación principal.
+
++---
+public interface ServiceUpdateUIListener {
+	public void update(Message message);
+}
+
+
+public static ServiceUpdateUIListener UI_UPDATE_LISTENER;
+
+public static void setUpdateListener(ServiceUpdateUIListener l) {
+	UI_UPDATE_LISTENER = l;
+}
+
+private Handler handler = new Handler() {
+	@Override
+	public void handleMessage(Message msg) {
+		UI_UPDATE_LISTENER.update(msg);
+	}
+};
++---
+
+	Al destruir el servicio, cancelar las notificaciones que pueda estar en la barra de notificaciones y parar el servicio que gestiona las llamadas activas.	
+
++---
+mNotificationMgr.cancel(NOTIF_SOFTPHONE);
+mNotificationMgr.cancel(NOTIF_VIDEOCALL);
+stopService(videoCallIntent);
++---
+
+
+** {{Servicio para una llamada activa}}
+
+	Recuperación de <<controller>> desde <<<ApplicationContext>>>. Creación del objeto mediaSession y de los componentes de audio. Además se añaden los objetos de los componentes de audio en el <<<ApplicationContext>>> para poder acceder a ellos desde otra parte de la aplicación.
+
++---
+Controller controller = (Controller) ApplicationContext.contextTable
+			.get("controller");
+if (controller == null) 		
+	return;
+
+MediaSessionAndroid mediaSession = controller.getMediaSession();
+
+try {
+	audioPlayerComponent = mediaSession.createMediaComponent(MediaComponentAndroid.AUDIO_PLAYER, Parameters.NO_PARAMETER);
+	
+	Parameters params = new ParametersImpl();
+	params.put(MediaComponentAndroid.STREAM_TYPE, AudioManager.STREAM_MUSIC);
+	audioRecorderComponent = mediaSession.createMediaComponent(MediaComponentAndroid.AUDIO_RECORDER, params);
+} catch (MsControlException e) {
+	e.printStackTrace();
+}
+ApplicationContext.contextTable.put("audioPlayerComponent", audioPlayerComponent);
+ApplicationContext.contextTable.put("audioRecorderComponent", audioRecorderComponent);
++---
+
+	Recuperación de <<<NetworkConnection>>> de <<<ApplicationContext>>> y configuración y arranque de los componentes de audio.
+
++---
+NetworkConnection nc = (NetworkConnection) ApplicationContext.contextTable
+	.get("networkConnection");
+if (nc == null) 
+	return;
+		
+try {
+	if (audioPlayerComponent != null) {
+		audioPlayerComponent.join(Direction.SEND,
+				nc.getJoinableStream(StreamType.audio));
+		audioPlayerComponent.start();
+	}
+	if (audioRecorderComponent != null) {
+		audioRecorderComponent.join(Direction.RECV,
+				nc.getJoinableStream(StreamType.audio));
+		audioRecorderComponent.start();
+	}
+	
+} catch (MsControlException e) {
+	e.printStackTrace();
+}
++---
+
+	Arrancar la actividad que controlará la gestión de una llamada activa.
+
++---
+videoCallIntent = new Intent(this, VideoCall.class);
+videoCallIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+startActivity(videoCallIntent);
++---
+
+	Al destruir el servicio, cambiar la notificación de una llamada activa por el de la aplicación.
+
++---
+mNotificationMgr.cancel(NOTIF_VIDEOCALL);
+mNotif = new Notification(R.drawable.icon, notificationTitleSoft,
+		System.currentTimeMillis());
+
+notifIntent = new Intent(this, SoftPhone.class);
+mNotifContentIntent = PendingIntent
+		.getActivity(this, 0, notifIntent, 0);
+mNotif.setLatestEventInfo(this, notificationTitleSoft, "",
+		mNotifContentIntent);
+
+mNotificationMgr.notify(NOTIF_SOFTPHONE, mNotif);
++---
+
+	Además de parar los componentes de audio.
+
++---
+if (audioPlayerComponent != null)
+	audioPlayerComponent.stop();
+
+if (audioRecorderComponent != null)
+	audioRecorderComponent.stop();
++---
+
+	Y enviar un mensaje confirmando que la llamada ha terminado. En este caso, se le enviará a la actividad que gestiona la llamada activa igual que he hemos visto en el servicio principal.
+
++---
+Message msg = new Message();
+Bundle b = new Bundle();
+b.putString("Call", "Terminate");
+msg.setData(b);
+handler.sendMessage(msg);
++---
+
+* Gestión de contactos 
+
+	Posible implementación de la obtención del nombre de un contacto a partir de su <<<id>>>. La idea es realizar una consulta, parecida a una query de sql en el cual le indicamos el identificador del usuario que buscamos. Si existe, podremos devolver el nombre.
+
++---
+public String getName(Integer id) {
+
+	int contact_id = -1;
+	String name = "";
+	contact_id = id;
+
+	Cursor pidcursor = c.getContentResolver().query(
+			ContactsContract.Contacts.CONTENT_URI,
+			new String[] { ContactsContract.Contacts.DISPLAY_NAME },
+			ContactsContract.Contacts._ID + "=" + contact_id, null, null);
+	if (pidcursor != null) {
+		if (pidcursor.moveToFirst()) {
+			name = pidcursor.getString(0);
+		}
+	}
+	return name;
+}
++---
+
+	Otra forma de realizar esta consulta es usando los datos que nos ofrece Android cuando accedemos desde la agenda. En este caso la consulta se realiza usando los datos del <<<Intent>>>.
+
++---
+public String getName(Intent data) {
+	Cursor cursor = c.getContentResolver().query(data.getData(), null,
+			null, null, null);
+
+	String name = null;
+
+	if (cursor.moveToFirst()) {
+		int nameIdx = cursor
+				.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME);
+
+		name = cursor.getString(nameIdx);
+	}
+	if (name != null)
+		return name;
+	else
+		return null;
+}
++---
+
+	Para recuperar el <<<id>>> de un posible contacto, buscamos mediante su <<<uri>>> dentro de los contactos que tengan algún contenido del tipo <<<CONTENT_URI>>>. Si el contacto existe se devolverá el <<<id>>>.
+
++---
+public Integer getId(String sipUri) {
+
+	Integer idContact = -1;
+	String sipUriContact = "";
+
+	String whereIm = ContactsContract.Data.MIMETYPE + " = ?";
+	String[] whereParametersIm = new String[] { ContactsContract.CommonDataKinds.Im.CONTENT_ITEM_TYPE };
+
+	Cursor contactsIm = c.getContentResolver().query(
+			ContactsContract.Data.CONTENT_URI, null, whereIm,
+			whereParametersIm, null);
+
+	while (contactsIm.moveToNext()) {
+
+		sipUriContact = contactsIm.getString(contactsIm
+				.getColumnIndexOrThrow(ContactsContract.Data.DATA1));
+		if (sipUri.equals(sipUriContact)) {
+			int idIdx = contactsIm
+					.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.CONTACT_ID);
+			idContact = contactsIm.getInt(idIdx);
+
+			break;
+		}
+	}
+	contactsIm.close();
+	return idContact;
+}
++---
+
+	Recuperación de la foto de un contacto mediante su <<<id>>>. Se buscará primero el contacto dentro de la agenda, para una vez encontrado, conseguir su fotografía usando el <<<photo_id>>>.
+
++---
+public Bitmap getPhoto(Integer id) {
+
+	byte[] photo = null;
+	Bitmap bm = null;
+	int contact_id = -1;
+	int photo_id = -1;
+
+	if (id != -1){
+		contact_id = id;
+
+		Cursor pidcursor = c.getContentResolver().query(
+				ContactsContract.Contacts.CONTENT_URI,
+				new String[] { ContactsContract.Contacts.PHOTO_ID },
+				ContactsContract.Contacts._ID + "=" + contact_id, null,
+				null);
+		if (pidcursor != null) {
+			if (pidcursor.moveToFirst()) {
+				photo_id = pidcursor.getInt(0);
+			}
+		}
+
+		Cursor pcursor = c.getContentResolver().query(
+				ContactsContract.Data.CONTENT_URI,
+				new String[] { ContactsContract.Data.DATA15 },
+				ContactsContract.Data._ID + "=" + photo_id, null, null);
+		if (pcursor.moveToFirst()) {
+			photo = pcursor.getBlob(0);
+		}
+		if (photo != null) {
+			bm = BitmapFactory.decodeByteArray(photo, 0, photo.length);
+		}
+	}
+	else Log.d(LOG_TAG, "Id is null, not contatc");
+	return bm;
+}
++---
+
+* Gestión de llamadas
+
+** Emisión de llamadas
+
+	Al crear la actividad, se recuperan los datos como la <<<uri>>> y el <<<id>>> y a partir de ahí se intentan recuperar los datos y la foto del contacto que nos llama desde la agenda. Si está en la agenda se rellena el interfaz con los datos para que sepamos a quién llamamos.
+
++---
+Bundle extras = getIntent().getExtras();
+String uri = (String) extras.getSerializable("Uri");
+Integer id = (Integer) extras.getSerializable("Id");
+TextView text = (TextView) findViewById(R.id.outgoing_sip);
+text.setText(uri);
+
+ImageView imageCall = (ImageView) findViewById(R.id.image_call);
+
+ControlContacts controlcontacts = new ControlContacts(this);
+
+Bitmap bm = controlcontacts.getPhoto(id);
+
+if (bm != null) {
+
+	imageCall.setImageBitmap(bm);
+}
++---
+
+	Cancelar una llamada saliente.
+
++---
+controller.cancel();
+finish();
++---
+
+** Recepción de llamadas
+
+	Al crear la actividad, se recuperan los datos como la <<<uri>>> y a partir de ahí se intentan recuperar los datos y la foto del contacto que nos llama desde la agenda. Si está en la agenda se rellena el interfaz con los datos para que sepamos quién nos está llamando.
+
++---
+Bundle extras = getIntent().getExtras();
+
+String uri = (String) extras.getSerializable("Uri");
+
+TextView text = (TextView) findViewById(R.id.incoming_sip);
+text.setText(uri);
+
+String[] sipArray = uri.split(":");
+String sipUri = "";
+if (sipArray.length > 1) sipUri = sipArray[1];
+else sipUri = sipArray[0];
+
+Integer idContact = controlcontacts.getId(sipUri);
+
+if (!idContact.equals("")){
+	ImageView imageCall = (ImageView) findViewById(R.id.image_call);
+	Bitmap bm = controlcontacts.getPhoto(idContact);
+	if (bm != null) {
+		imageCall.setImageBitmap(bm);
+	}
+}
++---
+
+	Funcionamiento del vibrador para simular la llamada.
+
++---
+Vibrator vibrator;
+vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+long[] pattern = { 0, 1000, 2000, 3000 };
+
+vibrator.vibrate(pattern, 1);
++---
+
+	Aceptar una llamada. Cancelaríamos la vibración, aceptaríamos la llamada con <<<aceptCall()>>> y finalizaríamos la actividad.
+
++---
+vibrator.cancel();
+if (controller != null){
+	try {
+		controller.aceptCall();
+	} catch (Exception e) {
+		e.printStackTrace();
+	}
+}
+finish();
++---
+
+	Para rechazar la llamada sería igual pero usando:
+
++---
+controller.reject();
++---
+
+
