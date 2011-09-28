@@ -255,23 +255,18 @@ public void onEvent(SipCallEvent event) {
 	The initialization of the SIP agent first requires factory parameterize the mean <<MSControlFactory>>, as shown in the following snippet.
 	
 +---
-Parameters params = new ParametersImpl();
+Parameters params = MSControlFactory.createParameters();
 
-NetIF netIF = NetIF.MOBILE;
-params.put(MediaSessionAndroid.NET_IF, netIF);
+params.put(MediaSessionAndroid.NET_IF, NetIF.MOBILE);
 
-InetAddress localAddress = NetworkIP.getLocalAddress();
+InetAddress localAddress =...;
 params.put(MediaSessionAndroid.LOCAL_ADDRESS, localAddress);
 
-int maxBW = 384000;
+int maxBW = 320000;
 params.put(MediaSessionAndroid.MAX_BANDWIDTH, maxBW);
 
 Map<MediaType, Mode> callDirection = new HashMap<MediaType, Mode>();
-callDirection.put(MediaType.VIDEO, Mode.SENDONLY);
-callDirection.put(MediaType.VIDEO, Mode.RECVONLY);
 callDirection.put(MediaType.VIDEO, Mode.SENDRECV);
-callDirection.put(MediaType.AUDIO, Mode.SENDONLY);
-callDirection.put(MediaType.AUDIO, Mode.RECVONLY);
 callDirection.put(MediaType.AUDIO, Mode.SENDRECV);
 params.put(MediaSessionAndroid.STREAMS_MODES, callDirection);
 
@@ -285,17 +280,20 @@ videoCodecs.add(VideoCodecType.H263);
 videoCodecs.add(VideoCodecType.MPEG4);
 params.put(MediaSessionAndroid.VIDEO_CODECS, videoCodecs);
 
-Dimension frame_size = new Dimension();
+Dimension frame_size = ...;
 params.put(MediaSessionAndroid.FRAME_SIZE, frame_size);
 
-int maxFR = 15;
+int maxFR = 12;
 params.put(MediaSessionAndroid.MAX_FRAME_RATE, maxFR);
 
-int gopSize = 6;
+int gopSize = 8;
 params.put(MediaSessionAndroid.GOP_SIZE, gopSize);
 
-int maxQueueSize = 2;
+int maxQueueSize = 3;
 params.put(MediaSessionAndroid.FRAMES_QUEUE_SIZE, maxQueueSize);
+
+
+MediaSessionAndroid mediaSession = MSControlFactory.createMediaSession(params);
 +---	
 
 	Also need to set the factory in SIP User Agents, as follows.
@@ -452,7 +450,8 @@ currentCall.getMediaTypesModes();
 			* A receiving component and audio plays through the external speaker:
 
 +---
-Parameters params = new ParametersImpl();
+Parameters params = MSControlFactory.createParameters();
+
 params.put(MediaComponentAndroid.STREAM_TYPE, AudioManager.STREAM_MUSIC);
 audioRecorderComponent = mediaSession.createMediaComponent(
 	MediaComponentAndroid.AUDIO_RECORDER, 
@@ -501,7 +500,8 @@ DisplayMetrics dm = new DisplayMetrics();
 getWindowManager().getDefaultDisplay().getMetrics(dm);
 int Orientation = getWindowManager().getDefaultDisplay().getOrientation();
 
-Parameters params = new ParametersImpl();
+Parameters params = MSControlFactory.createParameters();
+
 params.put(MediaComponentAndroid.VIEW_SURFACE,
 		(View) findViewById(R.id.video_receive_surface));
 params.put(MediaComponentAndroid.DISPLAY_WIDTH, dm.widthPixels);
@@ -514,7 +514,7 @@ videoRecorderComponent = mediaSession.createMediaComponent(
 	* Video output component, adding the <<SurfaceView>> and the orientation of the device:
 
 +---
-Parameters params = new ParametersImpl();
+Parameters params = MSControlFactory.createParameters();
 params.put(MediaComponentAndroid.PREVIEW_SURFACE,
 		(View) findViewById(R.id.video_capture_surface));
 params.put(MediaComponentAndroid.DISPLAY_ORIENTATION,
@@ -981,7 +981,7 @@ if (audioRecorderComponent != null) {
 			.getJoinableStream(StreamType.audio));
 }
 
-Parameters params = new ParametersImpl();
+Parameters params = MSControlFactory.createParameters();
 params.put(MediaComponentAndroid.STREAM_TYPE,
 		AudioManager.STREAM_VOICE_CALL);
 audioRecorderComponent = mediaSession
@@ -1687,7 +1687,7 @@ MediaSessionAndroid mediaSession = controller.getMediaSession();
 try {
 	audioPlayerComponent = mediaSession.createMediaComponent(MediaComponentAndroid.AUDIO_PLAYER, Parameters.NO_PARAMETER);
 	
-	Parameters params = new ParametersImpl();
+	Parameters params = MSControlFactory.createParameters();
 	params.put(MediaComponentAndroid.STREAM_TYPE, AudioManager.STREAM_MUSIC);
 	audioRecorderComponent = mediaSession.createMediaComponent(MediaComponentAndroid.AUDIO_RECORDER, params);
 } catch (MsControlException e) {
