@@ -340,7 +340,7 @@ ua.terminate();
 
 	* <<expires>>: Time until the next register.
 
-	* <<handler>>: Class that is responsible for implementing the interface <<<Sip EndPoint Listener>>>.
+	* <<handler>>: Class that is responsible for implementing the interface <<<SipEndPointListener>>>.
 
 	The register will return an object of type <<<SipEndPoint>>> with which we can make calls. Furthermore the class has to implement the interface will begin to receive the corresponding events.
 
