@@ -7,13 +7,115 @@
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>kurento-android-docs</name>
-	<url>http://repository.kurento.com/site/kurento-android-docs</url>
+	<name>Kurento Android SDK</name>
+	<url>http://www.kurento.com/docs/kurento-android-docs</url>
+	<description>
+		Kurento Android SDK (KAS) is a development framework intended to accelerate development
+		of SIP applications with video support on Android platform. KAS enable flexible, rapid 
+		application development, with video conferencing capabilities, through an easy API layer
+		for full user control and flexibility. Kurento Android SDK is built on open standards and 
+		as such, complies with IETF and 3GPP specifications to: create, manage and terminate video 
+		conferencing sessions that seamlessly integrates within Android Applications. Multimedia 
+		sessions are built on most popular codecs like G.711, GSM, AMR, H.263 H.264, MPEG4 and many 
+		more in the near future.	
+	</description>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8 </project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 	</properties>
+
+	<organization>
+		<name>Kurento</name>
+		<url>http://www.kurento.com</url>
+	</organization>
+
+	<developers>
+	
+		<developer>
+			<id>mparis</id>
+			<name>Miguel París Díaz</name>
+		</developer>
+		
+		<developer>
+			<id>rbenitez</id>
+			<name>Raul Benitez Mejías</name>
+		</developer>
+		
+		<developer>
+			<id>qiang</id>
+			<name>Qiang Zhou Ni</name>
+		</developer>
+
+		<developer>
+			<id>fjlopez</id>
+			<name>Javier López Fernández</name>
+		</developer>	
+
+		<developer>
+			<id>sgala</id>
+			<name>Santiago Gala</name>
+		</developer>
+					
+	</developers>
+
+	<mailingLists>
+		<mailingList>
+			<name>Kurento</name>
+			<subscribe>http://groups.google.com/group/kurento/subscribe</subscribe>
+			<post>http://groups.google.com/group/kurento/post</post>
+			<archive>http://groups.google.com/group/kurento/about</archive>
+		</mailingList>
+	</mailingLists>
+	
+	<dependencies>
+		<dependency>
+			<groupId>com.kurento.commons</groupId>
+			<artifactId>kc-mediaspec</artifactId>
+			<version>1.0.0-RC-1</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.kurento.kas</groupId>
+			<artifactId>kas-media</artifactId>
+			<version>1.0.0-RC-1</version>
+			<type>apklib</type>
+			<scope>compile</scope>
+		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>com.kurento.kas</groupId>-->
+<!--			<artifactId>kas-mscontrol</artifactId>-->
+<!--			<version>1.0.0-RC-1</version>-->
+<!--			<type>apklib</type>-->
+<!--		</dependency>-->
+<!--		<dependency>-->
+<!--			<groupId>com.kurento.commons</groupId>-->
+<!--			<artifactId>kc-sipua</artifactId>-->
+<!--			<version>1.0.0-RC-1</version>-->
+<!--			<type>jar</type>-->
+<!--			<scope>compile</scope>-->
+<!--		</dependency>-->
+<!--		<dependency>-->
+<!--			<groupId>com.kurento.commons</groupId>-->
+<!--			<artifactId>kc-sipua-impl</artifactId>-->
+<!--			<version>1.0.0-RC-1</version>-->
+<!--			<type>jar</type>-->
+<!--			<scope>compile</scope>-->
+<!--		</dependency>-->
+		<dependency>
+			<groupId>com.google.android</groupId>
+			<artifactId>android</artifactId>
+			<version>2.3.3</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.sip</groupId>
+			<artifactId>jain-sip-ri</artifactId>
+			<version>1.2</version>
+			<scope>compile</scope>
+		</dependency>
+	</dependencies>
 
 	<build>
 		<plugins>
@@ -21,7 +123,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-site-plugin</artifactId>
-				<version>2.2</version>
+				<version>3.0</version>
 				<configuration>
 					<locales>en,es</locales>
 					<encoding>UTF-8</encoding>
@@ -39,20 +141,54 @@
 
 	</build>
 
-	<reporting>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-plugin-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</reporting>
+<!--	<reporting>-->
+<!--		<plugins>-->
+<!--			<plugin>-->
+<!--				<groupId>org.apache.maven.plugins</groupId>-->
+<!--				<artifactId>maven-project-info-reports-plugin</artifactId>-->
+<!--				<version>2.0.1</version>-->
+<!--			</plugin>-->
+<!--		</plugins>-->
+<!--	</reporting>-->
 
+	<repositories>
+		<repository>
+			<id>kurento-snapshots</id>
+			<name>Kurento Snapshot Repository</name>
+			<url>http://repository.kurento.com/archiva/repository/snapshots/
+			</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>kurento-releases</id>
+			<name>Kurento Repository</name>
+			<url>http://repository.kurento.com/archiva/repository/internal/</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+	
 	<distributionManagement>
 		<site>
 			<id>maven-site</id>
 			<url>scp://repository.kurento.com/var/www/kurento/site/kurento-android-docs/${project.version}</url>
 		</site>
 	</distributionManagement>
+
+	<scm>
+		<connection>scm:http://kurento.googlecode.com</connection>
+		<developerConnection>scm:git:ssh://repository.kurento.com/git/kurento-android-docs</developerConnection>
+		<url>https://repository.kurento.com/git/kurento-android-sdk/?p=kurento-android-docs</url>
+	</scm>
+
 
 </project>
