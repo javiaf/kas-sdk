@@ -62,9 +62,9 @@ Kurento Android SDK
    	media type (audio/video). Media formats are automatically adapted.
 
 	* <<Connection Media>>: Audio and Video channels can be handled independently
-	
+
 	* <<Connection mode>>: Connection can be declared DUPLEX, SEND or RECV
-           		      		  
+
 * Resources & Community
 
 	Kurento Android SDK is part of {{{http://www.kurento.com}Kurento}}. An End-to-End

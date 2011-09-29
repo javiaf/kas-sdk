@@ -2,19 +2,18 @@
 <project name="Kurento Android SDK">
 	<bannerLeft>
 		<name>Kurento Android Project</name>
-		<src>http://www.kurento.com/kurento/sites/all/themes/bartikplus/logo.png
-		</src>
+		<src>http://www.kurento.com/kurento/sites/all/themes/bartikplus/logo.png</src>
 		<href>http://www.kurento.com</href>
 	</bannerLeft>
 	<body>
 		<links>
 			<item name="Kurento" href="http://www.kurento.com/" />
 		</links>
-		<menu name="Kurento Android" href="./index.html">
+		<menu name="Kurento Android">
+			<item name="Release notes" href="releasenote.html" />
 			<item name="Source code" href="./source.html" />
 			<item name="Download" href="./download.html" />
 			<item name="Test Plan" href="testplan.html" />
-			<item name="Release note" href="releasenote.html" />
 		</menu>
 		<menu name="Documentation">
 			<item name="Developer's guide" href="./developer-guide.html" />

@@ -15,14 +15,17 @@ Introduction
 		detailed information regarding contact management and call handling.
 
 		* <<User Plane>>: Shows the mechanisms available to build a media distribution network associated with a call.
-Provides details of core configuration average, as the building blocks that allow connection of
-multimedia devices to networks for the transmission and reception of audio and video.
+Provides configuration details of basic building blocks enabling multimedia relay between in/out devices network
+interfaces.
 
-		* <<Application Android>>. Are the steps needed to create an application that incorporates Kurento Android Android SDK.
+		* <<Application Android>>. This section covers the a set of recommended steps intended to create
+		 an application that incorporates Kurento Android Android SDK. This are just recommendations based
+		 in {{{../docs/kas-softphone}K-Phone}} experience, but other options might be also valid.
 
 Control Plane
 
-	Control function is formed by a SIP Agent that supports connectivity with VoIP networks. Presents the architecture shown in the figure below.
+	Control function consist of a SIP User Agent providing connectivity with VoIP networks. Figure below shows
+	relationships with the application and the rest of components architecture shown in the figure below.
 
 [images/diagrama-control-plane.png]
 
@@ -30,48 +33,64 @@ Control Plane
 
 ** <<UA>>
 
-	This object is responsible for all management of the SIP protocol. Send, receive, process SIP messages for to sent by the network. This object can communicate to multiple contacts (<<<SipEndPoint>>>).
-
+	The user agent manages the SIP protocol. Instantiates a {{{http://java.net/projects/jsip}JAIN-SIP}} 
+	based SIP stack to handle message creation and relay. The UA is able to host multiple <<<SipEndPoint>>>,
+	each one seving one user (SIPURI)
+	The UA API is designed to hide SIP protocol complexities and provide a user oriented service layer. Following
+	list provides a summary of most relevant methods.
 
 *** <<<registerEndPoint(String user, String realm, String password, int expires, SipEndPointListener handler)>>>
 
-	This method registers a user to the server that is defined in the configuration of the object <<<ua>>>. Furthermore, it tells who is responsible for receiving events generated.
-
-	The parameter <<<expires>>> indicates the maximum time for each register, also you can unregister the user by setting this value to 0.
+	This method registers a user (SIPURI=sip:<<<user>>>@<<<realm>>>) contact against the REGISTRAR configured 
+	during <<<UA>>>	instantiation. The application defines also the registration period through parameter 
+	<<<expires>>>. Default value for this parameter is 3.600 seconds. Setting this parameter to 0 causes
+	the UA to unregister the contact.  
+	
+	Registering an endpoint also requires a reference to the listener that will handle SIP events. This listener
+	must be implemented by the application that controls the SIPURI life cycle.
 
 ***<<<terminate()>>>
 
-	This method ends the SIP stack, furthermore the user unregister the server.
+	This method unregister all SIPURIS hosted by the UA and terminates the SIP stack. The UA enters a
+	termination state from where it can not recover
 	
 **  <<SipEndPoint>>. 
 
-	This object is the representation of a <<<sipuri>>>, a contact. It is responsible for conventional tasks of a call, accept,  cancel, reject ...
+	The SIP endpoint represents a SIPURI with a registered contact. It is the user's service point for call
+	management that Kurento Android SDK provides to applications. The API is aimed to provide
+	a call control abstraction layer. 
+	
 
 ***<<<dial(String remoteParty, SipCallListener callController)>>>
 
-	This method makes a call to a contact. Using the parameter <<<remoteParty>>>  to configurate <<<sipuri>>>, it's the contact you want to call. 
-	Furthermore, it tells who is responsible for receiving events that may be generated. This will generate a message of SIP protocol that  send an invitation for communication.
+	This method starts an outgoing call to a remote contact identified by the <<<remoteParty>>> SIPURI.
+	In order to set up a call, the <<<SipEndPoint>>> requires a reference to the call listener that
+	will handle call events. This listener is implemented by the application and controls the call life
+	cycle
 
 **  <<SipEndPointEvent>>. 
 
-	This object provides events that are received after making a register in a SIP server. To receive events is necessary to implement the interface <<<SipEndPointListener>>> and 
-	subscribe to object <<<SipEndPoint>>> which we want to receive such events. This subscription is done when the user is register.
+	Endpoint events are received by the SIP handler notify relevant state changes experienced by
+	the <<<SipEndPoint>>>. In order to receive this events the handler must implement the interface
+	<<<SipEndPointListener>>>.
 	
 		***<<<SipEndPointListener>>>
 	
-			This interface represents a method for receiving events of type <<<SipEndPointEvent>>>:
-	
-			*<<<onEvent()>>>
+			*<<<onEvent()>>>: This method is used by the <<<SipEndPoint>> to send events 
+			of type <<<SipEndPointEvent>>>
 
-		The implementation of this method should be able to handle the following events:
+		The <<<SipEndPointListener>>> receiving notifications should be able to handle the following events:
 		
-			* <<<INCOMING_CALL>>>, this event means that someone is making call to us.
+			* <<<INCOMING_CALL>>>, Notifies an INVITE message has been received by the UA addressed to this
+			<<<SipEndPoint>>>, i.e. someone is trying to make call.
 
-			* <<<REGISTER_USER_SUCESSFUL>>>, this event means that the register with the connection settings are correct and we are registered. 
+			* <<<REGISTER_USER_SUCESSFUL>>>, Issued after successful register of SIPURI's contact 
 
-			* <<<REGISTER_USER_FAIL>>>, this event signifies that registration was incorrect.
+			* <<<REGISTER_USER_FAIL>>>, This event is sent if a server internal or protocol error 
+			is detected during registration process.
 	
-			* <<<REGISTER_USER_NOT_FOUND>>>, this event means that the user does not exist and the register has been wrong.
+			* <<<REGISTER_USER_NOT_FOUND>>>, The user does not exist within the REGISTRAR or and authentication
+			problem has been found.
 
 
 +---
@@ -99,54 +118,68 @@ public void onEvent(SipEndPointEvent event) {
 
 **  <<SipCall>>. 
 
-	This object handles the call once created. In addition to managing it, we may collect information from the media that has been established in the negotiation.
+	This object handles the call during its life cycle from instantiation, to termination.
 	
 ***<<<accept()>>>
 
-	This method accepts an incoming call. This generates a SIP message accepting the call.
+	Allows the application to accept an incoming call signaled by the <<<SipEndPoint>>>. The call
+	is accepted by sending a <<<200 OK>>> response
+	
+	Execute this method with an outgoing call will rise an error.
 
 ***<<<reject()>>>
 
-	This method rejects an incoming call. This generates a SIP message of rejecting the call.
+	Allows the application to reject an incoming call. It causes the SIP stackt to 
+	respond with DECLINE SIP message.
 
 ***<<<hangup()>>>
 
-	This method ends a call. This generates a SIP message of ending the call.
+	This method ends a call. It causes the SIP stack to send a BYE SIP request to the remote party.
 
 ***<<<cancel()>>>
 
-	This method cancels the invitation to establish a connection. This will generate a SIP message canceling the call.
+	This allows the caller to cancels outgoing calls.
 	
 ***<<<getNetworkConnection(JoinableStream.StreamType media)>>>
 
-	This method can obtain the <<<NetworkConnection>>> that has been generated in the SIP stack configuration.	
+	This method returns the network connection associated to a successful call setup. The
+	<<<NetworkConnection>>> provides a control interface of transmission and reception pipes that
+	enables media relay between network interfaces and in/out elements (camera, screen, microphone ...)
 	
+	Method returns a null value if the call state is different from CONNECTED.
+		
 ***<<<getMediaTypesModes()>>>
 
-	This method can know the direction of the communication (send only, receive only, send / receive) from each stream of the communication.
+	This method provides a MAP containing connection modes of every channel in the call.
+	Connection mode will depend on internal configuration, provided during <<<UA>>> instantiation
+	and remote peer requirements.
+	
+	Supported channels are AUDIO and VIDEO. They can present any of the following connection
+	modes: send only, receive only, send-receive
 
 **  <<SipCallEvent>>.
 
-	This object lets us know the events that will be received during the establishment of a call. To receive events is necessary to implement the interface <<<SipCallListener>>> 
-	and subscribe to object <<<SipCall>>> which we want to receive such events.
+	Call events notify state transitions within the <<<SipCall>>>. They are sent to the registered listeners
+	implementing interface <<<SipCallListener>>>
+	
 	
 		*** <<<SipCallListener>>>. 
-
-			This interface represents a method for receiving events of type <<<SipCallEvent>>>:
 	
-			*<<<onEvent()>>>
+			*<<<onEvent()>>>: This method is used by the <<<SipCall>> to send events 
+			of type <<<SipCallEvent>>>
 
-		The implementation of this method should be able to handle the following events:
+		The application implementing this listener  should be able to handle following events:
 
-			* <<<CALL_SETUP>>>, this event means that the call has been established.
+			* <<<CALL_SETUP>>>, Notifies a successful call setup.
 
-			* <<<CALL_TERMINATE>>>, this event means that the call has been terminated by any user.
+			* <<<CALL_TERMINATE>>>, This event is sent when call has been terminated, either by local 
+			or remote party.
 	
-			* <<<CALL_REJECT>>>, this event means that the call has been rejected by the contact.
+			* <<<CALL_REJECT>>>, This event is sent when outgoing calls are rejected by remote peer.
 		
-			* <<<CALL_CANCEL>>>, this event means that the user who made the call has been canceled before it has been established.
+			* <<<CALL_CANCEL>>>, This event is sent when incoming calls are canceled by remote peer.
 	
-			* <<<CALL_ERROR>>>, this event means that has not been able to locate the requested contact
+			* <<<CALL_ERROR>>>, Notifies an internal non recoverable error that prevents the call to progress.
 
 
 +---
@@ -169,90 +202,99 @@ public void onEvent(SipCallEvent event) {
 
 ** <<SipConfig>>. 
 
-	The definition of an object of this class is required for the initialization of the SIP stack. Get the parameters of the network configuration.
+	This object is the mechanism used to provide the UA Factory with required SIP configuration. Supported
+	configuration keys are defined in the {{{../kas-sipua-impl/apidocs/com/kurento/commons/sip/util/SipConfig.html}<<<SipConfig>>>}}}
+	reference guide
 
 ** <<MSControlFactory>>. 
 
-	It is the main factory provides a static method to create <<<MediaSessionAndroid>>>.
+	This factory provides a static method to create <<<MediaSessionAndroid>>> instances, used to control and 
+	manage media core capabilities.
 
 **  <<MediaSessionAndroid>>. 
 
-	An object of this class acts as a factory to create object <<<MediaComponentAndroid>>>. This creates a <<<MediaComponentAndroid>>> based on the particular configuration and 
-	the parameters passed into the method <<<createMediaComponent>>>. An object of this class is assigned to <<<UAFactory>>> using the static method <<<setMediaSession>>> through 
-	this object and builds a <<<NetworkConnection>>>.
-	
+	This is the media core central class. It provides factory methods to instantiate <<<MediaComponentAndroid>>>
+	and <<<NetworkConnection>>>, used to relay media between device's in/out components and the active network
+	interface. <<<UAFactory>>> requires an instance of <<<MediaComponentAndroid>>> in order to create <<<NetworkConnections>>>
+	that service the User Plane.
+		
 ***<<<createMediaComponent(Configuration<MediaComponent> predefinedConfig, Parameters params)>>>
 
-	This method creates the components of media (audio and video).
+	Factory method to instantiate media components.
 	
 ** <<MediaComponentAndroid>>. 
 
-	An object of this class define a particular media component, according to the settings.
+	Media components attach a media pipe to device's in/out components enabling media relay to other components or
+	network interfaces. 
 
 * SIP Agent initialization.
 
-	The User Agent must be initialized to start the application. Serves one or more SIP termination points and manages all calls: 
-	incoming and outgoing calls. Must be restarted only when significant changes occur, such as an IP change, active interface, 
-	the proxy or similar.
+	The User Agent must be initialized in order to provide a SIP service to applications. It can
+	manage one or more SIPURI, multiplexing calls among then. The SIP User Agent must be restarted
+	 only when significant changes occur, such as an IP change, active interface change, 
+	proxy address or similar.
 	
-	Internally it have a SIP stack that handles the exchange of messages between remote agents. Kurento Android SDK used for this purpose 
-	the implementation {{{http://java.net/projects/jsip}JAIN-SIP}}
+	Internally it has a SIP stack that handles messages exchange between remote peers. Kurento Android SDK
+	uses for this purpose {{{http://java.net/projects/jsip}JAIN-SIP}}
 
-	The initialization of the SIP user agent configuration requires two sets of parameters:
+	Initialization of the SIP User Agent requires two sets of configurations:
 	
-	* <<Configuration SIP>>: Sets the configuration required to connect to a VoIP network. It consists of the parameters shown in the next table.
+	* <<SIP Configuration>>: Sets the parameters required to connect the UA to a VoIP network. It consists
+	 of the parameters shown in the next table.
 	
 	
 *--------*-----------*----*--------*----------------------------------------------------------------*
 | <<Name>> | <<M/O>> |<<Type>>|<<Range>>    | <<Description>>                                                    |
 *--------*-----------*----*--------*----------------------------------------------------------------+
-| LocalAddress| M | String | NA    | Sets the IP address used by the SIP stack. If the IP address does not |
-|             |   |        |       | correspond to an active interface, then it generate an exception  |
+| localAddress| M | String | NA    | Sets the IP address used by the SIP stack. If the IP address does not |
+|             |   |        |       | correspond to an active interface, then it rises an exception  |
 *--------*-----------*----*--------*----------------------------------------------------------------+
-| LocalPort   | O | Integer| 1-2^16| Sets the local port where the SIP stack send and heard the messages|
+| localPort   | O | Integer| 1-2^16| Sets the local port where the SIP stack binds |
 *--------*-----------*----*-------*----------------------------------------------------------------+
-| ProxyAddress| M | String | NA    | Set the SIP proxy address. This is also the address used |
-|             |   |        |       |as a SIP REGISTER                           |
+| proxyAddress| M | String | NA    | Set the SIP PROXY address. This is also the address used |
+|             |   |        |       |as SIP REGISTER                           |
 *--------*-----------*----*-------*----------------------------------------------------------------+
-| ProxyPort| M | String |  1-2^16  | Set the SIP proxy port that SIP messages are sent|
+| proxyPort| M | String |  1-2^16  | Set the remote port in the SIP PROXY where messages are sent|
 *--------*-----------*----*-------*----------------------------------------------------------------+
 (M: Mandatory; O: Optional)
 
 
-	* <<Configuration of media>>: It provides relevant information required of media in the process of negotiating calls. 
-	The following table lists the parameters:
-
+	* <<Media Configuration>>: It provides relevant information required by media core for call negotiation 
+	and setup. Next table provides a complete reference to supported parameters:
 
 *--------*-----------*----*-------*--------------*--------------------------------------------------*
-| <<Basic parameters>> | <<M/O>> | <<Type>> | <<Range>> | <<Default value>> | <<Description>> |
+| <<Basic configuration>> |
+*--------*-----------*----*-------*--------------*--------------------------------------------------*
+| <<Name>> | <<M/O>> | <<Type>> | <<Range>> | <<Default value>> | <<Description>> |
 *--------*-----------*----*-------*---------------*-------------------------------------------------+
-| NET_IF |  M | NetIF | [WIFI, MOBILE] | | Indicate if the network interface is WIFI or MOBILE. |
+| NET_IF |  M | NetIF | [WIFI, MOBILE] | | Defines active network interface: WIFI or MOBILE. |
 *--------*-----------*----*-------*---------------*-------------------------------------------------+
-| LOCAL_ADDRESS | M | InetAddress | NA | |Indicate the local IP address.|
+| LOCAL_ADDRESS | M | InetAddress | NA | |Provides the local IP address of active interface.|
 *--------*-----------*----*-------*---------------*-------------------------------------------------+
-| MAX_BANDWIDTH | O | Integer | NET_IF.MOBILE:\ [150000,\ 384000]\ | NET_IF.MOBILE:\ 384000\ | Indicate the max bandwidth will be used in bps(bits per second). |
+| MAX_BANDWIDTH | O | Integer | NET_IF.MOBILE:\ [150000,\ 384000]\ | NET_IF.MOBILE:\ 384000\ | Limits max bandwidth usage, in bps(bits per second). |
 |				|	|		  | NET_IF.WIFI:\ [150000,\ 1500000]	| NET_IF.WIFI:\ 1500000  |																	|	
 *--------*-----------*----*-------*---------------*-------------------------------------------------+
-| STREAMS_MODES | O | Map\<MediaType,\ Mode\> | [SENDRECV, SENDONLY, RECVONLY] | SENDRECV | Indicate the mode of each media stream.|
+| STREAMS_MODES | O | Map\<MediaType,\ Mode\> | [SENDRECV, SENDONLY, RECVONLY] | SENDRECV | Defines connection mode for each media stream.|
 *--------*-----------*----*-------*---------------*-------------------------------------------------+
-| AUDIO_CODECS   | O | List\<AudioCodectype\> | [AMR, MP2] | [AMR, MP2] |Indicate the audio codecs supported. |
+| AUDIO_CODECS   | O | List\<AudioCodectype\> | [AMR, MP2] | [AMR, MP2] |Configures the list of enabled audio codecs. |
 *--------*-----------*----*-------*---------------*-------------------------------------------------+
-| VIDEO_CODECS   | O | List\<VideoCodectype\> | [H263, MPEG4]| [H263, MPEG4] |	Indicate the video codecs supported. |
+| VIDEO_CODECS   | O | List\<VideoCodectype\> | [H263, MPEG4]| [H263, MPEG4] |	Configures the list of enabled video codecs . |
 *--------*-----------*----*-------*---------------*-------------------------------------------------+
-| <<Advanced parameters>> |
+| <<Advanced configuration>> |
 *--------*-----------*----*-------*---------------*-------------------------------------------------+
-| FRAME_SIZE | O | Dimension | NA | 352x288 | Indicate the frame size in pixels (width x height).  |
+| FRAME_SIZE | O | Dimension | NA | 352x288 | Sets the maximum frame size to be used, in pixels (width x height).  |
 *--------*-----------*----*-------*---------------*-------------------------------------------------+
-| MAX_FRAME_RATE | O |Integer|  [1, MAX_INT] | 15 |Indicate the max frame rate will be used. |
+| MAX_FRAME_RATE | O |Integer|  [1, MAX_INT] | 15 |Sets the max frame rate taht will be used. |
 *--------*-----------*----*-------*---------------*-------------------------------------------------+
-| GOP_SIZE | O |Integer| [0, MAX_INT] | 6 | Indicate the max number of frames in a group of pictures, or 0 for intra_only.  |
+| GOP_SIZE | O |Integer| [0, MAX_INT] | 6 |  Max number of frames in a group of pictures, set 0 for intra_only.  |
 *--------*-----------*----*-------*---------------*-------------------------------------------------+
-| FRAMES_QUEUE_SIZE | O | Integer | [2, MAX_INT] | 2 | Indicate the number of frames will be buffered from the camera. |
+| FRAMES_QUEUE_SIZE | O | Integer | [2, MAX_INT] | 2 | Configures the size of jitter buffer in frames. Large numbers will cause latency increase |
 *--------*-----------*----*-------*---------------*-------------------------------------------------+
 (M: Mandatory; O: Optional)
 	
 	
-	The initialization of the SIP agent first requires factory parameterize the mean <<MSControlFactory>>, as shown in the following snippet.
+	Creation of a SIP UA instance requires two previous initialization procedures. First,
+	the initialization of parent media factory <<MSControlFactory>>, as shown in the following snippet.
 	
 +---
 Parameters params = MSControlFactory.createParameters();
@@ -296,7 +338,7 @@ params.put(MediaSessionAndroid.FRAMES_QUEUE_SIZE, maxQueueSize);
 MediaSessionAndroid mediaSession = MSControlFactory.createMediaSession(params);
 +---	
 
-	Also need to set the factory in SIP User Agents, as follows.
+	Second, initialization of the SIP configuration, as follows.
 	
 +---
 SipConfig sipConfig = new SipConfig();
@@ -306,7 +348,8 @@ sipConfig.setProxyAddress(proxyIP);
 sipConfig.setProxyPort(proxyPort);
 +---
 
-	Once the factories are set up, you instantiate an object <<MediaSession>> passed as parameter to instantiate a SIP User Agent.
+	Once the factories are configured, a <<MediaSession>> object is created and passed as parameter
+	 to instantiate a SIP User Agent.
 
 +---
 mediaSession = MSControlFactory.createMediaSession(params);
@@ -315,32 +358,38 @@ UaFactory.setMediaSession(mediaSession);
 ua = UaFactory.getInstance(sipConfig);
 +---
 
-	It is important to note that a change in media parameters required to instantiate a new <<<MediaSession>>> and so reset both a user agent.
+	It is important to notice that any change in media parameters requires a new <<<MediaSession>>>, and
+	hence the UA has to be recreated.
 	
-	To finalize the User Agent, either because the application is finished, or because it is necessary to reconfigure, the code that  runs is
+	To Terminate the User Agent, either because the application is finished, or because a reconfiguration
+	is required, the following code has to be run
 	
 +---
 ua.terminate();
 +---
 
 
-* Register control
+* Contact management
 
-** Register
+** Register contact
 
-	Once the SIP stack is initialized and have our object <<<ua>>> created successfully, a user can register into a server. Registration in the server can be authenticated or not. Depending on the server and the application being made, so will the values ​​you enter in the call to <<<registerEndPoint(String user, password, String String int expires, realm, SipEndPointListener handler)>>>:
+	UA registers a contact when its associated SIPURI must support incoming calls. Kurento Android SDK
+	models the user contact with the object <<<SipEndPoint>>>, that is instantiated and returned by method
+	<<<registerEndPoint(String user, password, String String int expires, realm, SipEndPointListener
+	    handler)>>>:
 
-	* <<user>>: User registration.
+	* <<user>>: User name to be registered.
 
-	* <<realm>>: User domain to register.
+	* <<realm>>: Domain name to be register.
 
-	* <<password>>: User password for registration.
+	* <<password>>: User password, required only when AUTH is activated.
 
-	* <<expires>>: Time until the next register.
+	* <<expires>>: Register expires time. Default value is 3600 seconds. A 0 value is interpreted as a unregister.
 
-	* <<handler>>: Class that is responsible for implementing the interface <<<SipEndPointListener>>>.
+	* <<handler>>: Reference to the object that will be receiving endpoint events.
 
-	The register will return an object of type <<<SipEndPoint>>> with which we can make calls. Furthermore the class has to implement the interface will begin to receive the corresponding events.
+	Method registerENdPoint animatedly returns a <<<SipEndPoint>>> instance from where call control can
+	 be performed.
 
 +---
 endPoint = ua.registerEndPoint(localUser, localRealm, localPassword, expires, this);
@@ -348,7 +397,7 @@ endPoint = ua.registerEndPoint(localUser, localRealm, localPassword, expires, th
 
 ** Unregister
 
-	If for any reason wish to stop receiving calls or the application has finished, we will unregister the contact  on the server. Set the parameter <<<expires>>> with a value of 0.
+	Contact unregister can be achieved by setting the <<<expires>>> header to 0
 
 +---
 expires = 0;
@@ -357,57 +406,88 @@ endPoint = ua.registerEndPoint(localUser, localRealm, localPassword, expires, th
 
 * Outgoing calls
 
-** Make calls
+** Initiate a call
 
-	To make an outgoing call indicated the contact you want to make the call with an <<<sipuri>>>, which will consist of the username and domain, for example: <<<user@dominio.es>>> . The call is made by the object <<<endpoint>>> of class <<<SipEndPoint>>> that we obtained when we have completed the registration of the user. Furthermore, we tell the class that implements the interface <<<SipCallListener>>>. This returns an object of class <<<SipCall>>>.
+	A call can be initiated by method <<<SipEndPoint.dial()>>>. It is mandatory to provide the called party (SIPURI)
+	and the call event handler to the endpoint. Method dial will immediately return a <<<SipCall>>> object
+	enable the application full control over the call life cycle 
 	
 +---
 currentCall = endPoint.dial(remoteURI, this);
 +---
 
-	For events that occurs when a call is made it, must implement the interface <<<SipEndPointListener>>>.
+** Cancel a call
 
-** Cancel calls
-
-	We may cancel a call before it is established. We will use an object of class <<<SipCall>>> that is created when we started the outgoing call.
+	Before the call moves to CONNECTED or ERROR states, the calling party can request the call to be canceled
+	with method <<<SipCall.cancel()>>>. This will cause the SIP stack to send a CANCEL request and the call
+	will move to state FINISHED.
 	
+	Call cancel can be only requested by calling party. Called party would reject the call.
+		
 +---
 currentCall.cancel(); 
 +---	
 
 * Incoming calls
 
-	When you register, it also indicates the class that implements <<<SipEndPointListener>>>. This is necessary to receive some events, including the event <<<SipEndPointEvent.INCOMING_CALL>>>. 
-	When we receive this event:
-
-	* Accept call.
-
-	* Reject call.
+	Incoming calls are those initiated by the remote party. Every time an incoming call is 
+	received, the <<<UA>>> performs following verifications
+	
+		* There is a registered SIPURI hosted by the <<<UA>>>. Otherwise a <<<404 NOT_FOUND>>> response is
+		 sent back
+		 
+		* Requested media format is supported by media core. Otherwise a <<<415 UNSUPPORTED MEDIA TYPE>>> 
+		response is sent back
+	
+	If SIPURI is locally hosted and media is supported an event is generated the The associated endpoint 
+	notifies to the	handler with event <<<SipEndPointEvent.INCOMING_CALL>>> 
+		
+	The application can retrieve the <<<SipCall>>> from the event and must then accept or reject the call
 
 ** Accept call
 
-	To accept the call, we use the method <<<accept()>>> of the class <<<SipCall>>>.
+	Method <<<accept()>>> causes the call to be accepted
 
 +---
-this.pendingEndPointEvent = event;
-incomingCall = pendingEndPointEvent.getCallSource();
-incomingCall.accept();
+// handler implementing SipEndPointListener
+// accept all calls
+
+@Overide
+public void onEvent(SipEndPointEvent event) {
+...
+   if (event.getEventType().equals(SipEndPointEvent.INCOMING_CALL)){
+       SipCall incomingCall = event.getCallSource();
+       incomingCall.accept();
+   }
+...
+}
 +---
 
 
 ** Reject call
 
-	To reject the call, we use the method <<<reject()>>> of the class <<<SipCall>>>.
+	Method <<<reject()>>> causes the call to be rejected.
 	
 +---
-this.pendingEndPointEvent = event;
-incomingCall = pendingEndPointEvent.getCallSource();
-incomingCall.reject();
-+---
-	
-* Finish call
+// handler implementing SipEndPointListener
+// reject all calls
 
-	Once the call is established can be finished using the object <<<SipCall>>> that are set when you called:
+@Overide
+public void onEvent(SipEndPointEvent event) {
+...
+   if (event.getEventType().equals(SipEndPointEvent.INCOMING_CALL)){
+       SipCall incomingCall = event.getCallSource();
+       incomingCall.reject();
+   }
+...
+}
++---
+	
+* Terminate call
+
+	A <<<SipCall>>> can be terminated only if it is in CONNECTED state. Method
+	<<<hangup()>>> will cause the SIP stack to send a BYE and the media core
+	to free the media resources.
 	
 +---
 currentCall.hangup();
@@ -415,85 +495,101 @@ currentCall.hangup();
 
 User Plane
 	
-	With Plane User can define and build a network of media distribution that is associated with a call. For this you must configure the media, configure the components to connect to multimedia devices to the network and these to perform transmission and reception of audio and video.
+	The User Plane function is able create media networks connecting in/out ports on remote
+	devices, based in the  negotiation carried out by the Control Plane.
+	Kurento Android SDK User Plane is implemented by {{{../kas-mscontrol}MSControl project}}, and
+	consist of a set of basic building blocks implemented with ffmpeg that can interchange media
+	when connected.
+	
+* Media initialization
 
-* Initialization media
-
-	Initialization of media requires prior configuration is made from a series of parameters that are used to create a <<<MediaSession>>> with a certain characteristics. We use the method <<<createMediaSession()>>> from the factory <<MSControlFactory>> as mentioned above in the initialization section of Control Plane.
-
-	This <<<MediaSession>>> be used in <<<UaFactory>>> to create a <<<ua>>> which internally create a <<<NetworkConnection>>> based on the previous configuration.
-
-	Initialization of media itself takes place once the call, which determines the final characteristics of audio and video. It initializes the internal media stack that is responsible for all management and encoding, sending over the network ... all managed by the <<<NetworkConnection>>> created internally by the SIP stack.
-
-	As mentioned in a previous section, we know that the call has been set correctly because it has received an event <<<SipCallEvent.CALL_SETUP>>>, through which we can access the <<<NetworkConnection>>> that are obtained after the call:
+	Media core requires a previous initialization before it can be used. This configuration is
+	intended to provide environmental information (IP address, available bandwidth, etc.) and user
+	preferences (enabled codecs, MAX bandwidth, etc.).
+	
+	Kurento Android SDK uses method <<<createMediaSession()>>> of parent factory <<MSControlFactory>> 
+	to initialize  media core. The method takes a list of parameters defined in <SIP Agent initialization>
+	and returns a <<<MediaSession>>> instance that will be used to create <<<MediaGroups>>> and 
+	<<<NetworkConnections>>>.
+	
+	<<<MediaGroups>>> are created by the application, based in the model of use and business logic.
+	<<<NetworkConnection>>> is automatically created by the <<<UA>>> after call setup is successful.
+	Code below shows an example of how to get the connection object after an event has been received
+	from the call. If the event is different from CALL_SETUP, the <<<NetworkConnection>>> instance will
+	be <<<null>>>
 
 +---
 SipCall currentCall = event.getSource();
-currentCall.getNetworkConnection(null);
-+---
-	and direction of each media stream, ie for each stream media if is SENDONLY, RECVONLY o SENDRECV:
-
-+---
-currentCall.getMediaTypesModes();
+currentCall.getNetworkConnection(StreamType.video);
 +---
 
-	From each stream direction can create particular media components (using the <<<MediaSession>>> created in the configuration) that is connected to <<<NetworConnection>>> obtained, specifically the audio stream or video of the latter.
-
-	Finally, with the established call is the time to establish media streams (audio and video). This will be created for each media component to be objects of class <<<MediaComponentAndroid>>>.
-	
+	A <<<MediaComponent>>> can be created for each stream type (audio/video) and direction (SEND/RECV) 
+	of the call. When connecting <<<MediaComponent>>> and <<<NetworkConnection>>> is important
+	to verify there is at least a connection alternative where streams in both sides are the same type
+	and opposite direction.
+		
 * {Audio Components}
 
- 	You must create audio components for both the emission and reception. To create the audio components will use a method of <<<MediaSessionAndroid>>>.
-
-		** <<<createMediaComponent>>>, we indicate the type of component you need, if emission or reception, as well as the speaker for which we receive.
+ 	There are reception and transmission audio components. Method <<<createMediaComponent>>>
+ 	of factory <<<MediaSessionAndroid>>> is used to create audio instances. It is required
+ 	the component name, stream direction and speaker id.
 		 
-			* A receiving component and audio plays through the external speaker:
+		* Create a reception audio component that plays through the external speaker:
 
 +---
 Parameters params = MSControlFactory.createParameters();
 
 params.put(MediaComponentAndroid.STREAM_TYPE, AudioManager.STREAM_MUSIC);
 audioRecorderComponent = mediaSession.createMediaComponent(
-	MediaComponentAndroid.AUDIO_RECORDER, 
-	params);
+	MediaComponentAndroid.AUDIO_RECORDER, params);
 +---	
 
-			* An audio output component:
+		* Next code shows how to create an audio emision component getting audio
+		from microphone.
 			
 +---
 audioPlayerComponent = mediaSession.createMediaComponent(
-	MediaComponentAndroid.AUDIO_PLAYER,
-	Parameters.NO_PARAMETER);
+	MediaComponentAndroid.AUDIO_PLAYER, Parameters.NO_PARAMETER);
 +---
 
-	* Once you've created the audio components, we must define each component as it will, if of emission or reception and make them start. We will need access to the configuration <<<NetworkConnection>>> to retrieve the type of <<<stream>>> we want to play, in this case will be <<<StreamType.audio>>>.
+		* Audio components can be joined to <<<NetworkConnections>>> in order to receive or send
+	media to remote peers. It is important to notice the <<<NetworkConnection>>> will relay media
+	only after a successful call set up has been completed. If the <<<NetworkConnection>>> is not
+	connected, media will be lost.
 	 
-		* Audio receiver component.
+			* Connect audio receiver component to a network connection.
 
 +---
+NetworkConnection nc = sipcall.getNetworkConnection();
 audioRecorderComponent.join(Direction.RECV, nc.getJoinableStream(StreamType.audio));
 audioRecorderComponent.start();
 +---
 
-		* Audio output component.
+			* Connect audio output component to a network connection.
 		
 +---
+NetworkConnection nc = sipcall.getNetworkConnection();
 audioPlayerComponent.join(Direction.SEND, nc.getJoinableStream(StreamType.audio));
 audioPlayerComponent.start();
 +---
 
-	To stop the audio components:
+		* Next code shows how to stop audio components, in case transmission has to terminate
 	
 +---
 audioRecorderComponent.stop();
 audioPlayerComponent.stop();
 +---
 
-* {Video compoments}
+* {Video components}
 
-	The creation of the media components are very similar to the audio. It also uses a method of <<<MediaSessionAndroid>>>. In this case we add some parameters like <<SurfaceView>> (is the surface where it will display video received), the width and length of the device's screen. We will need access to the configuration <<<NetworkConnection>>> to retrieve the type of <<<stream>>> we want to play, in this case will be <<<StreamType.video>>>.
+	Creation of the video components is very similar to the audio case seen before. It also uses a method 
+	<<<createMediaComponent>>> from <<<MediaSessionAndroid>>>, but with a different set of parameters.
+	Video players require the application to provide the <<SurfaceView>> 
+	(is the screen space where it will display video received), the <<width>> and <<length>> of device's 
+	screen.
 	
-	* Video receiver component, adding the <<SurfaceView>>, height and width of the screen of the device:
+	* Video receiver component, adding the <<SurfaceView>>, <<height>> and <<width>> 
+	of the screen of the device:
 
 +---
 DisplayMetrics dm = new DisplayMetrics();
@@ -517,29 +613,30 @@ videoRecorderComponent = mediaSession.createMediaComponent(
 Parameters params = MSControlFactory.createParameters();
 params.put(MediaComponentAndroid.PREVIEW_SURFACE,
 		(View) findViewById(R.id.video_capture_surface));
-params.put(MediaComponentAndroid.DISPLAY_ORIENTATION,
-		Orientation);
+params.put(MediaComponentAndroid.DISPLAY_ORIENTATION, Orientation);
 videoPlayerComponent = mediaSession.createMediaComponent(
 		MediaComponentAndroid.VIDEO_PLAYER, params);
 +---
 
-	Once the component has been set correctly, we can define what is and what action we want to do:
+	* Video components can be also connected to a network interface:
 	
-		* Video receiver component:
+		* Connect a video receiver component to a network interface for data reception:
 
 +---
+NetworkConnection nc = sipCall.getNetworkConnection()
 videoRecorderComponent.join(Direction.RECV, nc.getJoinableStream(StreamType.video));
 videoRecorderComponent.start();
 +---
 
-		* Video output component:
+		* Connect a video output component to a network interface for data delivery:
 	
 +---
+NetworkConnection nc = sipCall.getNetworkConnection()
 videoPlayerComponent.join(Direction.SEND, nc.getJoinableStream(StreamType.video));
 videoPlayerComponent.start();
 +---	
 
-	To stop the video components:
+	Video components are terminated as shown in the following code:
 
 +---
 videoRecorderComponent.stop();
@@ -549,19 +646,22 @@ videoPlayerComponent.stop();
 
 Creating an Android application
 
-	From this section will give some recommendations and next steps to perform an Android application that incorporates Kurento Android SDK. They discussed issues such as configuration files .xml, activities and services required, managing preferences, and finally, how to manage the media, both audio and video.
-
-	In the final section you can find some code examples to follow.
-
-	The next diagram you can see a diagram of the activities, services and components that are necessary for an application.
+	This section will provide hints and recommendations for application development including
+	Kurento Android SDK. The guide will cover configuration files, activities and services, and 
+	how to incorporate call handling and media management. 
+	
+	The diagram shows a complete architecture, including activities, services 
+	and components required for an application.
 
 [images/diagrama-tk-softphone.png]
 
 * Configuration file {AndroidManifest.xml}
 	
-	Configuration file AndroidManifest.xml of an application based on Android is very important, because in this file are located, the permissions the user must agree to when installing the application, and other activities and services which shall be composed of the application.
-	
-		Some of the necessary permissions are:
+	Configuration file (AndroidManifest.xml) of an Android application is very important, 
+	because defines:
+		* Permissions the user must agree with during installation. Required permission 
+		is quite dependent on the application model of use, but in general, Kurento Android SDK
+		will require the ones listed below:
 
 +---
 <uses-permission android:name="android.permission.VIBRATE"></uses-permission>
@@ -576,27 +676,29 @@ Creating an Android application
 <uses-permission android:name="android.permission.READ_PHONE_STATE"></uses-permission>
 +---
 			
-		Depending on the application wants to implement some of these permits are not necessary. For all permissions that are available can be found in the {{{http://developer.android.com/reference/android/Manifest.permission.html}guía de desarrollo de Android}}.
-		
-		Also define the activities and services that make up our application, such as:
-		
-			* A service is defined as:
-			
-+--- 
-<service android:enabled="true" android:name="com.tikal.softphone.SoftPhoneService" \>
-+---
+		A complete list of permissions can be found in 
+		 {{{http://developer.android.com/reference/android/Manifest.permission.html}Android developer's guide}}
+		 		
+		* Activities
 
-			* An activity is defined as:
-			
 +---			
 <activity android:name="com.tikal.videocall.VideoCall" android:label="Video Call" 
 android:theme="@android:style/Theme.NoTitleBar.Fullscreen" android:screenOrientation="landscape" 
 android:launchMode="singleTop" \>
 +---
 				
-		Each of the activities that will be launched within the application should be defined in this file. For more information on setting AndroidManifest.xml file can be found in the  {{{http://developer.android.com/guide/topics/manifest/manifest-intro.html}guía de desarrollo de Android}}.
-
-		Por último, en la configuración de la actividad principal deberá incluirse un apartado llamado <<{{{http://developer.android.com/guide/topics/manifest/intent-filter-element.html}intent-filter}}>> que nos servirá para cuando un usuario quiera realizar una llamada desde los contactos según el "scheme" que nosotros elijamos, en este caso se busca qué cuando un usuario tenga guardado un contacto con datos como <<<"sip:juan@server.net">>> se abra nuestra actividad:
+		* Services that have to wake up:
+			
++--- 
+<service android:enabled="true" android:name="com.tikal.softphone.SoftPhoneService" \>
++---
+			
+		* Intent filter: Within the main activity configuration it is useful to include the 
+		a section called <<{{{http://developer.android.com/guide/topics/manifest/intent-filter-element.html}intent-filter}}>>.
+		This configuration will enable direct access from the agenda to the call handler for all
+		contacts with a field based in a given <schema>. The {{{../kas-softphone}K-phone}}} defines
+		the schema <<<"sip:user@server.net">>>. When selecting that field it will automatically initiate
+		the call
 		
 +---
 <intent-filter>
@@ -606,25 +708,34 @@ android:launchMode="singleTop" \>
 	<data android:scheme="imto" \>
 <\intent-filter> 
 +---	
-	
+
+	Each element required by the application must be defined 
+	in this file. Detailed information on setting AndroidManifest.xml file can be found in the  
+	{{{http://developer.android.com/guide/topics/manifest/manifest-intro.html}Android developer's guide}}
+
+
 * Activities
 
-	** {{Principal activity}}
+	Any application including Kurento Android SDK should include following list of activities
+
+	** {{Main activity}}
 	
-	** Management Connection Preferences
+	** Connection Preferences
 	
-	** Management Media Preferences
+	** Media Preferences
 	
-	** Management receiving a call
+	** Call reception
 	
-	** Management emission a call
+	** Call initiation
 	
-	** Management media (Video and Audio)
+	** Media management
 
 
 * Services
 
-	** {{Principal service}}
+	Kurento Android SDK application are likely to need the services listed next
+	
+	** {{Main service}}
 	
 	** {{Service to an active call}}
 
