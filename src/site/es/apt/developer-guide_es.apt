@@ -553,7 +553,7 @@ videoPlayerComponent.stop();
 
 Crear una aplicación en Android
 
-	A partir de este apartado se van a dar algunas recomendaciones y pasos a seguir para poder realizar una aplicación en Android que incorpore Kurento Android SDK. Se comentarán temas como la configuración de los ficheros .xml, las actividades y servicios necesarios, la gestión de las preferencias y, por último, cósmo realizar la gestión del media, tanto del audio como del vídeo.
+	A partir de este apartado se van a dar algunas recomendaciones y pasos a seguir para poder realizar una aplicación en Android que incorpore Kurento Android SDK. Se comentarán temas como las actividades, servicios necesarios, la gestión de las preferencias, la configuración de los ficheros .xml,  y, por último, cómo realizar la gestión del media, tanto del audio como del vídeo.
 
 	En la parte final del apartado se podrán encontrar algunos ejemplos de código a seguir.
 
@@ -561,94 +561,221 @@ Crear una aplicación en Android
 
 [../images/diagrama-tk-softphone.png]
 
-* Configuración del fichero {AndroidManifest.xml}
-	
-	La configuración del fichero AndroidManifest.xml dentro de una aplicación basada en Android es muy importante, debido a que en este fichero se encuentran por un lado, definidos los permisos que deberá aceptar el usuario cuando se instale la aplicación, y por otro las actividades y los servicios de los cuales estará compuesta la aplicación.
-	
-		Algunos de los permisos necesarios son:
+	Una vez arranca la aplicación:
 
-+---
-<uses-permission android:name="android.permission.VIBRATE"></uses-permission>
-<uses-permission android:name="android.permission.CAMERA"></uses-permission>
-<uses-permission android:name="android.permission.RECORD_AUDIO"></uses-permission>
-<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>
-<uses-permission android:name="android.permission.INTERNET"></uses-permission\>
-<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"></uses-permission>
-<uses-permission android:name="android.permission.WAKE_LOCK"></uses-permission>
-<uses-permission android:name="android.permission.READ_CONTACTS"></uses-permission>
-<uses-permission android:name="android.permission.WRITE_CONTACTS"></uses-permission>
-<uses-permission android:name="android.permission.READ_PHONE_STATE"></uses-permission>
-+---
-			
-		Dependiendo de que tipo de aplicación se quiera implementar algunos de estos permisos no serán necesarios. Para conocer todos los permisos de los que se dispone se pueden consultar en la {{{http://developer.android.com/reference/android/Manifest.permission.html}guía de desarrollo de Android}}.
+		[[1]] Se arranca la actividad principal (<<<Softphone Activity>>>). Se suscribe al servicio principal (<<<Softphone Service>>>). Mediante la implementación de la interfaz <<<ServiceUpdateUIListener>>> recibirá eventos de éste.
+
+		[[1]] Por un lado si todos son correctos, se crea un servicio de Android, <<<Softphone Service>>>, que será el servicio principal de la aplicación. Mediante la implementación de la interfaz <<<CallListener>>> realizará algunas tareas propias de un teléfono y notificará algunos eventos a la actividad principal. Además, mediante un método de la clase <<<Controller>>> se suscribirá para poder recibir notificaciones.
+
+		[[1]] Y por otro, se crea un objeto de la clase <<<Controller>>>. Este objeto debe implementar las interfaces <<<SipEndPointListener, SipCallListener, InterfacePhone, CallNotifier>>>. Se encargará de la gestión de las llamadas y de la gestión de los mensajes del protocolo SIP. Además, notificará de ciertos eventos al servicio principal, mediante la suscripción antes mencionada.
+
+		[[1]] Una vez el <<servicio>> y el <<controller>> están creados, la aplicación realizará el registro al servidor con los parámetros configurados en las preferencias de la aplicación. A partir de este punto, la aplicación estará preparada para realizar o recibir llamadas.
+
+	Realizamos una llamada:
+
+		[[1]]	Cuando se realiza una llamada desde la actividad principal, se utiliza el objeto <<<controller>>> que se ha creado anteriormente, que se encargará de enviar los mensajes del protocolo SIP necesarios. 
+
+		[[1]] Se arranca la actividad <<<Outgoing Call>>>. Esta actividad será la encargada de levantar una nueva interfaz de usuario, en la cual, aparecerán datos del contacto al cual estamos llamando y desde donde podremos cancelar la llamada. Si fuese así, se utilizaría el objeto <<<controller>>> para ello.
+
+		[[1]] Será desde el objeto <<<controller>>> desde donde se notifique al <<<servicio principal>>> sí la llamada ha sido aceptada o rechazada.
+
+	Recibimos una llamada:
+
+		[[1]] Desde el objeto <<<controller>>> podremos recibir un mensaje del protocolo SIP, en el cual, nos indique que nos están llamando. 
+
+		[[1]] El <<<controller>>> se lo notifica al <<<servicio principal>>> y esté arranca una nueva actividad llamada <<<Incoming Call>>>.
+
+		[[1]] Esta actividad será la encargada de levantar una nueva interfaz de usuario, en la cual, aparecerán datos del contacto que nos está llamando. Mediante esta interfaz podremos aceptar o cancelar la llamada. Para cualquiera de las dos opciones usaremos el objeto <<<controller>>>.
+
+	Llamada establecida:
+
+	[[1]] Cuando se ha establecido una llamada, llegará un mensaje del protoclo SIP a el <<<controller>>>. Cuando esto ocurre se lo notificará al <<<servicio principal>>>. 
+
+	[[1]] El <<<servicio principal>>> arrancará un nuevo servicio, <<<VideoCall Service>>> que será el encargado de gestionar los flujos de media que se utilicen durante la llamada.
+
+	[[1]] El <<<VideoCall Service>>>, por un lado, cuando arranca, establecerá los componentes de audio para la llamada. 
+
+	[[1]] Una vez establecidos correctamente los componentes de audio, se arranca una nueva actividad <<<VideoCall>>>. 
+
+	[[1]] <<<VideoCall>>> será la encargada de establecer los componentes de vídeo para la llamada. Por otro lado, deberá suscribirse a los eventos generados por <<<VideoCall Service>>> mediante la implementación de la interfaz <<<ServiceUpdateUIListener>>>. Además, levantará una nueva interfaz de usuario, en la cual, se mostrará el vídeo recibido, el vídeo enviado y los controles para finalizar la llamada. 
+
+	[[1]] De nuevo, para finalizar la llamada se utilizará el objeto <<<controller>>>, que mediante un mensaje del protocolo SIP la terminará.
+
+
+{Actividad principal}
+
+	Esta será la actividad que se crea cuando se abre la aplicación por primera vez, debe encargarse de:
+	
+	* Gestión de la inicialización.
+
+	* Realizar llamadas.
+
+	* Acceder a los contactos.
+
+	* Configuración de las preferencias de conexión y de media.
+
+	* Gestionar la GUI.
+
+* Gestión de la inicialización.
+
+	Cuando la aplicación se crea por primera vez, será el método <<<onCreate>>> el primero en ejecutarse. En este punto deberemos inicializar toda la estructura para el funcionamiento de la aplicación. La actividad debe suscribirse al servicio principal <<<Softphone Service>>> para poder recibir los mensajes que puedan llegarle estando la actividad en primer o segundo plano. Para esto deberá implementar la interfaz <<<ServiceUpdateUIListener>>>.
+
+	En este apartado, es importante la verificación de la conectividad que tenga el dispositivo para poder realizar correctamente las operaciones SIP. También, se debe verificar la configuración de las preferencias de la aplicación.
+
+	Una vez realizadas estas comprobaciones, se crea un servicio de Android, <<<Softphone Service>>> antes mencionado, que será el servicio principal de la aplicación. Por otro lado, también se crea un objeto de la clase <<<Controller>>>. 
+
+	La aplicación intentará realizar un registro al servidor. El resultado del registro se le notificará al usuario. A partir de este punto, la aplicación estará preparada para realizar o recibir llamadas.
+
+
+* Interacción con el usuario
+
+	La interacción con el usuario dentro de una aplicación Android, se gestiona dentro de el método <<<onResume>>>. Se debe tener en cuenta dos apartados:
+
+		* Suscribirnos a los cambios de estado de la red que nos ofrece Android, gracias a esto podremos controlar los cambios que existan en las interfaces de red del dispositivo y así actuar en consecuencia como se explicará en el {{Control de interfaces de red}}.
+
+		* Gestión de los elementos de la GUI:
+
+			** Cuando se pulse el botón de acceso a los contactos, se deberá abrir la agenda del dispositivo.
+
+			** Cuando se pulse el botón de llamada, se deberá arrancar la actividad relacionada con mostrar el historial de llamadas. 
+
+* Contactos
+
+	Cuando se abre la actividad de acceso a la agenda y se selecciona un contacto, se vuelve a la actividad principal y se podrá obtener algunos datos de ese contacto, como si tiene configurado una <<<uri>>> correcta o no. Sí es así, se puede realizar una {{llamada}} sino se mostrará un mensaje mostrando que el usuario no tienen configurado ninguna <<<uri>>>.
+	
+* {Control de interfaces de red}
+
+	Es importante para este tipo de aplicaciones que seamos conscientes de los cambios que existen en las interfaces de red, para poder tener el control de cambio de ip's, cortes en la red, cambio de WIFI a 3G, etc... Por lo tanto, como se ha comentado anteriormente, la actividad principal se suscribe a los cambios que existan. 
+
+	Los pasos recomendables a seguir son:
 		
-		Por otro lado, también se definirán las actividades y los servicios que compondrán nuestra aplicación, como por ejemplo:
+		[[1]] Almacenar el tipo de interfaz que se está utilizando, WIFI o 3G. Esto nos servirá para determinar primeramente si tenemos alguno de los interfaces de red activos o no.
+
+		[[1]] Averiguar si la IP que se está usando es la misma o ha cambiado. Esto es importante, ya que, aunque el interfaz sea el mismo, si la IP ha cambiado es necesario volver a registrarse en el servidor SIP.
+
+		[[1]] Por último, si cambia el interfaz de red o la IP de nuestro dispositivo se debe finalizar con el <<controller>> para así, poder volver a generar una nueva estructura con los nuevos datos de red, y volver a intentar un registro contra el servidor SIP. 
+
+* Gestión de mensajes
+
+	Como se ha comentado antes, la aplicación se debe suscribir también a los mensajes que pueda recibir desde el servicio principal. Desde el servicio se irán enviando mensajes a la actividad como que el registro ha sido correcto, erróneo o que han aceptado la llamada y se debe cerrar la actividad de emisión de llamadas. Para poder recibir todo estos mensajes, la actividad principal deberá implementar la interfaz <<<ServiceUpdateUIListener>>>.
+
+
+* Realización de una llamada
+
+	Tan sólo podremos realizar una llamada cuando tengamos una dirección <<<uri>>> a la que poder llamar. Cuando se realiza la llamada saliente, se debe arrancar la actividad que se encarga de gestionar la emisión de llamadas. Se pueden añadir algunos parámetros a la actividad como el <<<id>>> del usuario que hemos recogido de la agenda y la <<<uri>>> del contacto al que queremos llamar. 
+	
+	En el apartado de gestión de llamadas, será explicada con más detalle el funcionamiento de esta actividad.
+
+* Menús
+
+	Para acceder a las preferencias de la aplicación se deberá crear un menú. En el menú también es recomendable añadir un apartado para salir de la aplicación.
+
+* Finalización de la aplicación
+	
+	Cuando se finaliza la aplicación se debe tener en cuenta algunos puntos:
+
+	** Dejar de escuchar los cambios de red que existan en el dispositivo.
+
+	** Finalizar el <<controller>>.
+	
+	** Liberar los datos guardados en {{<<<ApplicationContext>>>.}}
+
+	** Finalizar los servicios que estén activos.
+
+* GUI
+
+	Esta actividad tiene su propio fichero <<<xml>>> que define como es la interfaz de usuario. Deberá tener:
+	
+		** Un <<Button>> para poder acceder al interfaz de historial de llamadas.
+
+		** Un <<<Button>>> para poder acceder a la agenda.
+
+	Además para facilitar al usuario se pueden añadir otros elementos como:
+	
+		** Varios <<<ImageView>>> para poder mostrar información sobre el estado del registro, la conectividad, configuraciones, etc...
+
+{Servicios}
+
+	La creación de los servicios es necesaria para poder gestionar los eventos que llegan al <<controller>> cuando la aplicación no está en primer plano. Se deben crear dos servicios, uno que gestione todos los eventos de la conexión SIP y otro que gestione el media durante una llamada.
+
+* {Servicio principal}
+
+	El servicio principal de la aplicación será el encargado de gestionar los eventos que puedan llegar desde el protocoo SIP. 
+
+	Las responsabilidades de este servicio son:
+
+		* Registrar un icono en la barra de notificaciones para indicar que el servicio está arrancado. La notificación debe estar asociada a la actividad principal.
+	
+		* Suscribirse al objeto <<controller>>, que podemos recuperar gracias a <<<ApplicationContext>>>, para que pueda hacernos llegar los eventos generados a través del protocolo SIP.
+
+		* Gestionar los eventos del protocolo SIP.
+
+		* Arrancar actividades aunque la aplicación esté en segundo plano.
+
+		* Cuando se finaliza la aplicación, debe eliminar el icono de la barra de notificaciones y cerrar el servicio para una llamada activa.
+
+** Gestión de eventos SIP.
+
+	Para poder recibir los eventos generados por el protocolo SIP, debe implementar la interfaz <<<CallListener>>> para que el <<controller>> pueda llamar a los métodos correspondientes. De manera, que el <<controller>> llamará a los siguientes métodos:
+
+		Relacionado con el registro en el servidor SIP:
+
+			* <<<registerUserSucessful()>>>. Cuando el usuario se ha registrado correctamente. Se debe indicar a la actividad principal mediante un mensaje que el usuario se ha registrado correctamente.
+
+			* <<<registerUserFailed()>>>. Cuando el usuario <<no>> se ha registrado correctamente. Se deberá indicar a la actividad principal mediante un mensaje que el usuario <<no>> se ha registrado correctamente.
+
+		Relacionado con la gestión de una llamada:
 		
-			* Un servicio se define como:
-			
-+--- 
-<service android:enabled="true" android:name="com.tikal.softphone.SoftPhoneService" \>
-+---
+			* <<<incomingCall(String uri)>>>. Cuando recibamos una invitación de llamada. Se deberá iniciar la actividad que gestione la recepción de llamadas. De esta manera será el usuario el que podrá aceptar o rechazar la llamada. 
 
-			* Una actividad se define como:
-			
-+---			
-<activity android:name="com.tikal.videocall.VideoCall" android:label="Video Call" 
-android:theme="@android:style/Theme.NoTitleBar.Fullscreen" android:screenOrientation="landscape" 
-android:launchMode="singleTop" \>
-+---
-				
-		Cada una de las actividades que vayan a ser lanzadas dentro de la aplicación deben ser definidas en este fichero. Para más información sobre la configuración del fichero AndroidManifest.xml se pueden consultar en la {{{http://developer.android.com/guide/topics/manifest/manifest-intro.html}guía de desarrollo de Android}}.
+			* <<<callSetup(NetworkConnection networkConnection)>>>. Cuando la llamada se ha establecido correctamente por parte de los usuarios. Se debe indicar a la actividad principal mediante un mensaje que debe parar la actividad de gestión de llamadas. Además, se debe arrancar el servicio para una llamada activa.
 
-		Por último, en la configuración de la actividad principal deberá incluirse un apartado llamado <<{{{http://developer.android.com/guide/topics/manifest/intent-filter-element.html}intent-filter}}>> que nos servirá para cuando un usuario quiera realizar una llamada desde los contactos según el "scheme" que nosotros elijamos, en este caso se busca qué cuando un usuario tenga guardado un contacto con datos como <<<"sip:juan@server.net">>> se abra nuestra actividad:
+			* <<<callTerminate()>>>. Cuando la llamada ha finalizado. Se debe parar el servicio para una llamada activa.
 		
-+---
-<intent-filter>
-	<action android:name="android.intent.action.SENDTO" \>
-	<category android:name="android.intent.category.DEFAULT" \>
-	<data android:scheme="sip" \>
-	<data android:scheme="imto" \>
-<\intent-filter> 
-+---	
-	
-* Actividades
+			* <<<callReject()>>>. Cuando la llamada ha sido rechazada.  Se debe indicar a la actividad principal mediante un mensaje que debe parar la actividad encargada de emisión de llamadas.
 
-	** {{Actividad principal}}
-	
-	** Gestión de {{preferencias}} de {{Conexión}}
-	
-	** Gestión de {{preferencias}} del {{Media}} 
-	
-	** Gestión de la {{Recepción}} de una llamada 
-	
-	** Gestión de la {{Emisión}} de una llamada 
-	
-	** {{Gestión del media}} ({{Vídeo}} y {{Audio}})
+* {Servicio para una llamada activa}
 
+	Este servicio es el encargado de gestionar una llamada activa y es creado desde el servicio principal cuando se ha establecido una llamada correctamente.
 
-* Servicios
+	* Cuando se crea el servicio, se debe cambiar el icono de la barra de notificaciones por el icono correspondiente a una llamada activa, de este modo si salimos de la aplicación podemos volver a la llamada sin problemas. La notificación deberá estar asociada a la actividad <<<VideoCall>>>.
 
-	** {{Servicio principal}}
-	
-	** {{Servicio para una llamada activa}}
+	* Se crean los componentes de audio, tanto para la emisión como para la recepción. Los componentes de vídeo se crean en la actividad encargada de mostrar el vídeo en el dispositivo, esto es así para poder seguir enviando audio si la aplicación está en segundo plano, pero no vídeo. 
 
+	* Una vez creados los componentes de audio, se define el modo de transmisión de cada uno de ellos, de emisión o de recepción, y se arrancan.
 
-* Controller
+	* Se arranca la actividad que se encargará de mostrar el vídeo en el dispositivo, y será ahí donde crearemos los componentes de vídeo.
 
-	Deberá existir una clase que debe implementar varias interfaces: <<<SipEndPointListener, SipCallListener, InterfacePhone y CallNotifier>>>. A está clase la llamaremos para entender su funcionamiento <<"controller">>. Será la encargada de controlar y gestionar todos los eventos SIP que nos puedan llegar o que podamos enviar, de implementar los comportamientos normales de un teléfono como aceptar una llamada, rechazarla, etc... A esta clase se añadirán "listener" y será el <<controller>> quien les irá avisando de qué está pasando. 
+	* Cuando se destruye el servicio, éste debe:
 
-** SipEndPointListener
+		** Volver a cambiar el icono de la barra de notificaciones.
+
+		** Detener los componentes de audio.
+
+		** Avisar a la actividad que se encarga de mostrar el video en el dispositivo que debe cerrarse.
+
+Controller
+
+	Debe existir una clase que sea la encargada de la gestión de los mensajes del protocolo SIP, de la gestión de las llamadas y de realizar los comportamientos que se esperan de un teléfono. 
+
+	Es una clase bastante especial, debido a que será el punto de unión entre las actividades encargadas de gestionar el control de las llamadas, de las actividades que representan el media en el dispositivo, los servicios que se arrancan en la aplicación, etc...
+
+	Esta unión se lleva a cabo mediante suscripciones a esta clase. Para que puedan suscribirse, esta clase debe implementar varias interfaces: <<<SipEndPointListener, SipCallListener, InterfacePhone y CallNotifier>>>. A está clase la llamaremos para entender su funcionamiento <<"controller">>. 
+
+	Será mediante la implementación de las interfaces como el resto de actividades y servicios podrán recibir los mensajes o los eventos que vayan surgiendo durante la ejecución de la aplicación.
+
+* SipEndPointListener
 
 	Cómo se ha explicado en el Control Plane, implementando esta interfaz seremos capaces de recibir algunos eventos y la aplicación deberá comportarse como se espera de ella:
 
-		* <<<INCOMING_CALL>>>, la recepción de este evento significa que alguien nos está realizando una llamada, por lo que desde la clase <<controller>> hay que notificar al <<<listener>>> que se haya agregado que está llegando una llamada. En este caso habrá que invocar a un método de un objeto de la interfaz <<<CallListener>>>, de la cual hablaremos en el {{Servicio principal}} que será quien implemente esta interfaz, llamado <<<incomingCall(String uri)>>>.  Básicamente lo que hará será levantar la actividad encargada de la recepción de llamadas.
-	
+		* <<<INCOMING_CALL>>>, la recepción de este evento significa que alguien nos está realizando una llamada, por lo que desde la clase <<controller>> hay que notificar al <<<servicio principal>>> que llegando una llamada. Se usará el método <<<incomingCall(String uri)>>> de la interfaz <<<CallListener>>>.
+
 		* <<<REGISTER_USER_SUCESSFUL>>>, la recepción de este evento significa que el registro con los parámetros de configuración de conexión son correctos y hemos podido registrarnos en el servidor. En este caso al igual que en el anterior, será un método de un objeto de la interfaz <<<CallListener>>> a quien tendremos que invocar, llamado <<<registerUserSucessful()>>>. Este método se encargará de hacerle saber al usuario de la aplicación que su registro ha sido correcto.
 
 		* <<<REGISTER_USER_FAIL>>>, la recepción de este evento significa, al contrario que el evento anterior, que el registro ha sido incorrecto. El método al que se llamará será <<<registerUserFailed()>>>  y se encargará de hacerle saber al usuario de la aplicación que su registro ha sido incorrecto.
 	
 
-** SipCallListener
+* SipCallListener
 
 	La implementación de este método en la clase <<controller>> deberá ser capaz de tratar los siguientes eventos, al igual que en el apartado anterior la llamada a los métodos serán de un objeto de la interfaz <<<CallListener>>> que serán implementados por el {{Servicio principal}}:
 
@@ -659,7 +786,7 @@ android:launchMode="singleTop" \>
 	* <<<CALL_REJECT>>>, la recepción de este evento significa que la llamada ha sido rechazada por el contacto, por lo que habrá que cerrar la actividad que se encarga de gestionar la emisión de llamadas. Esto se hará llamando al método <<<callReject()>>>.
 		
  
-** InterfacePhone 
+* InterfacePhone 
 
 	Esta interfaz representa las acciones básicas de un teléfono:
 	
@@ -689,7 +816,7 @@ android:launchMode="singleTop" \>
 	Este método de la clase <<controller>> se llamará desde la actividad que gestione una llamada activa. La implementación de este método usará un objeto de la clase <<SipCall>> para llamar a su método <<<hang()>>> de esta manera usando el protocolo SIP se podrá enviar el mensaje de finalización de llamada.
 
 
-** CallNotifier
+* CallNotifier
 
 	Este interfaz representa dos métodos para poder añadir o eliminar <<listener>> del tipo interfaz <<<CallListener>>>, como se ha comentado antes será implementado en el {{Servicio principal}}:
 	
@@ -697,174 +824,6 @@ android:launchMode="singleTop" \>
 
 		*<<<removeListener(CallListener listener)>>>. Eliminar un <<listener>>.
 
-
-{Actividad principal}
-
-	Esta será la actividad que se abrirá cuando se quiera abrir la aplicación, debe ser la encargada de: 
-	
-	* Poder configurar las preferencias de conexión y de media.
-
-	* Arrancar el servicio.
-
-	* Realizar llamadas.
-
-	* Acceder a los contactos.
-
-	* Etc...
-
-* Fichero XML
-
-	Esta actividad tendrá su propia fichero <<<xml>>> que definirá como será el interfaz de usuario. Este interfaz debería tener como mínimo:
-
-		** Un <<<EditText>>> para poder escribir la <<<uri>>> de la persona a la que se quiere llamar sino estuviese en la agenda.
-
-		** Un <<<Button>>> para poder realizar una llamada al contacto que se haya escrito en el <<<EditText>>> o para poder acceder a la agenda si estuviese vacío.
-
-		** Un <<<Button>>> para poder acceder directamente a la agenda para seleccionar un contacto.
-
-	Además para facilitar al usuario se pueden añadir otros elementos como:
-	
-		** Varios  <<<TextView>>> donde se pueden mostrar los datos de configuración que se están usando.
-
-		** Un <<<TextView>>> para mostrar el estado del registro contra el servidor SIP.
-
-
-* onCreate
-
-	Cuando se crea la actividad uno de los pasos importantes que se debe llevar a cabo es controlar si el dispositivo tiene alguna red activa, ya que, para todas las operaciones con SIP es necesario. Por lo que sino es así, se deberá mostrar un mensaje de error al usuario y cerrar la aplicación antes de avanzar. Si el dispositivo tiene algún tipo de red activa, entonces podremos seguir adelante.
-
-	La actividad se suscribirá a la entrega de mensajes que realizará el {{Servicio principal}} para así recibir los mensajes que lleguen cuando la actividad este en primer o segundo plano.
-
-	Una vez estamos hemos realizado la comprobación de la red, se debe recoger los datos de las preferencias para configurar los datos necesarios para el registro en el servidor SIP (usuario, dominio, servidor, puerto). También se recoge la información necesaria de la configuración del media. Si la recogida de todos estos datos son correctos, se procede a intentar el registro contra el servidor configurado en las preferencias. Según tenga éxito el registro o no, se llamarán a las funciones correspondientes con los mensajes que envíe el {{Servicio principal}}.
-
-* onNewIntent
-
-	Como hemos visto en la configuración del {{AndroidManifest.xml}}, el modo de lanzar una aplicación puede ser <<<launchMode>>>. Cuando se configura de esta manera, se debe implementar este método, <<<onNewIntent>>>. Esto significa que si existe una actividad ya creada, no la volverá a crear sino que pasará directamente a este método. En esta parte, se debe comprobar de nuevo si está activa la red.
-
-* onResume
-
-	En esta parte de la aplicación deberemos por un lado, suscribirnos a los cambios de estado de la red que nos ofrece Android, gracias a esto podremos controlar los cambios que existan en las interfaces de red del dispositivo y así actuar en consecuencia como se explicará en el {{Control de red}}.
-
-	Por otro lado, tendremos el control sobre los botones que se han definido en el fichero <<<xml>>> de configuración del interfaz. 
-
-	En el botón que ha definido para realizar las llamadas, podremos tener dos casos:
-
-	** Se ha rellenado la caja de texto con una <<<uri>>> y al pulsarlo se realiza la llamada contra ese contacto.
-
-	** La caja de texto está vacía y al pulsarlo se abre la agenda directamente para poder elegir un contacto.
-
-	Además tendremos el botón que nos da acceso directo a los contactos para poder elegir uno.
-
-
-* Contactos
-
-	Cuando abrimos la actividad de acceso a la agenda desde cualquiera de dos opciones anteriores y seleccionamos un contacto, al volver a la actividad en el apartado de <<<onActivityResult>>> se comprobará usando la clase de ayuda para obtener datos {{de la agenda}} si el contacto seleccionado tiene configurado una <<<uri>>> correcta. Sí es así, se realizará la {{llamada}} sino se mostrará un mensaje mostrando que el usuario no tienen configurado ninguna <<<uri>>>. 
-	
-* {Control de red}
-
-	Es importante para este tipo de aplicaciones que seamos conscientes de los cambios que existen en las interfaces de red, para poder tener el control de cambio de ip's, cortes en la red, cambio de WIFI a 3G, etc... Por lo tanto, como hemos comentado antes la actividad principal se suscribirá a los cambios que existan en este apartado del dispositivo. 
-
-	Los pasos recomendables a seguir serán:
-		
-		** Almacenar el tipo de interfaz que se está utilizando, WIFI o 3G. Esto nos servirá para determinar primeramente si tenemos alguna de los interfaces de red activos o no.
-
-		** Una vez que sabemos que tipo de interfaz estamos usando, debemos saber también si la IP que estábamos usando es la misma o ha cambiado. Esto es importante, ya que, aunque estemos en el mismo interfaz si hemos cambiado de IP necesitaremos volver a registrarnos al servidor para que nos puedan localizar sin problemas.
-
-		** Por último, si cambia el interfaz de red o la IP de nuestro dispositivo deberemos finalizar nuestro <<controller>> usando el método <<<finishUA()>>>, eliminar los datos que existan en {{<<<ApplicationContext>>>}} y además para el servicio principal. Una vez hecho esto, volveremos a crear de nuevo el <<controller>> con los nuevos datos de configuración, rellenaremos {{<<<ApplicationContext>>>}} con los datos necesarios y volveremos a intentar el registro.
-
-* Control de mensajes
-
-	Como se ha comentado antes, la aplicación se debe suscribir también a los mensajes que pueda recibir desde el servicio principal. Desde el servicio se irán enviando mensajes a la actividad como que el registro ha sido correcto, erróneo o que han aceptado la llamada y se debe cerrar la actividad de emisión de llamadas.
-
-
-* Realización de una {llamada}
-
-	Tan sólo podremos realizar una llamada cuando tengamos una dirección <<<uri>>> a la que poder llamar, bien sea por obtenerla por el acceso a los contactos o por la caja de texto. Cuando se realiza la llamada, se tendrá que arrancar la actividad que se encarga de gestionar la {{Emisión}} de llamadas. Es recomendable añadirle como parámetros a esta actividad, el <<<id>>> del usuario que hemos recogido de la agenda y la <<<uri>>> del contacto al que queremos llamar. Será la nueva actividad la encargada de realizar finalmente la llamada.
-
-* Menús
-
-	Para acceder a las preferencias de la aplicación se deberá tener un menú desde el cual se pueda acceder a ellas. En estos menús también es recomendable añadir un apartado para salir de la aplicación.
-
-* Finalización de la aplicación
-	
-	La finalización de la aplicación puede venir dada por querer salir realmente de la aplicación o porque la hemos dejado corriendo en segundo plano. 
-
-	Si queremos salir realmente, deberemos:
-
-	** Dejar de escuchar los cambios de red que existan en el dispositivo.
-
-	** Finalizar el <<controller>> mediante el método <<<finishUA>>>.
-	
-	** Liberar los datos guardados en {{<<<ApplicationContext>>>.}}
-
-	** Finalizar el servicio principal.
-
-	Si realmente no se quiere salir sino que la aplicación a pasado a segundo plano, no se deberá hacer nada para no perder la información almacenada.
-
-{Servicios}
-
-	La creación de los servicios es necesaria para poder controlar ciertos eventos que pueden ocurrir cuando la aplicación no está en primer plano. Para ello se deberían crear dos servicios, uno que gestione todos los eventos de la conexión SIP y otro que gestione el media durante una llamada.
-
-* {Servicio principal}
-
-	El servicio principal de la aplicación será el encargado de controlar los eventos que puedan surgir desde SIP, por ello, es el encargado de implementar la interfaz {{<<<CallListener>>>}}. 
-
-	Algunas de las responsabilidades que tendrá este servicio son:
-
-	* Cuando desde la aplicación principal se arranque el servicio, debería iniciar la notificación de que la aplicación está abierta en la barra de notificaciones. A la hora de crear la notificación se debería asociar la actividad principal a esta notificación.
-
-	* Agregarse mediante el método  <<<addListener()>>> del objeto <<controller>>, que recuperaremos gracias a {{<<<ApplicationContext>>>}},  para poder recibir los eventos anteriormente mencionados. De esta manera desde <<controller>> se podrá llamar a nuestra implementación de <<<CallListener>>>.
-
-	* Cuando recibamos una llamada a <<<incomingCall(String uri)>>>, se deberá iniciar la actividad que gestione la recepción de llamadas. De esta manera será el usuario el que podrá aceptar o rechazar la llamada. Por otro lado, gracias a que estamos usando un servicio, cada vez que este método sea invocado y aunque la aplicación esté en segundo plano se podrá levantar dicha actividad.
-
-	* Cuando recibamos una llamada a <<<registerUserSucessful()>>>, se deberá indicar a la actividad principal mediante un mensaje que el usuario se ha registrado correctamente para que ésta pueda notificárselo al usuario mediante algún mensaje.
-
-	* Cuando recibamos una llamada a <<<registerUserFailed()>>>, se deberá indicar a la actividad principal mediante un mensaje que el usuario <<no>> se ha registrado correctamente para que ésta pueda notificárselo al usuario mediante algún mensaje.
-
-	* Cuando recibamos una llamada a <<<callSetup(NetworkConnection networkConnection)>>>, se deberá indicar a la actividad principal mediante un mensaje que debe parar la actividad de emisión de llamadas o de recepción de llamadas según sea el caso. Además, se deberá arrancar el {{Servicio para una llamada activa}}.
-
-	* Cuando recibamos una llamada a <<<callTerminate()>>>, se deberá para el {{Servicio para una llamada activa}}.
-
-	* Cuando recibamos una llamada a <<<callReject()>>>, se deberá indicar a la actividad principal mediante un mensaje que debe parar la actividad encargada de emisión de llamadas, ya que sólo nos podrán rechazar una llamada cuando la realicemos nosotros.
-
-	* Por último, cuando se finalice la aplicación el servicio será en encargado de eliminar la notificación de la barra de notificaciones y además cerrar el {{Servicio para una llamada activa}} para evitar que se quedase corriendo.
-
-	
-**{CallListener}
-
-	Esta interfaz representa los eventos que podremos recibir desde SIP:
-	
-		* <<<incomingCall(String uri)>>>. Se llamará a este método desde <<controller>> cuando recibamos una invitación de llamada.
-
-		* <<<registerUserSucessful()>>>. Se llamará a este método desde <<controller>> cuando el usuario se ha registrado correctamente.
-
-		* <<<registerUserFailed()>>>. Se llamará a este método desde <<controller>> cuando el usuario <<no>> se ha registrado correctamente.
-
-		* <<<callSetup(NetworkConnection networkConnection)>>>. Se llamará a este método desde <<controller>> cuando la llamada se ha establecido correctamente por parte de los usuarios.
-
-		* <<<callTerminate()>>>. Se llamará a este método desde <<controller>> cuando la llamada ha finalizado.
-		
-		* <<<callReject()>>>. Se llamará a este método desde <<controller>> cuando la llamada ha sido rechazada.
-
-* {Servicio para una llamada activa}
-
-	Este servicio será el encargado de gestionar una llamada activa y será creado desde el servicio principal cuando se ha establecido una llamada correctamente.
-
-	* Cuando se crea el servicio, uno de los primeros pasos que debe hacerse es cambiar la notificación que tenemos en la barra de notificaciones para indicar que tenemos una llamada activa, de este modo si salimos al menú principal o a la agenda, etc... podemos volver a la llamada sin problemas. La notificación estará asociada a la actividad que se encargue de mostrar el media en el dispositivo.
-
-	* Durante la creación del servicio, también se crearan los componentes de audio, tanto para la emisión como para la recepción. Los componentes de vídeo se crearan en la actividad encargada de mostrar el media en el dispositivo, esto es así para poder seguir enviando audio si la aplicación está en segundo plano, pero no vídeo. 
-
-	* Cuando el servicio ha comenzado, y hemos creado los componentes de audio correctamente, debemos definir como será cada componente, sí de emisión o de recepción y hacerlos empezar. 
-
-	* Una vez los componentes de audio han comenzado, se deberá arrancar la actividad que se encargará de mostrar el media en el dispositivo, entonces crearemos los componentes de vídeo.
-
-	* Cuando se destruye el servicio, éste deberá:
-
-		** Volver a cambiar la notificación de la barra de notificaciones a la notificación principal.
-
-		** Detener los componentes de audio.
-
-		** Avisar a la actividad que se encarga de mostrar el media en el dispositivo que debe cerrarse.
 
 Gestión de {preferencias}
 
@@ -1036,6 +995,57 @@ if (audioRecorderComponent != null) {
 * {Audio}
 
 	La gestión de los componentes de audio se puede ver en la sección de User Plane.
+
+
+Configuración del fichero {AndroidManifest.xml}
+	
+	La configuración del fichero AndroidManifest.xml dentro de una aplicación basada en Android es muy importante, debido a que en este fichero se encuentran por un lado, definidos los permisos que deberá aceptar el usuario cuando se instale la aplicación, y por otro las actividades y los servicios de los cuales estará compuesta la aplicación.
+	
+		Algunos de los permisos necesarios son:
+
++---
+<uses-permission android:name="android.permission.VIBRATE"></uses-permission>
+<uses-permission android:name="android.permission.CAMERA"></uses-permission>
+<uses-permission android:name="android.permission.RECORD_AUDIO"></uses-permission>
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>
+<uses-permission android:name="android.permission.INTERNET"></uses-permission\>
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"></uses-permission>
+<uses-permission android:name="android.permission.WAKE_LOCK"></uses-permission>
+<uses-permission android:name="android.permission.READ_CONTACTS"></uses-permission>
+<uses-permission android:name="android.permission.WRITE_CONTACTS"></uses-permission>
+<uses-permission android:name="android.permission.READ_PHONE_STATE"></uses-permission>
++---
+			
+		Dependiendo de que tipo de aplicación se quiera implementar algunos de estos permisos no serán necesarios. Para conocer todos los permisos de los que se dispone se pueden consultar en la {{{http://developer.android.com/reference/android/Manifest.permission.html}guía de desarrollo de Android}}.
+		
+		Por otro lado, también se definirán las actividades y los servicios que compondrán nuestra aplicación, como por ejemplo:
+		
+			* Un servicio se define como:
+			
++--- 
+<service android:enabled="true" android:name="com.tikal.softphone.SoftPhoneService" \>
++---
+
+			* Una actividad se define como:
+			
++---			
+<activity android:name="com.tikal.videocall.VideoCall" android:label="Video Call" 
+android:theme="@android:style/Theme.NoTitleBar.Fullscreen" android:screenOrientation="landscape" 
+android:launchMode="singleTop" \>
++---
+				
+		Cada una de las actividades que vayan a ser lanzadas dentro de la aplicación deben ser definidas en este fichero. Para más información sobre la configuración del fichero AndroidManifest.xml se pueden consultar en la {{{http://developer.android.com/guide/topics/manifest/manifest-intro.html}guía de desarrollo de Android}}.
+
+		Por último, en la configuración de la actividad principal deberá incluirse un apartado llamado <<{{{http://developer.android.com/guide/topics/manifest/intent-filter-element.html}intent-filter}}>> que nos servirá para cuando un usuario quiera realizar una llamada desde los contactos según el "scheme" que nosotros elijamos, en este caso se busca qué cuando un usuario tenga guardado un contacto con datos como <<<"sip:juan@server.net">>> se abra nuestra actividad:
+		
++---
+<intent-filter>
+	<action android:name="android.intent.action.SENDTO" \>
+	<category android:name="android.intent.category.DEFAULT" \>
+	<data android:scheme="sip" \>
+	<data android:scheme="imto" \>
+<\intent-filter> 
++---	
 
 Otras clases de ayuda
 
