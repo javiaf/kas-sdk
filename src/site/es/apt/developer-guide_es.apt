@@ -798,20 +798,20 @@ Controller
 
 		* <<<hang()>>>. Colgar una llamada en curso.
 
-*** <<<aceptCall()>>>
+** <<<aceptCall()>>>
 	
 	Este método de la clase <<controller>> se llamará desde la actividad que se encargue de la gestión de las llamadas entrantes. La implementación de este método debe recoger los datos de la llamada y llamar al método <<<accept()>>> de la clase <<<SipCall>>>. De esta manera se podrá enviar mediante el protocolo SIP que la llamada ha sido aceptada.
 
-*** <<<reject()>>>
+** <<<reject()>>>
 
 	Este método de la clase <<controller>> se llamará desde la actividad que se encargue de la gestión de las llamadas entrantes también. La implementación de este método debe recoger los datos de la llamada y llamará al método <<<reject()>>> de la clase <<<SipCall>>>. De esta manera se podrá enviar mediante el protocolo SIP que la llamada ha sido rechazada.
 
 
-*** <<<call(String remoteURI)>>>
+** <<<call(String remoteURI)>>>
 
 	Este método de la clase <<controller>> se llamará desde la actividad principal de la aplicación o desde la actividad que se encargue de gestionar la emisión de llamadas a partir de un contacto. Deberá tener como parámetro la Uri del contacto al que se quiere realizar la llamada. En la implementación de este método, se usará un objeto de la clase <<<SipEndPoint>>>, que será definido en el registro del usuario (se verá en el apartado que donde se registran los usuarios), usando el método <<<dial(String remoteParty, Direction direction, SipCallListener callController)>>> el cual se encargará de enviar mediante el protocolo SIP el mensaje de invitación.
 
-*** <<<hang()>>>
+** <<<hang()>>>
 
 	Este método de la clase <<controller>> se llamará desde la actividad que gestione una llamada activa. La implementación de este método usará un objeto de la clase <<SipCall>> para llamar a su método <<<hang()>>> de esta manera usando el protocolo SIP se podrá enviar el mensaje de finalización de llamada.
 
