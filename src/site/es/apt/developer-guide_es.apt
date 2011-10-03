@@ -1019,13 +1019,13 @@ Configuración del fichero {AndroidManifest.xml}
 			* Un servicio se define como:
 			
 +--- 
-<service android:enabled="true" android:name="com.tikal.softphone.SoftPhoneService" \>
+<service android:enabled="true" android:name="kas.softphone.SoftPhoneService" \>
 +---
 
 			* Una actividad se define como:
 			
 +---			
-<activity android:name="com.tikal.videocall.VideoCall" android:label="Video Call" 
+<activity android:name="kas.videocall.VideoCall" android:label="Video Call" 
 android:theme="@android:style/Theme.NoTitleBar.Fullscreen" android:screenOrientation="landscape" 
 android:launchMode="singleTop" \>
 +---
@@ -1125,12 +1125,12 @@ Ejemplos
 
 		* Donde queremos que se instale (en este caso en la tarjeta de memoria si es posible).
 
-		* El paquete principal de la aplicación (com.tikal.softphone).
+		* El paquete principal de la aplicación (kas.softphone).
 
 +---
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	package="com.tikal.softphone" android:versionCode="1"
+	package="kas.softphone" android:versionCode="1"
 	android:versionName="1.0" android:installLocation="preferExternal">
 +---
 	
@@ -1172,18 +1172,18 @@ Ejemplos
 	Definición de las actividades de gestión de emisión y recepción de llamadas.
 
 +---
-<activity android:name="com.tikal.media.MediaControlIncoming"
+<activity android:name="kas.media.MediaControlIncoming"
 	android:label="Media Control Incoming">
 </activity>
-<activity android:name="com.tikal.media.MediaControlOutgoing"
+<activity android:name="kas.media.MediaControlOutgoing"
 	android:label="Media Control Outgoing">
 </activity>
 +---
 
-	Definición de la actividad que muestra el media en el dispositivo. Se añade un parámetro para que desaparezca la barra de notificaciones y esté a pantalla completa (<<<android:theme="@android:style\/Theme.NoTitleBar.Fullscreen">>>). Además, se obliga a que la orientación sea siempre horizontal (<<<android:screenOrientation="landscape">>>).
+	Definición de la actividad que muestra el vídeo en el dispositivo. Se añade un parámetro para que desaparezca la barra de notificaciones y esté a pantalla completa (<<<android:theme="@android:style\/Theme.NoTitleBar.Fullscreen">>>). Además, se obliga a que la orientación sea siempre horizontal (<<<android:screenOrientation="landscape">>>).
 
 +---
-<activity android:name="com.tikal.videocall.VideoCall"
+<activity android:name="kas.videocall.VideoCall"
 	android:label="Video Call" android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
 	android:screenOrientation="landscape" android:launchMode="singleTop" >
 </activity>
@@ -1192,11 +1192,11 @@ Ejemplos
 	Definición de las actividades de gestión de preferencias. En este caso la orientación es vertical.
 
 +---
-<activity android:name="com.tikal.preferences.Connection_Preferences"
+<activity android:name="kas.preferences.Connection_Preferences"
 	android:label="Connection Preferences" android:screenOrientation="portrait">
 </activity>
 
-<activity android:name="com.tikal.preferences.Video_Preferences"
+<activity android:name="kas.preferences.Video_Preferences"
 	android:label="Video Preferences" android:screenOrientation="portrait">
 </activity>
 +---
@@ -1205,9 +1205,9 @@ Ejemplos
 
 +---
 <service android:enabled="true"
-	android:name="com.tikal.softphone.SoftPhoneService" />
+	android:name="kas.softphone.SoftPhoneService" />
 <service android:enabled="true"
-	android:name="com.tikal.videocall.VideoCallService" />
+	android:name="kas.videocall.VideoCallService" />
 +---
 
 	Definición de:
@@ -1260,20 +1260,6 @@ public void update(Message message) {
 			finishActivity(MEDIA_CONTROL_OUTGOING);
 		}
 	}
-}
-+---
-
-	Cuando se recibe alguno de estos mensajes, los métodos deberán ser de la siguiente manera para darle un aviso al usuario.
-
-+---
-public void registerSucessful() {
-	SoftPhone.this.text = (TextView) findViewById(R.id.textRegister);
-	SoftPhone.this.text.setTextSize(20);
-	SoftPhone.this.text.setTextColor(Color.GREEN);
-	SoftPhone.this.text.setText("Register Sucessful");
-
-	isRegister = true;
-	ApplicationContext.contextTable.put("isRegister", isRegister);
 }
 +---
 
@@ -1418,11 +1404,8 @@ private boolean initControllerUAFromSettings() {
 		Toast.makeText(SoftPhone.this,
 				"SoftPhone: Please enable any network interface.",
 				Toast.LENGTH_SHORT).show();
-
-		finish();
 		return false;
 	}
-
 }
 +---
 
@@ -1478,7 +1461,7 @@ private void register() {
 }
 +---
 
-	Durante el método <<<register>>> aparece la llamada a <<<initUA>>>, que finalmente realizará la llamada a <<<initUA>>> de <<controller>>. Donde realmente realizamos el registro y la inicialización de las estructuras para SIP.
+	Durante el método <<<register>>> aparece la llamada a <<<initUA>>>, que finalmente realizará la llamada al método <<<initUA>>> del objeto <<controller>>. Donde realmente realizamos el registro y la inicialización de las estructuras para SIP.
 
 +---
 private void initUA() {
@@ -1514,7 +1497,7 @@ private void openContacts() {
 	startActivityForResult(intentContacts, PICK_CONTACT_REQUEST);
 }
 +---	
-		Y dentro de <<<onActivityResult(int requestCode, int resultCode, Intent data) >>> tendremos:
+		Dentro de <<<onActivityResult(int requestCode, int resultCode, Intent data) >>> tendremos:
 
 +---
 if (requestCode == PICK_CONTACT_REQUEST) {
@@ -1604,7 +1587,7 @@ if (isExit) {
 
 ** {{Servicio principal}}
 
-	La definición de una notificación en la barra de notificaciones, con el nombre <<Softphone>> y que está asociada a la clase <<SoftPhone.class>>.
+	La definición de un icono en la barra de notificaciones, con el nombre <<Softphone>> y que está asociada a la clase <<SoftPhone.class>>.
 
 +---
 private NotificationManager mNotificationMgr;
@@ -1634,7 +1617,7 @@ mNotif.setLatestEventInfo(this, notificationTitle, "",
 mNotificationMgr.notify(NOTIF_SOFTPHONE, mNotif);
 +---
 
-	Recoger <<controller>> de <<<ApplicationContext>>> e informar al <<controller>> que el servicio implementará <<<CallListener>>>.
+	Recoger el objeto <<controller>> de <<<ApplicationContext>>> e informar al objeto <<controller>> cual será el servicio qué implementará <<<CallListener>>>.
 
 +---
 Controller controller = (Controller) ApplicationContext.contextTable
@@ -1643,7 +1626,7 @@ if (controller != null)
 		controller.addListener(this);
 +---
 
-	Una posible implementación de <<<incomingCall(String uri)>>>. Arrancaremos como explicamos en la documentación la actividad que se encarga de gestionar las llamadas entrantes, añadiendo mediante <<<putExtra>>> la <<<uri>>> que nos ha llegado.
+	Una posible implementación del método <<<incomingCall(String uri)>>>. Arrancar la actividad que se encarga de gestionar las llamadas entrantes, añadiendo mediante el método <<<putExtra>>> la <<<sipuri>>>.
 
 +---
 @Override
@@ -1657,7 +1640,7 @@ public void incomingCall(String uri) {
 }
 +---
 	
-	Una posible implementación de <<<callSetup>>>. La llamada se ha establecido por lo tanto debemos avisar a la aplicación principal que debe detener la actividad que gestionar las llamadas salientes mediante un mensaje (<<<handler.sendMessage(msg)>>>). Además, debemos arrancar el servicio que se encarga de gestionar las llamadas activas.
+	Una posible implementación del método <<<callSetup>>>. Una vez la llamada se ha establecido, se debe avisar a la aplicación principal que debe detener la actividad que gestionar las llamadas salientes mediante un mensaje (<<<handler.sendMessage(msg)>>>). Además, se debe arrancar el servicio que se encarga de gestionar las llamadas activas.
 
 +---
 @Override
@@ -1676,7 +1659,7 @@ public void callSetup(NetworkConnection networkConnection) {
 }
 +---
 	
-	Método para el envío de mensajes a la aplicación que se suscriba. En este caso será la aplicación principal.
+	La definición de la interfaz para el envío de mensajes desde el servicio principal a la actividad principal.
 
 +---
 public interface ServiceUpdateUIListener {
@@ -1698,7 +1681,7 @@ private Handler handler = new Handler() {
 };
 +---
 
-	Al destruir el servicio, cancelar las notificaciones que pueda estar en la barra de notificaciones y parar el servicio que gestiona las llamadas activas.	
+	Al destruir el servicio, hay que cancelar las notificaciones que estén en la barra de notificaciones y parar el servicio que gestiona las llamadas activas.	
 
 +---
 mNotificationMgr.cancel(NOTIF_SOFTPHONE);
@@ -1709,7 +1692,7 @@ stopService(videoCallIntent);
 
 ** {{Servicio para una llamada activa}}
 
-	Recuperación de <<controller>> desde <<<ApplicationContext>>>. Creación del objeto mediaSession y de los componentes de audio. Además se añaden los objetos de los componentes de audio en el <<<ApplicationContext>>> para poder acceder a ellos desde otra parte de la aplicación.
+	Podemos recuperar el objeto <<controller>> desde <<<ApplicationContext>>>. Se crea el objeto mediaSession y los componentes de audio. Además se añaden los objetos de los componentes de audio en el <<<ApplicationContext>>> para poder acceder a ellos desde otra parte de la aplicación.
 
 +---
 Controller controller = (Controller) ApplicationContext.contextTable
@@ -1732,7 +1715,7 @@ ApplicationContext.contextTable.put("audioPlayerComponent", audioPlayerComponent
 ApplicationContext.contextTable.put("audioRecorderComponent", audioRecorderComponent);
 +---
 
-	Recuperación de <<<NetworkConnection>>> de <<<ApplicationContext>>> y configuración y arranque de los componentes de audio.
+	Recuperación del objeto <<<NetworkConnection>>> de <<<ApplicationContext>>> y configuración y arranque de los componentes de audio.
 
 +---
 NetworkConnection nc = (NetworkConnection) ApplicationContext.contextTable
@@ -1765,7 +1748,7 @@ videoCallIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 startActivity(videoCallIntent);
 +---
 
-	Al destruir el servicio, cambiar la notificación de una llamada activa por el de la aplicación.
+	Al destruir el servicio, hay que cambiar la notificación de una llamada activa por el de la aplicación.
 
 +---
 mNotificationMgr.cancel(NOTIF_VIDEOCALL);
@@ -1781,7 +1764,7 @@ mNotif.setLatestEventInfo(this, notificationTitleSoft, "",
 mNotificationMgr.notify(NOTIF_SOFTPHONE, mNotif);
 +---
 
-	Además de parar los componentes de audio.
+	Para parar los componentes de audio.
 
 +---
 if (audioPlayerComponent != null)
@@ -1791,7 +1774,7 @@ if (audioRecorderComponent != null)
 	audioRecorderComponent.stop();
 +---
 
-	Y enviar un mensaje confirmando que la llamada ha terminado. En este caso, se le enviará a la actividad que gestiona la llamada activa igual que he hemos visto en el servicio principal.
+	Envío de un mensaje confirmando que la llamada ha terminado. En este caso, se le envía a la actividad que gestiona la llamada activa igual que he hemos visto en el servicio principal.
 
 +---
 Message msg = new Message();
@@ -1803,7 +1786,7 @@ handler.sendMessage(msg);
 
 * Gestión de contactos 
 
-	Posible implementación de la obtención del nombre de un contacto a partir de su <<<id>>>. La idea es realizar una consulta, parecida a una query de sql en el cual le indicamos el identificador del usuario que buscamos. Si existe, podremos devolver el nombre.
+	Una posible implementación de la obtención del nombre de un contacto a partir de su <<<id>>>. La idea es realizar una consulta, parecida a una query de sql en el cual le indicamos el identificador del usuario que buscamos. Si existe, podremos devolver el nombre.
 
 +---
 public String getName(Integer id) {
@@ -1923,7 +1906,7 @@ public Bitmap getPhoto(Integer id) {
 
 ** Emisión de llamadas
 
-	Al crear la actividad, se recuperan los datos como la <<<uri>>> y el <<<id>>> y a partir de ahí se intentan recuperar los datos y la foto del contacto que nos llama desde la agenda. Si está en la agenda se rellena el interfaz con los datos para que sepamos a quién llamamos.
+	Al crear la actividad, se recuperan los datos como la <<<sipuri>>> y el <<<id>>> y a partir de ahí se intentan recuperar los datos y la foto del contacto que nos llama desde la agenda. Si está en la agenda se rellena el interfaz con los datos para que sepamos a quién llamamos.
 
 +---
 Bundle extras = getIntent().getExtras();
@@ -1989,7 +1972,7 @@ long[] pattern = { 0, 1000, 2000, 3000 };
 vibrator.vibrate(pattern, 1);
 +---
 
-	Aceptar una llamada. Cancelaríamos la vibración, aceptaríamos la llamada con <<<aceptCall()>>> y finalizaríamos la actividad.
+	Aceptar una llamada. Hay que cancelar la vibración, aceptar la llamada con <<<aceptCall()>>> y finalizar la actividad.
 
 +---
 vibrator.cancel();
