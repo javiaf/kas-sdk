@@ -781,7 +781,7 @@ Controller
 
 	* <<<CALL_SETUP>>>, la llamada ha sido establecida. Se tiene que terminar la actividad encargada de gestionar llamadas y empezar la actividad y el servicio que se encarga de gestionar el media, tanto el vídeo como el audio. Se usa el método <<<callSetup(NetworkConnection networkConnection)>>> de la interfaz <<<CallListener>>>.
 
-	* <<<CALL_TERMINATE>>>, la llamada ha sido terminada por alguno de los <<<sipuri>>>. Hay que finalizar la actividad y el servicio que se encarga de gestionar una llamada activa. Se usa el método <<<callTerminate()>>> de la interfaz <<<CallListener>>>.
+	* <<<CALL_TERMINATE>>>, la llamada ha sido terminada por alguno de los <<<sipuri>>>. Hay que finalizar la actividad y <<<call(String remoteURI)>>>  el servicio que se encarga de gestionar una llamada activa. Se usa el método <<<callTerminate()>>> de la interfaz <<<CallListener>>>.
 	
 	* <<<CALL_REJECT>>>, la llamada ha sido rechazada por el <<<sipuri>>>. Hay que finalizar la actividad que se encarga de gestionar la emisión de llamadas. Se usa el método <<<callReject()>>> de la interfaz <<<CallListener>>>.
 		
@@ -823,27 +823,28 @@ Controller
 		*<<<removeListener(CallListener listener)>>>. Eliminar un elemento.
 
 
-Gestión de {preferencias}
+Gestión de las preferencias
+
+	En el caso de la aplicación las preferencias dividirán en dos apartados, las preferencias relacionadas con la conexión al servidor SIP y las preferencias relacionadas con la configuración del media (vídeo y audio).
 
 * {Conexión}
 
-	En las preferencias de conexión deberemos dejar configurar los siguientes datos:
+	En las preferencias relacionadas con la conexión al servidor SIP se deben poder configurar:
 	
-	** <<Usuario>>: será el usuario con el que quedará registrado en el servidor SIP.
+	** <<Usuario>>: usuario con el que queda registrado en el servidor SIP.
 
-	** <<Password>>: será la password con el que quedará registrado en el servidor SIP.
+	** <<Password>>: password con el que queda registrado en el servidor SIP.
 
-	** <<Dominio>>: será el dominio con el que quedará registrado en el servidor SIP.
+	** <<Dominio>>: dominio con el que queda registrado en el servidor SIP.
 
-	** <<Ip del servidor SIP>>: será el servidor donde se registraran los usuarios.
+	** <<Ip del servidor SIP>>:  servidor donde se registra el usuario.
 
-	** <<Puerto del servidor SIP>>: será el puerto del servidor.
+	** <<Puerto del servidor SIP>>: puerto del servidor.
 
-	Con estos datos, más adelante veremos que pasos hay que seguir para registrarse en el servidor.
 
 * {Media}
 
-	En las preferencias del media deberemos dejar configurar los siguientes datos:
+	En las preferencias relacionadas con el media se deben poder configurar:
 
 	* <<Máximo ancho de banda>>: establece el ancho de banda máximo que se utilizará para la emisión de media (audio y vídeo).
 
@@ -871,13 +872,13 @@ Gestión de {preferencias}
 		
 	* <<Dirección de la llamada>>: sólo envío, sólo recepción o envío/recepción.
 		
-Gestión de emisión y recepción de llamadas
+Gestión de llamadas
 
 	Tanto para la emisión como para la recepción de llamadas podemos tener dos actividades que nos representen que un contacto nos está llamando o bien que le estamos llamando nosotros.
 
 * {Emisión} de llamadas
 
-	La actividad que se encargue de la emisión de llamadas será creada cuando se haya elegido un contacto o se sepa a que contacto se quiere realizar la llamada y debería mostrar en la pantalla como mínimo:
+	La actividad que se encarga de la emisión de llamadas es creada cuando se haya elegido un contacto para realizar la llamada y debe mostrar en la pantalla como mínimo:
 	
 		** El nombre del contacto.
 
@@ -885,7 +886,7 @@ Gestión de emisión y recepción de llamadas
 
 		** Un botón para cancelar la llamada.
 
-	Esta actividad no deberá hacer nada más que mostrar la interfaz para que el usuario sepa que se está realizando una llamada y que puede cancelarla. La realización de la llamada se encargará la clase <<controller>> que hemos definido anteriormente. 
+	Esta actividad no debe hacer nada más que mostrar la interfaz para que el usuario sepa que se está realizando una llamada y que puede cancelarla. La realización final de la llamada se encarga la clase <<controller>> que hemos definido anteriormente. Esta actividad es la encargada de llamar al método <<<call(String remoteURI)>>>.
 
 	El cierre de esta actividad puede venir dada por 3 circunstancias:
 
@@ -898,19 +899,19 @@ Gestión de emisión y recepción de llamadas
 
 * {Recepción} de llamadas
 
-	La actividad que se encargue de la recepción de llamadas será creada a partir del servicio encargado de controlar los eventos SIP que puedan llegar, como sería un <invite> en el caso de una recepción de llamada. La interfaz de esta actividad debería mostrar en la pantalla como mínimo:
+	La actividad que se encarga de la recepción de llamadas es creada a partir del servicio principal. La interfaz de esta actividad debe mostrar en la pantalla como mínimo:
 
 		** El nombre del contacto.
 		
 		** La imagen del contacto, si éste lo tuviera.
 
-		** Un botón para aceptar la llamada. Cuando se pulse, se deberá notificar a <<controller>> que la llamada se ha aceptado y cerrar la actividad.
+		** Un botón para aceptar la llamada. Cuando se pulse, se debe usar el método  <<<aceptCall()>>> y cerrar la actividad.
 
-		** Un botón para cancelar la llamada. Cuando se pulse, se deberá notificar a <<controller>> que la llamada se ha rechazado y cerrar la actividad.
+		** Un botón para rechazar la llamada. Cuando se pulse, se debe usar el método <<reject()>> y cerrar la actividad.
 	
-		** Vibrar e incluso hacer sonar el sonido del dispositivo. Cuando se acepte o se rechace la llamada la vibración y/o el sonido deberá cesar.
+		** Hacer vibrar el dispositivo. Cuando se acepte o se rechace la llamada la vibración deberá cesar.
 
-	Como se ha comentado anteriormente, el cierre de esta actividad puede venir dada por 3 circunstancias:
+	El cierre de esta actividad puede venir dada por 3 circunstancias:
 		
 		** Quien llama cancela la llamada.
 	
