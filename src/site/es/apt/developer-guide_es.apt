@@ -760,69 +760,67 @@ Controller
 
 	Es una clase bastante especial, debido a que será el punto de unión entre las actividades encargadas de gestionar el control de las llamadas, de las actividades que representan el media en el dispositivo, los servicios que se arrancan en la aplicación, etc...
 
-	Esta unión se lleva a cabo mediante suscripciones a esta clase. Para que puedan suscribirse, esta clase debe implementar varias interfaces: <<<SipEndPointListener, SipCallListener, InterfacePhone y CallNotifier>>>. A está clase la llamaremos para entender su funcionamiento <<"controller">>. 
+	Esta unión se lleva a cabo mediante suscripciones a esta clase. Para que puedan suscribirse, esta clase debe implementar varias interfaces: <<<SipEndPointListener, SipCallListener, InterfacePhone y CallNotifier>>>. A esta clase la llamaremos para entender su funcionamiento <<"controller">>. 
 
 	Será mediante la implementación de las interfaces como el resto de actividades y servicios podrán recibir los mensajes o los eventos que vayan surgiendo durante la ejecución de la aplicación.
 
-* SipEndPointListener
+* Eventos SIP
 
-	Cómo se ha explicado en el Control Plane, implementando esta interfaz seremos capaces de recibir algunos eventos y la aplicación deberá comportarse como se espera de ella:
+	Cómo se ha explicado en el Control Plane, implementando la interfaz <<<SipEndPointListener>>> se reciben los eventos relacionados con el protocolo SIP y la aplicación deberá comportarse como se espera de ella:
 
-		* <<<INCOMING_CALL>>>, la recepción de este evento significa que alguien nos está realizando una llamada, por lo que desde la clase <<controller>> hay que notificar al <<<servicio principal>>> que llegando una llamada. Se usará el método <<<incomingCall(String uri)>>> de la interfaz <<<CallListener>>>.
+		* <<<INCOMING_CALL>>>, alguien nos está realizando una llamada, por lo que desde la clase <<controller>> hay que notificar al <<<servicio principal>>> que está llegando una llamada. Se usa el método <<<incomingCall(String uri)>>> de la interfaz <<<CallListener>>>.
 
-		* <<<REGISTER_USER_SUCESSFUL>>>, la recepción de este evento significa que el registro con los parámetros de configuración de conexión son correctos y hemos podido registrarnos en el servidor. En este caso al igual que en el anterior, será un método de un objeto de la interfaz <<<CallListener>>> a quien tendremos que invocar, llamado <<<registerUserSucessful()>>>. Este método se encargará de hacerle saber al usuario de la aplicación que su registro ha sido correcto.
+		* <<<REGISTER_USER_SUCESSFUL>>>, el intento de registro en el servidor ha sido correcto.  Se usa el método <<<registerUserSucessful()>>> de la interfaz <<<CallListener>>>. Este método se encarga de notificárselo al usuario.
 
-		* <<<REGISTER_USER_FAIL>>>, la recepción de este evento significa, al contrario que el evento anterior, que el registro ha sido incorrecto. El método al que se llamará será <<<registerUserFailed()>>>  y se encargará de hacerle saber al usuario de la aplicación que su registro ha sido incorrecto.
+		* <<<REGISTER_USER_FAIL>>>,  el intento de registro en el servidor ha sido incorrecto. El método que se usa es <<<registerUserFailed()>>>  y se encarga de notificárselo al usuario.
 	
 
-* SipCallListener
+* Eventos de una llamada
 
-	La implementación de este método en la clase <<controller>> deberá ser capaz de tratar los siguientes eventos, al igual que en el apartado anterior la llamada a los métodos serán de un objeto de la interfaz <<<CallListener>>> que serán implementados por el {{Servicio principal}}:
+	Con la implementación de la interfaz <<<SipCallListener>>> se reciben los eventos que están relacionados con la gestión de una llamada. 
 
-	* <<<CALL_SETUP>>>, la recepción de este evento significa que la llamada ha sido establecida y que por lo tanto se puede cerrar la actividad encargada de gestionar o bien la emisión de llamadas o bien la recepción de llamadas y empezar la actividad y el servicio que se encargará de gestionar el media, tanto el vídeo como el audio. Esto se hará llamando al método <<<callSetup(NetworkConnection networkConnection)>>>.
+	* <<<CALL_SETUP>>>, la llamada ha sido establecida. Se tiene que terminar la actividad encargada de gestionar llamadas y empezar la actividad y el servicio que se encarga de gestionar el media, tanto el vídeo como el audio. Se usa el método <<<callSetup(NetworkConnection networkConnection)>>> de la interfaz <<<CallListener>>>.
 
-	* <<<CALL_TERMINATE>>>, la recepción de este evento significa que la llamada ha sido terminada por alguno de los usuarios, por lo tanto habrá que parar el servicio y la actividad que se encarga de gestionar una llamada activa. Esto se hará llamando al método <<<callTerminate()>>>.
+	* <<<CALL_TERMINATE>>>, la llamada ha sido terminada por alguno de los <<<sipuri>>>. Hay que finalizar la actividad y el servicio que se encarga de gestionar una llamada activa. Se usa el método <<<callTerminate()>>> de la interfaz <<<CallListener>>>.
 	
-	* <<<CALL_REJECT>>>, la recepción de este evento significa que la llamada ha sido rechazada por el contacto, por lo que habrá que cerrar la actividad que se encarga de gestionar la emisión de llamadas. Esto se hará llamando al método <<<callReject()>>>.
+	* <<<CALL_REJECT>>>, la llamada ha sido rechazada por el <<<sipuri>>>. Hay que finalizar la actividad que se encarga de gestionar la emisión de llamadas. Se usa el método <<<callReject()>>> de la interfaz <<<CallListener>>>.
 		
  
-* InterfacePhone 
+* Acciones básicas del teléfono 
 
-	Esta interfaz representa las acciones básicas de un teléfono:
+	Mediante la implementación de la interfaz <<<InterfacePhone>>> se espera que la aplicación realice las acciones básicas de un teléfono como son:
 	
 		* <<<aceptCall()>>>. Aceptar una llamada entrante.
 
 		* <<<reject()>>>. Rechazar una llamada entrante.
 
-		* <<<call(String remoteURI)>>>. Realizar una llamada saliente a un contacto.
+		* <<<call(String remoteURI)>>>. Realizar una llamada saliente a un <<<sipuri>>>.
 
 		* <<<hang()>>>. Colgar una llamada en curso.
 
-** <<<aceptCall()>>>
+** Aceptar una llamada
 	
-	Este método de la clase <<controller>> se llamará desde la actividad que se encargue de la gestión de las llamadas entrantes. La implementación de este método debe recoger los datos de la llamada y llamar al método <<<accept()>>> de la clase <<<SipCall>>>. De esta manera se podrá enviar mediante el protocolo SIP que la llamada ha sido aceptada.
+	La implementación del método <<<aceptCall()>>> debe usar el método <<<accept()>>> de la clase <<<SipCall>>> para enviar mediante el protocolo SIP el mensaje que corresponda, en este caso, el mensaje confirmando que se acepta la llamada. El método <<<aceptCall()>>> debe ser llamado desde la actividad que se encarga de la gestión de las llamadas entrantes.
 
-** <<<reject()>>>
+** Rechazar una llamada
 
-	Este método de la clase <<controller>> se llamará desde la actividad que se encargue de la gestión de las llamadas entrantes también. La implementación de este método debe recoger los datos de la llamada y llamará al método <<<reject()>>> de la clase <<<SipCall>>>. De esta manera se podrá enviar mediante el protocolo SIP que la llamada ha sido rechazada.
+	La implementación del método <<<reject()>>> debe usar el método <<<reject()>>> de la clase <<<SipCall>>> para enviar el mensaje confirmando que se rechaza la llamada. El método <<<reject()>>> debe ser llamado desde la actividad que se encarga de la gestión de las llamadas entrantes.
 
+** Realizar una llamada
 
-** <<<call(String remoteURI)>>>
+	La implementación de este método <<<call(String remoteURI)>>> debe usar el método  <<<dial(String remoteParty, Direction direction, SipCallListener callController)>>> de la clase <<<SipCall>>> para enviar el mensaje de invitación a una llamada. El método <<<call(String remoteURI)>>> debe ser llamado desde la actividad encargada de la emisión de llamadas. El parámetro <<<remoteURI>>> es la <<<sipuri>>> del contacto al que queremos llamar.
 
-	Este método de la clase <<controller>> se llamará desde la actividad principal de la aplicación o desde la actividad que se encargue de gestionar la emisión de llamadas a partir de un contacto. Deberá tener como parámetro la Uri del contacto al que se quiere realizar la llamada. En la implementación de este método, se usará un objeto de la clase <<<SipEndPoint>>>, que será definido en el registro del usuario (se verá en el apartado que donde se registran los usuarios), usando el método <<<dial(String remoteParty, Direction direction, SipCallListener callController)>>> el cual se encargará de enviar mediante el protocolo SIP el mensaje de invitación.
+** Finalizar una llamada
 
-** <<<hang()>>>
+	La implementación de este método <<<hang()>>> debe usar el método <<<hang()>>> de la clase <<<SipCall>>> para enviar el mensaje de finalización de la llamada. Este método <<<hang()>>> debe ser llamado desde la actividad que gestiona la llamada activa.
 
-	Este método de la clase <<controller>> se llamará desde la actividad que gestione una llamada activa. La implementación de este método usará un objeto de la clase <<SipCall>> para llamar a su método <<<hang()>>> de esta manera usando el protocolo SIP se podrá enviar el mensaje de finalización de llamada.
+* Eventos de aplicación
 
+	Mediante la implementación de la interfaz <<<CallNotifier>>> se notificar a la clase <<<controller>>> quién será el encargado de implementar la interfaz <<<CallListener>>>. 
 
-* CallNotifier
+		* <<<addListener(CallListener listener)>>>. Añadir un elemento.
 
-	Este interfaz representa dos métodos para poder añadir o eliminar <<listener>> del tipo interfaz <<<CallListener>>>, como se ha comentado antes será implementado en el {{Servicio principal}}:
-	
-		* <<<addListener(CallListener listener)>>>. Añadir un <<listener>>.
-
-		*<<<removeListener(CallListener listener)>>>. Eliminar un <<listener>>.
+		*<<<removeListener(CallListener listener)>>>. Eliminar un elemento.
 
 
 Gestión de {preferencias}
