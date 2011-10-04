@@ -655,11 +655,12 @@ Creating an Android application
 
 [images/diagrama-tk-softphone.png]
 
-* Configuration file {AndroidManifest.xml}
+* Configuration file AndroidManifest.xml
 	
 	Configuration file (AndroidManifest.xml) of an Android application is very important, 
 	because defines:
-		* Permissions the user must agree with during installation. Required permission 
+	
+		* <<Permissions>> the user must agree with during installation. Required permission 
 		is quite dependent on the application model of use, but in general, Kurento Android SDK
 		will require the ones listed below:
 
@@ -679,7 +680,7 @@ Creating an Android application
 		A complete list of permissions can be found in 
 		 {{{http://developer.android.com/reference/android/Manifest.permission.html}Android developer's guide}}
 		 		
-		* Activities
+		* <<Activities>>
 
 +---			
 <activity android:name="com.tikal.videocall.VideoCall" android:label="Video Call" 
@@ -687,13 +688,13 @@ android:theme="@android:style/Theme.NoTitleBar.Fullscreen" android:screenOrienta
 android:launchMode="singleTop" \>
 +---
 				
-		* Services that have to wake up:
+		* <<Services>> that have to wake up:
 			
 +--- 
 <service android:enabled="true" android:name="com.tikal.softphone.SoftPhoneService" \>
 +---
 			
-		* Intent filter: Within the main activity configuration it is useful to include the 
+		* <<Intent filter>>: Within the main activity configuration it is useful to include the 
 		a section called <<{{{http://developer.android.com/guide/topics/manifest/intent-filter-element.html}intent-filter}}>>.
 		This configuration will enable direct access from the agenda to the call handler for all
 		contacts with a field based in a given <schema>. The {{{../kas-softphone}K-phone}}} defines
@@ -718,7 +719,7 @@ android:launchMode="singleTop" \>
 
 	Any application including Kurento Android SDK should include following list of activities
 
-	** {{Main activity}}
+	** Main activity
 	
 	** Connection Preferences
 	
@@ -742,13 +743,20 @@ android:launchMode="singleTop" \>
 
 * Controller
 
-	There should be a class that must implement some interfaces: <<<SipEndPointListener, SipCallListener, CallNotifier and InterfacePhone>>>. This class might be called <<"controller">>. It will be responsible for controlling and managing all the events SIP we can get  or we can send. Also, you must implement the normal behavior of a phone as a call to accept, reject, etc ... This class will notify the listener to subscribe.
+	There should be a class, that might be called <<"controller">>, implementing interfaces: 
+	<<<SipEndPointListener, <<<SipCallListener>>>, <<<CallNotifier>>> and <<<InterfacePhone>>>. 
+	This class will receive SIP events and will implement the model of use and business logic.
 
 ** SipEndPointListener
 
-	As explained in the Control Plane, implementing this interface will be able to receive some events and the application should behave as expected of her:
+	The implementation of this interface should consider following aspects:
 
-		* <<<INCOMING_CALL>>>, this event means that someone is making a call, so from the class <<controller>> have to notify the <<<listener>>> you have added a call is coming. In this case you must invoke a method on an object of the interface <<<CallListener>>>, which we shall discuss in the {{Principal Service}} who shall implement this interface, called <<<incomingCall (String uri )>>>. Basically what we will do is start the activity responsible for receiving calls.
+		* <<<INCOMING_CALL>>>, This event is received when a remote peer is calling the application, 
+		so from the class <<controller>> have to notify the <<<listener>>> you have added a call 
+		is coming. In this case you must invoke a method on an object of the interface <<<CallListener>>>, 
+		which we shall discuss in the {{Principal Service}} who shall implement this interface, called 
+		<<<incomingCall (String uri )>>>. Basically what we will do is start the activity responsible 
+		for receiving calls.
 	
 		* <<<REGISTER_USER_SUCESSFUL>>>, this event means that the register with the connection settings are correct and have been checking on the server. In this case as in the previous one, is a method of an interface object <<<CallListener>>> who will have to invoke, called <<<registerUserSucessful()>>>. This method is responsible for sending the user to know that your registration application has been successful.
 
