@@ -683,7 +683,7 @@ Creating an Android application
 		* <<Activities>>
 
 +---			
-<activity android:name="com.tikal.videocall.VideoCall" android:label="Video Call" 
+<activity android:name="kas.videocall.VideoCall" android:label="Video Call" 
 android:theme="@android:style/Theme.NoTitleBar.Fullscreen" android:screenOrientation="landscape" 
 android:launchMode="singleTop" \>
 +---
@@ -691,7 +691,7 @@ android:launchMode="singleTop" \>
 		* <<Services>> that have to wake up:
 			
 +--- 
-<service android:enabled="true" android:name="com.tikal.softphone.SoftPhoneService" \>
+<service android:enabled="true" android:name="kas.softphone.SoftPhoneService" \>
 +---
 			
 		* <<Intent filter>>: Within the main activity configuration it is useful to include the 
@@ -1255,10 +1255,10 @@ Examples
 	Definition of emission management activities and receiving calls.
 
 +---
-<activity android:name="com.tikal.media.MediaControlIncoming"
+<activity android:name="kas.media.MediaControlIncoming"
 	android:label="Media Control Incoming">
 </activity>
-<activity android:name="com.tikal.media.MediaControlOutgoing"
+<activity android:name="kas.media.MediaControlOutgoing"
 	android:label="Media Control Outgoing">
 </activity>
 +---
@@ -1266,7 +1266,7 @@ Examples
 	Defining the activity displayed by the media in the device. It adds a parameter to clear the notification bar and is full screen (<<<android:theme="@android:style\/Theme.NoTitleBar.Fullscreen">>>). In addition, it undertakes to be always horizontal orientation (<<<android:screenOrientation="landscape">>>).
 
 +---
-<activity android:name="com.tikal.videocall.VideoCall"
+<activity android:name="kas.videocall.VideoCall"
 	android:label="Video Call" android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
 	android:screenOrientation="landscape" android:launchMode="singleTop" >
 </activity>
@@ -1275,11 +1275,11 @@ Examples
 	Defining preferences management activities. In this case the orientation is vertical.
 
 +---
-<activity android:name="com.tikal.preferences.Connection_Preferences"
+<activity android:name="kas.preferences.Connection_Preferences"
 	android:label="Connection Preferences" android:screenOrientation="portrait">
 </activity>
 
-<activity android:name="com.tikal.preferences.Video_Preferences"
+<activity android:name="kas.preferences.Video_Preferences"
 	android:label="Video Preferences" android:screenOrientation="portrait">
 </activity>
 +---
