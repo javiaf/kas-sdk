@@ -125,7 +125,7 @@
 				<artifactId>maven-site-plugin</artifactId>
 				<version>3.0</version>
 				<configuration>
-					<locales>en,es</locales>
+					<locales>en</locales>
 					<encoding>UTF-8</encoding>
 				</configuration>
 				<dependencies>
