@@ -23,6 +23,9 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8 </project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		
+		<!-- Dependency versions -->
+		<kcSipUaImplVersion>1.0.0-RC-2-SNAPSHOT</kcSipUaImplVersion>
 	</properties>
 
 	<organization>
@@ -89,20 +92,14 @@
 <!--			<version>1.0.0-RC-1</version>-->
 <!--			<type>apklib</type>-->
 <!--		</dependency>-->
-<!--		<dependency>-->
-<!--			<groupId>com.kurento.commons</groupId>-->
-<!--			<artifactId>kc-sipua</artifactId>-->
-<!--			<version>1.0.0-RC-1</version>-->
-<!--			<type>jar</type>-->
-<!--			<scope>compile</scope>-->
-<!--		</dependency>-->
-<!--		<dependency>-->
-<!--			<groupId>com.kurento.commons</groupId>-->
-<!--			<artifactId>kc-sipua-impl</artifactId>-->
-<!--			<version>1.0.0-RC-1</version>-->
-<!--			<type>jar</type>-->
-<!--			<scope>compile</scope>-->
-<!--		</dependency>-->
+
+		<dependency>
+			<groupId>com.kurento.commons</groupId>
+			<artifactId>kas-sipua-impl</artifactId>
+			<version>${kcSipUaImplVersion}</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
 		<dependency>
 			<groupId>com.google.android</groupId>
 			<artifactId>android</artifactId>
