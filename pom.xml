@@ -25,7 +25,13 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		
 		<!-- Dependency versions -->
-		<kcSipUaImplVersion>1.0.0-RC-2-SNAPSHOT</kcSipUaImplVersion>
+		<kcMediaSpecVersion>1.0.0-RC-1</kcMediaSpecVersion>
+		<kasMediaVersion>1.0.0-RC-1</kasMediaVersion>
+		<kasSipUaVersion>1.0.0-RC-2-SNAPSHOT</kasSipUaVersion>
+		<kasSipUaImplVersion>1.0.0-RC-2-SNAPSHOT</kasSipUaImplVersion>
+		<kcMsControlVersion>1.0.0-RC-1</kcMsControlVersion>
+		<kasMsControlVersion>1.0.0-RC-1</kasMsControlVersion>
+		<kasSoftPhoneVersion>1.0.0-RC-1</kasSoftPhoneVersion>
 	</properties>
 
 	<organization>
@@ -75,28 +81,28 @@
 		<dependency>
 			<groupId>com.kurento.commons</groupId>
 			<artifactId>kc-mediaspec</artifactId>
-			<version>1.0.0-RC-1</version>
+			<version>${kcMediaSpecVersion}</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.kurento.kas</groupId>
 			<artifactId>kas-media</artifactId>
-			<version>1.0.0-RC-1</version>
+			<version>${kasMediaVersion}</version>
 			<type>apklib</type>
 			<scope>compile</scope>
 		</dependency>
-<!--		<dependency>-->
-<!--			<groupId>com.kurento.kas</groupId>-->
-<!--			<artifactId>kas-mscontrol</artifactId>-->
-<!--			<version>1.0.0-RC-1</version>-->
-<!--			<type>apklib</type>-->
-<!--		</dependency>-->
+		<dependency>
+			<groupId>com.kurento.kas</groupId>
+			<artifactId>kas-mscontrol</artifactId>
+			<version>${kasMsControlVersion}</version>
+			<type>apklib</type>
+		</dependency>
 
 		<dependency>
 			<groupId>com.kurento.commons</groupId>
 			<artifactId>kas-sipua-impl</artifactId>
-			<version>${kcSipUaImplVersion}</version>
+			<version>${kasSipUaImplVersion}</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
