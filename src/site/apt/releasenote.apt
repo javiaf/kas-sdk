@@ -5,9 +5,35 @@
    Date
    ------
    
-Release note
+Release notes
 
-	* This platform has been tested in:
+* Features
+
+	* Supports AMR and MP2 audio
+	
+	* Supports H.263 and MP4 video codecs
+	
+	* Configurable media profile: Frame rate, bit rate
+	
+	* Configurable codec profile: Group of pictures 
+	
+	* Supports CIF video. This release does not support FRAME_SIZE parameter.
+	
+	* Video bandwidth is limited depending on active network interface. kas-media allows a
+	maximum bandwidth of 350 kbps for 3G connection and 1500 kbps for WiFi connection.
+	
+	* SDP negotiation does not support bandwidth negotiation.
+	
+	* Jitter adaptation buffer: KAS is designed for minimum latency and this decreases jitter
+	tolerance. A low pass jitter adaptation filter has been implemented to optimize video
+	continuity with minimun latency.
+	
+		
+* Integration and test
+
+	Kurento Android SDK is fully integrated with Maven to provide easy dependency management.
+	
+	This software has been tested with following Android platforms
 	
 		* Samsung Galaxy II
 		
@@ -18,5 +44,13 @@ Release note
 		* HTC Desire
 		
 		* Nexus One
-				
-	* Do not use the MP2 audio codec when the network is 3G.
+
+	This software is known to be compatible with following softphones
+	
+		* LinPhone
+		
+		* Eye-bean
+		
+		* PortGo & PortSip
+		
+		* Ekiga
