@@ -15,13 +15,12 @@ Kurento Android SDK
 	Kurento Android SDK is built on open standards and as such, complies with IETF and 3GPP
 	specifications to create, manage and terminate video conferencing sessions that seamlessly
 	integrates within Android Applications. Multimedia sessions are built on most popular codecs
-	like G.711, GSM, AMR, H.263 H.264, MPEG4 and many more in the near future. 
+	like AMR, MP2 audio, H.263 H.264, MPEG4 and many more in the near future. 
 	
 	Kurento Android SDK is incorporated to applications as a standard Android library. Internally
 	The SIP and Media stacks are instantiated and controlled through the API as shown in the 
 	Figure below.
-	
-  
+  				
 [./images/kurento-android-docs-stack.png] Kurento Android SDK stack
    
   Detailed information on Kurento Android SDK usage can be found in the 
@@ -29,7 +28,7 @@ Kurento Android SDK
   also a complete  {{{./reference-guide.html} Reference Guide}} for the API
   
   {{{../kas-softphone}K-Phone}} is a good example of Kurento Android SDK capabilities.
-  This is a test application that can of help in integration procedures or as guidance
+  This is a test application that can help in integration procedures or as guidance
   for new developers.
   
 
@@ -58,12 +57,16 @@ Kurento Android SDK
    The application layer <joins> blocks using the rules below to define the model of use.
    It is possible to build video soft-phones or applications suited to specific requirements 
    
-   	* <<Connection>>: Media blocks can be connected to each other as far as they share one common
-   	media type (audio/video). Media formats are automatically adapted.
+	   	* <<Connection>>: Media blocks can be connected to each other as far as they share one common
+   		media type (audio/video). Media formats are automatically adapted.
 
-	* <<Connection Media>>: Audio and Video channels can be handled independently
+		* <<Connection Media>>: Audio and Video channels can be handled independently
 
-	* <<Connection mode>>: Connection can be declared DUPLEX, SEND or RECV
+		* <<Connection mode>>: Connection can be declared DUPLEX, SEND or RECV
+		
+	Figure below shows a very simple join example
+	
+[./images/join-example.png]
 
 * Resources & Community
 
