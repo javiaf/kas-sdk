@@ -27,7 +27,7 @@ Kurento Android SDK
   {{{./developer-guide.html}Kurento Android SDK developer's guide}}. There's
   also a complete  {{{./reference-guide.html} Reference Guide}} for the API
   
-  {{{../kas-softphone}K-Phone}} is a good example of Kurento Android SDK capabilities.
+  {{{../../kas-softphone}K-Phone}} is a good example of Kurento Android SDK capabilities.
   This is a test application that can help in integration procedures or as guidance
   for new developers.
   

@@ -11,12 +11,12 @@ Kurento Android SDK reference guide
 	
 	* <<Control Plane API>>: Javadoc documentation for call handling
 
- 		** {{{../kas-sipua/${kasSipUaVersion}/apidocs/index.html}<<SIP User Agent API>>}}: kas-sipua
+ 		** {{{../../kas-sipua/${kasSipUaVersion}/apidocs/index.html}<<SIP User Agent API>>}}: kas-sipua
 
-		** {{{../kas-sipua-impl/${kasSipUaImplVersion}/apidocs/index.html}<<SIP User Agent Factory API>>}}: kas-sipua-impl
+		** {{{../../kas-sipua-impl/${kasSipUaImplVersion}/apidocs/index.html}<<SIP User Agent Factory API>>}}: kas-sipua-impl
 	
 	* <<User Plane API>>: Javadoc documentacion for media management
 
-		** {{{../kc-mscontrol/${kcMsControlVersion}/apidocs/index.html}<<General media control API>>}}: Control of general media components
+		** {{{../../kc-mscontrol/${kcMsControlVersion}/apidocs/index.html}<<General media control API>>}}: Control of general media components
 		
-		** {{{../kas-mscontrol/${kasMsControlVersion}/apidocs/index.html}<<Android specific media control API>>}}: Android specific media control functions 
+		** {{{../../kas-mscontrol/${kasMsControlVersion}/apidocs/index.html}<<Android specific media control API>>}}: Android specific media control functions 

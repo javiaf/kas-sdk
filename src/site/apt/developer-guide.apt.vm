@@ -25,7 +25,7 @@ Introduction
 		
 		[<<Examples>>]
 			Provides detailed information and code snippets of a real Android application
-			({{{../kas-softphone/${kasSoftPhoneVersion}}K-Phone}}) that uses Kurento Android SDK.
+			({{{../../kas-softphone/${kasSoftPhoneVersion}}K-Phone}}) that uses Kurento Android SDK.
 
 Control Plane
 
@@ -41,7 +41,7 @@ Control Plane
 	The User Agent manages the SIP protocol. Instantiates a {{{http://java.net/projects/jsip}JAIN-SIP}} 
 	based SIP stack to handle message creation and relay. The <<<UA>>> is able to host multiple <<<SipEndPoint>>>,
 	each one serving one user (SIPURI). A full reference guide can be found in the 
-	{{{../kas-sipua/${kasSipUaImplVersion}/apidocs}API documentation}}.	Following list shows the most relevant methods
+	{{{../../kas-sipua/${kasSipUaImplVersion}/apidocs}API documentation}}.	Following list shows the most relevant methods
 
 		[<<<registerEndPoint(String user, String realm, String password, int expires, SipEndPointListener handler)>>>]
 			This method registers a user (SIPURI=sip:<<<user>>>@<<<realm>>>) contact with an expiration time defined
@@ -57,7 +57,7 @@ Control Plane
 	
 **  <<SipEndPoint>>
 
-	Is the access point to VoIP services. Its {{{../kas-sipua/${kasSipUaImplVersion}/apidocs}API}} is aimed to 
+	Is the access point to VoIP services. Its {{{../../kas-sipua/${kasSipUaImplVersion}/apidocs}API}} is aimed to 
 	provide a call control abstraction layer. 
 	
 		[<<<dial(String remoteParty, SipCallListener callController)>>>]
@@ -209,7 +209,7 @@ public void onEvent(SipCallEvent event) {
 ** <<SipConfig>>. 
 
 	This object is the mechanism used to provide the <<<UaFactory>>> with required SIP configuration. Supported
-	keys are defined in the <<<SipConfig>>> {{{../kas-sipua-impl/${kasSipUaImplVersion}apidocs/com/kurento/commons/sip/util/
+	keys are defined in the <<<SipConfig>>> {{{../../kas-sipua-impl/${kasSipUaImplVersion}apidocs/com/kurento/commons/sip/util/
 	SipConfig.html}reference guide}}
 	
 *--------*-----------*----*--------*----------------------------------------------------------------*
@@ -434,7 +434,7 @@ currentCall.hangup();
 User Plane
 	
 	The User Plane function creates media delivery networks based in the  negotiation carried out by the Control Plane.
-	Kurento Android SDK User Plane is implemented by project {{{../kas-mscontrol/${kasMsControlVersion}}MSControl}}, and
+	Kurento Android SDK User Plane is implemented by project {{{../../kas-mscontrol/${kasMsControlVersion}}MSControl}}, and
 	consist of a set of basic building blocks implemented with <<ffmpeg>>.
 
 * <<Concepts>>
@@ -775,7 +775,7 @@ public interface ServiceUpdateUIListener {
 
 	The <Softphone Service> implements a listener interface (<<<CallListener>>>) in order to receive SIP events from
 	<<<Controller>>>. Next list provides an example of such interface implemented
-	by {{{../kas-softphone/${kasSoftPhoneVersion}}K-Phone}}
+	by {{{../../kas-softphone/${kasSoftPhoneVersion}}K-Phone}}
 
 		Events related to SIP contact register:
 
@@ -832,8 +832,8 @@ public interface ServiceUpdateUIListener {
 
 ** <<Controller>>
 
-	This class wraps projects {{{../docs/kas-sipua/${kasSipUaVersion}}KAS-SIPUA}} and 
-	{{{../docs/kas-sipua-impl/${kasSipUaImplVersion}}KAS-SIPUA implementation}}.
+	This class wraps projects {{{../../kas-sipua/${kasSipUaVersion}}KAS-SIPUA}} and 
+	{{{../../kas-sipua-impl/${kasSipUaImplVersion}}KAS-SIPUA implementation}}.
 	It provides a simplified control API of SIP User Agent, based in the application's
 	model of use.
 	
