@@ -181,8 +181,8 @@
 
 	<scm>
 		<connection>scm:http://kurento.googlecode.com</connection>
-		<developerConnection>scm:git:ssh://repository.kurento.com/git/kurento-android-docs</developerConnection>
-		<url>https://repository.kurento.com/git/kurento-android-sdk/?p=kurento-android-docs</url>
+		<developerConnection>scm:git:ssh://git@repository.kurento.com/kas/kurento-android-sdk.git</developerConnection>
+		<url>https://repository.kurento.com/git/kurento-android-sdk/?p=kurento-android-sdk.git</url>
 	</scm>
 
 	<licenses>
