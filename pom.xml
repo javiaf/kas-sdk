@@ -32,7 +32,7 @@
 		<kcMsControlVersion>1.0.0-RC-2-SNAPSHOT</kcMsControlVersion>
 		<kasMsControlVersion>1.0.0-RC-3-SNAPSHOT</kasMsControlVersion>
 		<kasSoftPhoneVersion>1.0.0-RC-1</kasSoftPhoneVersion>
-		
+
 		<kmsCoreVersion>0.6.0-SNAPSHOT</kmsCoreVersion>
 	</properties>
 
@@ -124,6 +124,13 @@
 
 	<build>
 		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -134,9 +141,8 @@
 					<encoding>UTF-8</encoding>
 				</configuration>
 			</plugin>
-
 		</plugins>
-		
+
 		<extensions>
 			<extension>
 				<groupId>org.apache.maven.wagon</groupId>
