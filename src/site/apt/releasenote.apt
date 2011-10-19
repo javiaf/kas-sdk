@@ -151,6 +151,18 @@ Release notes
 +---
 
 	* Signed app
+	
+	By default maven will sign applications with development signature. A '''release''' profile is defined allowing different signature to be added to apk archives for production mode. Following configurations are required by the pom.xml file
+
+ 		* Asign <<<true>>> value at property ''sign.develop'', used for ''<sign>'' tag of plugin <<<maven-android-plugin>>>. This value will be set when no profile (i.e. develop profile) is selected
+ 		
++---
+<properties>
+    <sign.develop>true</sign.develop>
+</properties>
++---
+
+ 		* Define specific configuration for profile ''release''. Set ''sig.develop'' to false (this will override previous configuration), and configure plugin <<<maven-jarsigner-plugin>>>. All keystore configurations will be set within the <<<settings.xml>>> file.
 		
 +---
 <profile>
@@ -186,6 +198,46 @@ Release notes
 </profile>
 +---
 	
+		* Configure ''<sign>'' tag of maven-android-plugin as shown below
+	
++---
+<plugin>
+    <groupId>com.jayway.maven.plugins.android.generation2</groupId>
+    <artifactId>maven-android-plugin</artifactId>
+        <version>3.0.0-alpha-2</version>
+            <configuration>
+                <sdk>
+                    <platform>10</platform>
+                </sdk>
+                <undeployBeforeDeploy>true</undeployBeforeDeploy>
+                <deleteConflictingFiles>true</deleteConflictingFiles>
+                <sign>
+                    <debug>${sign.develop}</debug>
+                </sign>
+            </configuration>
+    <extensions>true</extensions>
+</plugin>
++---
+
+		* Set keystore configurations within {{{settings.xml}}} file. This configurations will be asign only when profile '''release''' activates.
+	
++---
+<settings>
+  <profiles>
+    <profile>
+      <id>release</id>
+      <properties>
+        <keystore.path>/opt/prod/prod.keystore</keystore.path> 
+        <keystore.alias>prod</keystore.alias>
+        <keystore.type>JKS</keystore.type>
+        <keystore.store.password>${keystore.password}</keystore.store.password>
+        <keystore.key.password>${keystore.password}</keystore.key.password>
+      </properties>
+    </profile>
+  </profiles>
+</settings>
++---
+
 	
 	
 ** Test
