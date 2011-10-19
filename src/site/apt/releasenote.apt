@@ -32,11 +32,125 @@ Release notes
 	tolerance. A low pass jitter adaptation filter has been implemented to optimize video
 	continuity with minimun latency.
 	
-		
+				
 * Integration and test
+
+** Integration
 
 	Kurento Android SDK is fully integrated with Maven to provide easy dependency management.
 	
+*** Dependencies
+	
++---
+<dependencies>
+	<dependency>
+	        <groupId>com.kurento.kas</groupId>
+	        <artifactId>kurento-android-sdk</artifactId>
+	        <version>${kurentoAndroidSdkVersion}</version>
+	        <type>pom</type>
+	        <scope>compile</scope>
+	</dependency>
+	<dependency>
+	        <groupId>com.google.android</groupId>
+	        <artifactId>android</artifactId>
+	        <version>2.3.3</version>
+	        <scope>provided</scope>
+	</dependency>
+</dependencies>
++---
+
+*** Repository
+	
++---
+<repositories>
+	<repository>
+		<id>kurento-snapshots</id>
+		<name>Kurento Snapshot Repository</name>
+		<url>http://repository.kurento.com/archiva/repository/snapshots/</url>
+		<releases>
+	        <enabled>false</enabled>
+		</releases>
+		<snapshots>
+	        <enabled>true</enabled>
+		</snapshots>
+	</repository>
+	<repository>
+		<id>kurento-releases</id>
+		<name>Kurento Repository</name>
+		<url>http://repository.kurento.com/archiva/repository/internal/</url>
+		<releases>
+	        <enabled>true</enabled>
+		</releases>
+		<snapshots>
+	        <enabled>false</enabled>
+		</snapshots>
+	</repository>
+</repositories>
++---
+
+***Profiles
+	
+	* Android 2.2
+		
++---
+<profiles>
+	<profile>
+	    <id>android2.2</id>
+	    <dependencies>
+	        <dependency>
+	                <groupId>log4j</groupId>
+	                <artifactId>log4j</artifactId>
+	                <version>[1.2.16,)</version>
+	                <scope>compile</scope>
+	        </dependency>
+	    </dependencies>
+	    <build>
+            <finalName>${project.artifactId}-android2.2-${version}</finalName>
+	    </build>
+	</profile>
+</profiles>
++---
+
+	* Signed app
+		
++---
+<profile>
+	<id>release</id>
+	<properties>
+        <sign.develop>false</sign.develop>
+	</properties>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jarsigner-plugin</artifactId>
+				<version>1.2</version>
+				<executions>
+					<execution>
+				        <id>signing</id>
+				        <goals>
+			                <goal>sign</goal>
+				        </goals>
+				        <phase>package</phase>
+				        <inherited>true</inherited>
+				        <configuration>
+			                <keystore>${keystore.path}</keystore>
+			                <alias>${keystore.alias}</alias>
+			                <storepass>${keystore.store.password}</storepass>
+			                <keypass>${keystore.key.password}</keypass>
+				        </configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</profile>
++---
+	
+	
+	
+** Test
+
 	This software has been tested with following Android platforms
 	
 		* Samsung Galaxy II
