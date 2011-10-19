@@ -24,6 +24,8 @@
 		<project.build.sourceEncoding>UTF-8 </project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
+		<!-- KurentoAndroidSdk versions -->
+		<kurentoAndroidSdkVersion>1.0.0-SNAPSHOT</kurentoAndroidSdkVersion>
 		<!-- Dependency versions -->
 		<kcMediaSpecVersion>1.1.0-SNAPSHOT</kcMediaSpecVersion>
 		<!-- <kasMediaNativeVersion>1.1.0-SNAPSHOT</kasMediaNativeVersion> -->
