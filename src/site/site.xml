@@ -13,7 +13,6 @@
 			<item name="About" href="index.html" />
 			<item name="Release notes" href="releasenote.html" />
 			<item name="Source code" href="./source.html" />
-			<item name="Download" href="./download.html" />
 			<item name="Test Plan" href="testplan.html" />
 		</menu>
 		<menu name="Documentation">
