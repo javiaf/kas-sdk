@@ -20,6 +20,10 @@
 			<item name="Developer's guide" href="./developer-guide.html" />
 			<item name="SDK reference guide" href="./reference-guide.html" />
 		</menu>
+		<menu name="Integration and Test">
+			<item name="Infrastructure and Integration" href="./integration.html" />
+			<item name="Test" href="./test.html" />
+		</menu>
 
 		<menu ref="reports" />
 
