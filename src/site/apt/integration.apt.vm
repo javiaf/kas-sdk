@@ -161,7 +161,9 @@ $ mvn package
 	For further information about the `maven-android-plugin` you can check its web page: {{{http://code.google.com/p/maven-android-plugin/}Maven Android Plugin}}
 	
 ** Dependencies
-	
+
+	You should configure the dependency of Kurento Android SDK:
+
 +---
 <dependencies>
 	<dependency>
@@ -170,12 +172,6 @@ $ mvn package
 	        <version>${kurentoAndroidSdkVersion}</version>
 	        <type>pom</type>
 	        <scope>compile</scope>
-	</dependency>
-	<dependency>
-	        <groupId>com.google.android</groupId>
-	        <artifactId>android</artifactId>
-	        <version>2.3.3</version>
-	        <scope>provided</scope>
 	</dependency>
 </dependencies>
 +---
@@ -212,6 +208,8 @@ $ mvn package
 **Profiles
 	
 	* Android 2.2
+	
+	By default this configuration makes a <<<APK>>> for Android 2.3. If you want to make a <<<APK>>> for Android 2.2, you should add this <<<profile>>> in your project <<<pom.xml>>>.
 		
 +---
 <profiles>
