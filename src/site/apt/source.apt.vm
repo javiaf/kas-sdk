@@ -12,9 +12,9 @@ Kurento Android SDK
    * API code includes all source code exposing services to applications. It consist of the following
    projects
   
-  	 * <<{{{../../kas-sipua/${kasSipUaVersion}}SIP User Agent API}}>>: Defines the SIP User Agent API
+  	 * <<{{{../../kas-sipua/${kasSipUaVersion}SIP User Agent API}}>>: Defines the SIP User Agent API
   
-  	 * <<{{{../../kc-mscontrol/${kcMsControlVersion}} Media Control API}}>>: Defines JSR309 like control
+  	 * <<{{{../../kc-mscontrol/${kcMsControlVersion} Media Control API}}>>: Defines JSR309 like control
   	 interface for media management.
   	 
   	 * <<{{{../../kas-mscontrol/${kasMsControlVersion}} Android Media Control API}}>>: Extends kc-mscontrol
@@ -34,7 +34,7 @@ Applications
 
 	Kurento applications are mainly intended for test purposes and feature demonstrators.
 
-   * <<{{{../../kas-softphone/${kasSoftPhoneVersion}}K-Phone}}>>: This is a video soft phone application
+   * <<{{{../../kas-softphone/${kasSoftPhoneVersion}K-Phone}}>>: This is a video soft phone application
 	that uses Kurento Android SDK
    
    
