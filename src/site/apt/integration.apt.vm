@@ -250,7 +250,7 @@ $ mvn package
 <profile>
 	<id>release</id>
 	<properties>
-        <sign.develop>false</sign.develop>
+	    <sign.develop>false</sign.develop>
 	</properties>
 	<build>
 		<plugins>
