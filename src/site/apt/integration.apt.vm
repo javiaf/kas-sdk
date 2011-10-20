@@ -162,7 +162,7 @@ $ mvn package
 	
 ** Dependencies
 
-	You should configure the dependency of Kurento Android SDK:
+	You should configure the dependency of Kurento Android SDK in project <<<pom.xml>>>:
 
 +---
 <dependencies>
@@ -177,6 +177,8 @@ $ mvn package
 +---
 
 ** Repository
+
+	You should configure the repository where the dependencies will download.
 	
 +---
 <repositories>
