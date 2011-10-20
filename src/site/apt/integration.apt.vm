@@ -51,6 +51,115 @@ Infrastructure and Integration
 
 	Kurento Android SDK is fully integrated with Maven to provide easy dependency management.
 	
+** Build Android projects with Maven
+
+	Maven can compile Android projects using the 'maven-android-plugin'.
+
+*** Environment setup
+
+	Set environment variable <<<ANDROID_HOME>>> to the path of your installed Android SDK and add <<<$ANDROID_HOME/tools>>> as well as <<<$ANDROID_HOME/platform-tools>>> to your <<<$PATH>>>.
+
+	Additionally if your are going to compile native code you have to create <<<ANDROID_NDK_HOME>>> and also add it to the path.
+
+*** Prepare <<<pom.xml>>>
+
+	To compile using the plugin you should have a build section in your pom like this:
+
++---
+...
+<build>
+	<finalName>${project.artifactId}-${version}</finalName>
+	<sourceDirectory>src</sourceDirectory>
+	<plugins>
+		<plugin>
+			<groupId>com.jayway.maven.plugins.android.generation2</groupId>
+			<artifactId>maven-android-plugin</artifactId>
+			<version>3.0.0-alpha-2</version>
+			<configuration>
+				<sdk>
+					<platform>10</platform>
+				</sdk>
+				<undeployBeforeDeploy>true</undeployBeforeDeploy>
+			</configuration>
+			<extensions>true</extensions>
+		</plugin>
+		<plugin>
+			<artifactId>maven-compiler-plugin</artifactId>
+			<configuration>
+				<source>1.6</source>
+				<target>1.6</target>
+			</configuration>
+		</plugin>
+	</plugins>
+</build>
+...
++---
+
+	We are using version 3.0 even in alpha because it supports <<<apklib>>> correctly and we need this kind of dependency.
+
+	You may also configure your maven dependencies, as usual, but you should remember to include the android dependency ad a provided one. The version of the android dependency depends on the version of android you want to compile for. Next is an example of this dependency:
+
++---
+...
+<dependency>
+	<groupId>com.google.android</groupId>
+	<artifactId>android</artifactId>
+	<version>2.3.3</version>
+	<scope>provided</scope>
+</dependency>
+...
++---
+
+*** Compilation
+
+	To compile the project, once the <<<pom.xml>>> is properly configured, you just have to execute:
+
++---
+$ mvn compile
++---
+
+*** Packaging
+
+	Android projects can be packaged as final application (apk's) or as libraries or subprojects that other applications will use (apklib's). In order to decide the type of package you should add the following line to your project <<<pom.xml>>>:
+
++---
+<packaging>apk</packaging>
++---
+
+	or
+
++---
+<packaging>apklib</packaging>
++---
+
+	To create an apk or apklib just execute:
+
++---
+$ mvn package
++---
+
+	The apk will be created on the `target` directory.
+
+	If your are creating an apklib you will probably want to install it in your local maven repository in order to be able to use as a dependency on other project. To do so execute:
+
++---
+ $ mvn install
++---
+
+*** Install application
+
+	If you want to install the application on a device you have to configure the device to support `adb` access and connect it to the computer. Then you can execute:
+
++---
+ $ mvn android:deploy
++---
+
+	The application is now installed on the device.
+
+*** References
+
+	For further information about the `maven-android-plugin` you can check its web page: {{{http://code.google.com/p/maven-android-plugin/}Maven Android Plugin}}
+	
 ** Dependencies
 	
 +---
