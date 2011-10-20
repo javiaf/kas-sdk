@@ -1,0 +1,213 @@
+   ------
+   Kurento Android SDK
+   ------
+   ------
+   Date
+   ------
+   
+Infrastructure and Integration
+
+* Infrastructure
+
+	Before you begin, you should verify that the infrastructure is correct.
+	
+** Android
+
+	Kurento Android SDK requires following minimum versions of Android development infrastructure
+	
+		* <Android API level>: <<10>>
+		
+		* <Android SDK version>: <<2.3.3>>
+		
+		* <Android NDK version>: <<r5c>>. NDK is required only to compile {{{../../kas-media/${kasMediaVersion}}Android media core}}
+				
+		* <Platform>: Software has been tested with platforms 2.2 and 2.3
+	
+	Developing with Eclipse will require to install {{{http://developer.android.com/sdk/eclipse-adt.html}ADT plugin for Eclipse}}
+	
+** Maven
+
+	Kurento Android SDK is fully integrated with Maven v3 to provide easy dependency management.
+		
+	Developing with eclipse will required to install {{{http://eclipse.org/m2e/}Maven plugin for Eclipse}}
+	
+	Eclipse plugin <m2e> regenerates <.project> files, destroying configurations from other plugins. This is
+	relevant for Android projects created with <ADT plugin>. In order to make compatible <m2e> with <ADT> it
+	 is required plugin {{{http://rgladwell.github.com/m2e-android/}<m2e-android>}} 
+	available at <Eclipse Marketplace>. This plugin requires following software version:
+	
+		* Eclipse version 3.6+
+		
+		* Android Developer Tools plug-in version 12.0+
+    
+    	* M2Eclipse plug-in version 1.0+
+    
+    	* Maven Android Plugin version 3.0.0-alpha-2+
+    	
+    	* M2E Android connector versio 0.3+  
+	
+
+* Integration
+
+	Kurento Android SDK is fully integrated with Maven to provide easy dependency management.
+	
+** Dependencies
+	
++---
+<dependencies>
+	<dependency>
+	        <groupId>com.kurento.kas</groupId>
+	        <artifactId>kurento-android-sdk</artifactId>
+	        <version>${kurentoAndroidSdkVersion}</version>
+	        <type>pom</type>
+	        <scope>compile</scope>
+	</dependency>
+	<dependency>
+	        <groupId>com.google.android</groupId>
+	        <artifactId>android</artifactId>
+	        <version>2.3.3</version>
+	        <scope>provided</scope>
+	</dependency>
+</dependencies>
++---
+
+** Repository
+	
++---
+<repositories>
+	<repository>
+		<id>kurento-snapshots</id>
+		<name>Kurento Snapshot Repository</name>
+		<url>http://repository.kurento.com/archiva/repository/snapshots/</url>
+		<releases>
+	        <enabled>false</enabled>
+		</releases>
+		<snapshots>
+	        <enabled>true</enabled>
+		</snapshots>
+	</repository>
+	<repository>
+		<id>kurento-releases</id>
+		<name>Kurento Repository</name>
+		<url>http://repository.kurento.com/archiva/repository/internal/</url>
+		<releases>
+	        <enabled>true</enabled>
+		</releases>
+		<snapshots>
+	        <enabled>false</enabled>
+		</snapshots>
+	</repository>
+</repositories>
++---
+
+**Profiles
+	
+	* Android 2.2
+		
++---
+<profiles>
+	<profile>
+	    <id>android2.2</id>
+	    <dependencies>
+	        <dependency>
+	                <groupId>log4j</groupId>
+	                <artifactId>log4j</artifactId>
+	                <version>[1.2.16,)</version>
+	                <scope>compile</scope>
+	        </dependency>
+	    </dependencies>
+	    <build>
+            <finalName>${project.artifactId}-android2.2-${version}</finalName>
+	    </build>
+	</profile>
+</profiles>
++---
+
+	* Signed app
+	
+	By default maven will sign applications with development signature. A '''release''' profile is defined allowing different signature to be added to apk archives for production mode. Following configurations are required by the pom.xml file
+
+ 		* Asign <<<true>>> value at property ''sign.develop'', used for ''<sign>'' tag of plugin <<<maven-android-plugin>>>. This value will be set when no profile (i.e. develop profile) is selected
+ 		
++---
+<properties>
+    <sign.develop>true</sign.develop>
+</properties>
++---
+
+ 		* Define specific configuration for profile ''release''. Set ''sig.develop'' to false (this will override previous configuration), and configure plugin <<<maven-jarsigner-plugin>>>. All keystore configurations will be set within the <<<settings.xml>>> file.
+		
++---
+<profile>
+	<id>release</id>
+	<properties>
+        <sign.develop>false</sign.develop>
+	</properties>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jarsigner-plugin</artifactId>
+				<version>1.2</version>
+				<executions>
+					<execution>
+				        <id>signing</id>
+				        <goals>
+			                <goal>sign</goal>
+				        </goals>
+				        <phase>package</phase>
+				        <inherited>true</inherited>
+				        <configuration>
+			                <keystore>${keystore.path}</keystore>
+			                <alias>${keystore.alias}</alias>
+			                <storepass>${keystore.store.password}</storepass>
+			                <keypass>${keystore.key.password}</keypass>
+				        </configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</profile>
++---
+	
+		* Configure ''<sign>'' tag of maven-android-plugin as shown below
+	
++---
+<plugin>
+    <groupId>com.jayway.maven.plugins.android.generation2</groupId>
+    <artifactId>maven-android-plugin</artifactId>
+        <version>3.0.0-alpha-2</version>
+            <configuration>
+                <sdk>
+                    <platform>10</platform>
+                </sdk>
+                <undeployBeforeDeploy>true</undeployBeforeDeploy>
+                <deleteConflictingFiles>true</deleteConflictingFiles>
+                <sign>
+                    <debug>${sign.develop}</debug>
+                </sign>
+            </configuration>
+    <extensions>true</extensions>
+</plugin>
++---
+
+		* Set keystore configurations within <<<settings.xml>>> file. This configurations will be asign only when profile '''release''' activates.
+	
++---
+<settings>
+  <profiles>
+    <profile>
+      <id>release</id>
+      <properties>
+        <keystore.path>/opt/prod/prod.keystore</keystore.path> 
+        <keystore.alias>prod</keystore.alias>
+        <keystore.type>JKS</keystore.type>
+        <keystore.store.password>${keystore.password}</keystore.store.password>
+        <keystore.key.password>${keystore.password}</keystore.key.password>
+      </properties>
+    </profile>
+  </profiles>
+</settings>
++---
+   
