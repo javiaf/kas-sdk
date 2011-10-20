@@ -332,7 +332,7 @@ $ mvn package
 			
 			[[1]] Click second button on project -> <<Configure>> -> <<Convert Maven Project>>.
 			
-		[[1]] As this version plugin (maven-android-plugin) has problem with folder "gen", you should make "<<<mvn compile>>>" in console, the folder "target/generate-sources/r"  will was create.
+		[[1]] As this version plugin (maven-android-plugin) has problem with folder "gen", you should make "<<<mvn compile>>>" in console, the folder "target/generate-sources/r"  will be created.
 		
 		[[1]] For this problem, you should delete the Android builders in the properties project:
 		
