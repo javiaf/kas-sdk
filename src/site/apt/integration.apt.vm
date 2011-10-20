@@ -5,7 +5,7 @@
    Date
    ------
    
-Infrastructure and Integration
+Infrastructure, Integration and Create new Android project
 
 * Infrastructure
 
@@ -319,4 +319,30 @@ $ mvn package
   </profiles>
 </settings>
 +---
+
+* Create new Android project
+
+	To create a Android project and use the SDK, you should follow this steps:
+	
+		[[1]] Create empty Android project. The version should be for Android 2.3. See this {{{http://developer.android.com/resources/tutorials/hello-world.html}example}}.
+		
+		[[1]] Create project <<<pom.xml>>> how it's explain in integration section.
+		
+		[[1]] Now it's the moment of convert the project on Maven project. 
+			
+			[[1]] Click second button on project -> <<Configure>> -> <<Convert Maven Project>>.
+			
+		[[1]] As this version plugin (maven-android-plugin) has problem with folder "gen", you should make "<<<mvn compile>>>" in console, the folder "target/generate-sources/r"  will was create.
+		
+		[[1]] For this problem, you should delete the Android builders in the properties project:
+		
+			[[1]] Click second button on project -> <<Properties>> -> <<Builders>>
+			
+			[[1]] Unmark: <<Android Resource Manager>>, <<Android Pre Compiler>> and <<Android Package Builder>>.
+			
+		[[1]] After, in <<Java Builder Path>>, you should add as source folder the "target/generate-sources/r" folder. And delete as source folder the "gen" folder.
+		
+		[[1]] Finally, you should <<create>> the apk of the application and <<install>> in the phone how it's explain in integration section.
+		
+	If you follow this steps, you can use our sdk quick and easyly.
    
