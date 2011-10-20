@@ -15,11 +15,11 @@ Infrastructure, Integration and Create new Android project
 
 	Kurento Android SDK requires following minimum versions of Android development infrastructure
 	
-		* <Android API level>: <<10>>
+		* <Android API level>: <<10+>>
 		
-		* <Android SDK version>: <<2.3.3>>
+		* <Android SDK version>: <<2.3.3+>>
 		
-		* <Android NDK version>: <<r5c>>. NDK is required only to compile {{{../../kas-media/${kasMediaVersion}}Android media core}}
+		* <Android NDK version>: <<r5c+>>. NDK is required only to compile {{{../../kas-media/${kasMediaVersion}}Android media core}}
 				
 		* <Platform>: Software has been tested with platforms 2.2 and 2.3
 	
