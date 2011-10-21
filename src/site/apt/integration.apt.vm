@@ -27,7 +27,7 @@ Infrastructure, Integration and Create new Android project
 	
 ** Maven
 
-	Kurento Android SDK is fully integrated with Maven v3 to provide easy dependency management.
+	Kurento Android SDK is fully integrated with Maven v3.0.3 to provide easy dependency management.
 		
 	Developing with eclipse will required to install {{{http://eclipse.org/m2e/}Maven plugin for Eclipse}}
 	
@@ -42,7 +42,7 @@ Infrastructure, Integration and Create new Android project
     
     	* M2Eclipse plug-in version 1.0+
     
-    	* Maven Android Plugin version 3.0.0-alpha-2+
+    	* Maven Android Plugin version 3.0.0-alpha-9+
     	
     	* M2E Android connector versio 0.3+  
 	
