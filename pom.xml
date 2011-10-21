@@ -21,7 +21,7 @@
 	</description>
 
 	<properties>
-		<project.build.sourceEncoding>UTF-8 </project.build.sourceEncoding>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
 		<!-- KurentoAndroidSdk versions -->
@@ -36,7 +36,7 @@
 		<kasSipUaImplVersion>1.1.0-SNAPSHOT</kasSipUaImplVersion>
 
 		<kasSoftPhoneVersion>1.1.0-SNAPSHOT</kasSoftPhoneVersion>
-		 <kmsCoreVersion>0.6.0-SNAPSHOT</kmsCoreVersion>
+		<kmsCoreVersion>0.6.0-SNAPSHOT</kmsCoreVersion>
 	</properties>
 
 	<organization>
@@ -45,32 +45,26 @@
 	</organization>
 
 	<developers>
-
 		<developer>
 			<id>mparis</id>
 			<name>Miguel París Díaz</name>
 		</developer>
-
 		<developer>
 			<id>rbenitez</id>
 			<name>Raul Benitez Mejías</name>
 		</developer>
-
 		<developer>
 			<id>qiang</id>
 			<name>Qiang Zhou Ni</name>
 		</developer>
-
 		<developer>
 			<id>fjlopez</id>
 			<name>Javier López Fernández</name>
 		</developer>
-
 		<developer>
 			<id>sgala</id>
 			<name>Santiago Gala</name>
 		</developer>
-
 	</developers>
 
 	<mailingLists>
