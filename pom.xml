@@ -25,7 +25,7 @@
 
 		<!-- Dependency versions -->
 		<kcMediaSpecVersion>1.1.0-RC-1</kcMediaSpecVersion>
-		<kasMediaVersion>1.1.0-RC-1</kasMediaVersion>
+		<kasMediaVersion>1.1.0-RC-2</kasMediaVersion>
 		<kasMsControlVersion>1.1.0-RC-1</kasMsControlVersion>
 		<kasSipUaImplVersion>1.1.0-RC-1</kasSipUaImplVersion>
 	</properties>
