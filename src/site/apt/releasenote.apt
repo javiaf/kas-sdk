@@ -8,6 +8,8 @@
 Release notes
 
 * Features
+	
+	* The default port is 6060 but when It's trying to use the stun server exist the possibility that the port isn't free. If the port isn't free, the port that will be selected will be 6060 + 1, +2, ... After time, if you register another time and the port 6060 is free, the port selected will be 6060 again.
 
 	* Supports AMR and MP2 audio.
 	
