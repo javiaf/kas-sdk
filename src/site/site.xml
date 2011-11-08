@@ -18,6 +18,7 @@
 		<menu name="Documentation">
 			<item name="Developer's guide" href="./developer-guide.html" />
 			<item name="SDK reference guide" href="./reference-guide.html" />
+			<item name="Integration Howto" href="./integration-guide.html" />
 		</menu>
 		<menu name="Integration and Test">
 			<item name="Infrastructure and Integration" href="./integration.html" />
