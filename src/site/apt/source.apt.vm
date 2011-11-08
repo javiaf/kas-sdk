@@ -27,7 +27,7 @@ Kurento Android SDK
 
      * <<{{{../../kas-media/${kasMediaVersion}}Android Media}}>>: Implements media core functionalities.
 
-     * <<{{{../../kc-mediaspec/${kasMediaVersion}}Media Spec}}>>: Utility library intended 
+     * <<{{{../../kc-mediaspec/${kcMediaSpecVersion}}Media Spec}}>>: Utility library intended 
        to manage SDP message negotiation.
    
 Applications
