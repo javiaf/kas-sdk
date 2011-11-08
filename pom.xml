@@ -24,7 +24,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
 		<!-- KurentoAndroidSdk versions -->
-		<kurentoAndroidSdkVersion>1.0.0-RC-3-SNAPSHOT</kurentoAndroidSdkVersion>
+		<kurentoAndroidSdkVersion>1.0.0-RC-3</kurentoAndroidSdkVersion>
 
 		<!-- Dependency versions -->
 		<kcMediaSpecVersion>1.1.0-RC-2</kcMediaSpecVersion>
@@ -38,7 +38,7 @@
 		<kasSipUaVersion>1.1.0-RC-1</kasSipUaVersion>
 		<kasSipUaImplVersion>1.1.0-RC-2</kasSipUaImplVersion>
 
-		<kasSoftPhoneVersion>1.1.0-RC-2-SNAPSHOT</kasSoftPhoneVersion>
+		<kasSoftPhoneVersion>1.1.0-RC-2</kasSoftPhoneVersion>
 		
 		<kmsCoreVersion>0.7.0-SNAPSHOT</kmsCoreVersion>
 	</properties>
