@@ -23,11 +23,24 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
+		<!-- KurentoAndroidSdk versions -->
+		<kurentoAndroidSdkVersion>1.0.0-RC-3-SNAPSHOT</kurentoAndroidSdkVersion>
+
 		<!-- Dependency versions -->
 		<kcMediaSpecVersion>1.1.0-RC-1</kcMediaSpecVersion>
+		
+		<kasMediaNativeVersion>1.1.0-RC-3-SNAPSHOT</kasMediaNativeVersion>
 		<kasMediaVersion>1.1.0-RC-3-SNAPSHOT</kasMediaVersion>
+						
+		<kcMsControlVersion>1.0.0-RC-2</kcMsControlVersion>
 		<kasMsControlVersion>1.1.0-RC-2-SNAPSHOT</kasMsControlVersion>
+		
+		<kasSipUaVersion>1.1.0-RC-1</kasSipUaVersion>
 		<kasSipUaImplVersion>1.1.0-RC-1</kasSipUaImplVersion>
+
+		<kasSoftPhoneVersion>1.1.0-RC-2-SNAPSHOT</kasSoftPhoneVersion>
+		
+		<kmsCoreVersion>0.7.0-SNAPSHOT</kmsCoreVersion>
 	</properties>
 
 	<organization>
