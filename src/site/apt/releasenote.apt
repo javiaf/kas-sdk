@@ -37,12 +37,12 @@ Release notes
 		
 	* <<Configurable media profile:>> 
 				
-		* <<Frame rate>>: Target frame rate media core will try to provide. It can be
+		* <Frame rate>: Target frame rate media core will try to provide. It can be
 		limited by HW or negotiation constraints.
 		
-		* <<Bit rate>>: Target bit rate the media streams will try to provide.
+		* <Bit rate>: Target bit rate the media streams will try to provide.
 	
-		* <<Group of pictures>>: Ratio between P and I frames. No B frames are used.
+		* <Group of pictures>: Ratio between P and I frames. No B frames are used.
 	
 	* <<Stun Support.>>
 	
