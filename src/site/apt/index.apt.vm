@@ -18,7 +18,7 @@ Kurento Android SDK
 	like AMR, MP2 audio, H.263 H.264, MPEG4 and many more in the near future. 
 	
 	Kurento Android SDK is incorporated to applications as a standard Android library. Internally
-	The SIP and Media stacks are instantiated and controlled through the API as shown in the 
+	the SIP and Media stacks are instantiated and controlled through the API as shown in the 
 	Figure below.
   				
 [./images/kurento-android-docs-stack.png] Kurento Android SDK stack

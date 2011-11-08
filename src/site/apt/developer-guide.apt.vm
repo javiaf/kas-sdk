@@ -41,7 +41,7 @@ Control Plane
 	The User Agent manages the SIP protocol. Instantiates a {{{http://java.net/projects/jsip}JAIN-SIP}} 
 	based SIP stack to handle message creation and relay. The <<<UA>>> is able to host multiple <<<SipEndPoint>>>,
 	each one serving one user (SIPURI). A full reference guide can be found in the 
-	{{{../../kas-sipua/${kasSipUaImplVersion}/apidocs}API documentation}}.	Following list shows the most relevant methods
+	{{{../../kas-sipua/${kasSipUaImplVersion}/apidocs}API documentation}}.	Following list shows the most relevant methods.
 
 		[<<<registerEndPoint(String user, String realm, String password, int expires, SipEndPointListener handler)>>>]
 			This method registers a user (SIPURI=sip:<<<user>>>@<<<realm>>>) contact with an expiration time defined
@@ -53,7 +53,7 @@ Control Plane
 
 		[<<<terminate()>>>]
 			This method unregister all SIPURIs hosted by the <<<UA>>> and terminates the SIP stack. The <<<UA>>> enters a
-			termination state from where it can not recover
+			termination state from where it can not recover.
 	
 **  <<SipEndPoint>>
 
@@ -69,10 +69,10 @@ Control Plane
 
 	Provides information related to <<<SipEndPoint>>> state transitions. 
 	In order to receive this events the handler must implement the interface
-	<<<SipEndPointListener>>>
+	<<<SipEndPointListener>>>.
 	
 		[<<<onEvent()>>>]
-			 This method is used by the <<<SipEndPoint>> to send events of type <<<SipEndPointEvent>>>
+			 This method is used by the <<<SipEndPoint>>> to send events of type <<<SipEndPointEvent>>>.
 
 	The <<<SipEndPointListener>>> should be able to handle the following events:
 		
@@ -94,7 +94,7 @@ Control Plane
 		[<<<SERVER_INTERNAL_ERROR>>>]
 			 The server experienced a problem preventing the process to complete normally.
 
-	Next code shows an implementation example of the <<<SipEndPointListener>>>
+	Next code shows an implementation example of the <<<SipEndPointListener>>>.
 	
 +---
 @Override
@@ -119,7 +119,7 @@ public void onEvent(SipEndPointEvent event) {
 }
 +---
 
-**  <<SipCall>>. 
+**  <<SipCall>>
 
 	This object handles the call during its life cycle: from instantiation, to termination.
 	
@@ -147,20 +147,20 @@ public void onEvent(SipEndPointEvent event) {
 			Connection mode will depend on internal <<<UA>>> configuration	and remote peer requirements.
 	
 			Supported channels are AUDIO and VIDEO. They can present any of the following connection
-			modes: send-only, receive-only, send-receive
+			modes: send-only, receive-only, send-receive.
 
-**  <<SipCallEvent>>.
+**  <<SipCallEvent>>
 
 	Provide information related <<<SipCall>>> state transitions. They are sent to listeners
-	implementing interface <<<SipCallListener>>>
+	implementing interface <<<SipCallListener>>>.
 		
 		[<<<onEvent()>>>]
-			 This method is used by the <<<SipCall>>> to send events of type <<<SipCallEvent>>>
+			 This method is used by the <<<SipCall>>> to send events of type <<<SipCallEvent>>>.
 
 	The application implementing this listener  should be able to handle following events:
 
 		[<<<CALL_SETUP>>>] 
-			Notifies a successful call setup. The call is CONNECTED
+			Notifies a successful call setup. The call is CONNECTED.
 
 		[<<<CALL_TERMINATE>>>] 
 			This event is sent when call has been terminated, either by local or remote party.
@@ -186,7 +186,7 @@ public void onEvent(SipEndPointEvent event) {
 		[<<<SERVER_INTERNAL_ERROR>>>]
 			Signals a server error preventing the call to progress
 
-	Next code shows an implementation example
+	Next code shows an implementation example.
 	
 +---
 @Override
@@ -206,11 +206,11 @@ public void onEvent(SipCallEvent event) {
 }
 +---
 
-** <<SipConfig>>. 
+** <<SipConfig>>
 
 	This object is the mechanism used to provide the <<<UaFactory>>> with required SIP configuration. Supported
 	keys are defined in the <<<SipConfig>>> {{{../../kas-sipua-impl/${kasSipUaImplVersion}apidocs/com/kurento/commons/sip/util/
-	SipConfig.html}reference guide}}
+	SipConfig.html}reference guide}}.
 	
 *--------*-----------*----*--------*----------------------------------------------------------------*
 | <<Name>> | <<M/O>> |<<Type>>|<<Range>>    | <<Description>>                                       |
@@ -231,7 +231,7 @@ public void onEvent(SipCallEvent event) {
 * <<SIP User Agent initialization>>
 
 	The User Agent must be initialized before it can be used. Initialization
-	considers two aspects: signaling and media
+	considers two aspects: signaling and media.
 	
 	* <<SIP Configuration>>: Provides configurations required by the <<<UA>>> to connect to a VoIP network. 
 	It consist of a <<<SipConfig>>> instance with appropriate values.
@@ -317,7 +317,7 @@ ua.terminate();
 	The <<<UA>>> registers a SIP contact when its associated SIPURI must support incoming calls. Kurento Android SDK
 	models the user contact with the class <<<SipEndPoint>>>, created by method
 	<<<registerEndPoint(String user, password, String String int expires, realm, SipEndPointListener
-	    handler)>>>
+	    handler)>>>.
 
 		[<<user>>] User name to be registered.
 
@@ -337,7 +337,7 @@ endPoint = ua.registerEndPoint(localUser, localRealm, localPassword, expires, th
 
 ** <<Unregister>>
 
-	Contact unregister can be achieved by setting the <<<expires>>> header to 0
+	Contact unregister can be achieved by setting the <<<expires>>> header to 0.
 
 +---
 expires = 0;
@@ -350,7 +350,7 @@ endPoint = ua.registerEndPoint(localUser, localRealm, localPassword, expires, th
 
 	A call can be initiated by method <<<SipEndPoint.dial(String sipUri, SipEndPointListener handler)>>>.
 	It is mandatory to provide the called party (SIPURI) and the call event handler. This method will 
-	immediately return a <<<SipCall>>> object providing full control over the call life cycle to the application
+	immediately return a <<<SipCall>>> object providing full control over the call life cycle to the application.
 	
 +---
 currentCall = endPoint.dial(remoteURI, this);
@@ -371,7 +371,7 @@ currentCall.cancel();
 * <<Incoming call>>
 
 	Incoming calls are those initiated by the remote party. Every time an incoming call is 
-	received, the <<<UA>>> performs following verifications
+	received, the <<<UA>>> performs following verifications.
 	
 		* There is a registered SIPURI hosted by the <<<UA>>> and hence a <<<SipEndPoint>>> object.
 		 Otherwise a <<<404 NOT_FOUND>>> response is sent back.
@@ -439,7 +439,7 @@ User Plane
 
 * <<Concepts>>
 
-**  <<MediaSession>>. 
+**  <<MediaSession>>
 
 	This is the User Plane's central class. It provides factory methods to create <<<MediaComponent>>>
 	and <<<NetworkConnection>>>, used to relay media between device's in/out components and network.
@@ -449,7 +449,7 @@ User Plane
 			Factory method used to create media components.
 			
 
-** <<MSControlFactory>>. 
+** <<MSControlFactory>>
 
 	This factory provides a static method to create <<<MediaSession>>> instances. Media core requires an 
 	initialization including environmental information and user preferences. Next table provides a complete list
@@ -486,14 +486,14 @@ User Plane
 (M: Mandatory; O: Optional)
 
 	
-** <<MediaComponent>>. 
+** <<MediaComponent>>
 
 	Media components attach pipes to in/out devices enabling captured media to be transmitted to remote peers
 	and received media to be reproduced.
 	
 ** <<NetworkConnection>>
 
-	Provides a control interface for a network pipe, enabling media transmission and reception between remote devices
+	Provides a control interface for a network pipe, enabling media transmission and reception between remote devices.
 
 * <<Media initialization>>
 
@@ -525,7 +525,7 @@ currentCall.getNetworkConnection(StreamType.video);
  	of factory <<<MediaSession>>> is used to create audio instances. It requires
  	the component name, stream direction and speaker id.
 		 
-		* Create a reception audio component that plays through the loudspeaker:
+		* Create a reception audio component that plays through the loudspeaker.
 
 +---
 Parameters params = MSControlFactory.createParameters();
@@ -579,7 +579,7 @@ audioPlayerComponent.stop();
 	(screen space where it will display video received), the <<width>> and the <<length>> of device's 
 	screen.
 	
-	* Create video receiver component, for agiven <<<SurfaceView>>>, <<height>> and <<width>>:
+	* Create video receiver component, for agiven <<<SurfaceView>>>, <<height>> and <<width>>.
 
 +---
 DisplayMetrics dm = new DisplayMetrics();
@@ -597,7 +597,7 @@ videoRecorderComponent = mediaSession.createMediaComponent(
 		MediaComponentAndroid.VIDEO_RECORDER, params);
 +---
 
-	* Create video output component, for a given <<SurfaceView>> and device orientation:
+	* Create video output component, for a given <<SurfaceView>> and device orientation.
 
 +---
 Parameters params = MSControlFactory.createParameters();
@@ -609,7 +609,7 @@ videoPlayerComponent = mediaSession.createMediaComponent(
 +---
 
 	
-	* Connect video receiver component to a network interface for data reception:
+	* Connect video receiver component to a network interface for data reception.
 
 +---
 NetworkConnection nc = sipCall.getNetworkConnection()
@@ -625,7 +625,7 @@ videoPlayerComponent.join(Direction.SEND, nc.getJoinableStream(StreamType.video)
 videoPlayerComponent.start();
 +---	
 
-	Video components are terminated as shown in the following code:
+	Video components are terminated as shown in the following code.
 
 +---
 videoRecorderComponent.stop();
@@ -763,7 +763,7 @@ public interface ServiceUpdateUIListener {
 	
 		* Register an icon into the notification bar to signal the service. 
 		  The notification must be associated to the <Softphone Activity>.
-		  This will allow to get back to the application after it enters background state
+		  This will allow to get back to the application after it enters background state.
 	
 		* Subscribe to the <<<Controller>>> to receive SIP events.
 		
@@ -775,7 +775,7 @@ public interface ServiceUpdateUIListener {
 
 	The <Softphone Service> implements a listener interface (<<<CallListener>>>) in order to receive SIP events from
 	<<<Controller>>>. Next list provides an example of such interface implemented
-	by {{{../../kas-softphone/${kasSoftPhoneVersion}}K-Phone}}
+	by {{{../../kas-softphone/${kasSoftPhoneVersion}}K-Phone}}.
 
 		Events related to SIP contact register:
 
@@ -809,7 +809,7 @@ public interface ServiceUpdateUIListener {
 ** <<VideoCall Service>>
 
 	This service is created by <Softphone Service> to handle media channels of active calls. It must
-	execute following activities
+	execute following activities.
 
 		* Create and connect audio components in order to start the voice conference. With the audio connected
 		to the service the conference will remain active even if the application enters background state. 
@@ -868,7 +868,7 @@ public interface ServiceUpdateUIListener {
 			is terminated and <VideoCall Service> is started in order to manage media. 
 			The <<<Controller>>> instance has been responsible to create an configure a
 			<<<NetworkConnection>>> object that must be given to the <VideoCall Service>
-			so it can connect media reception and transmission to media devices (screen, camera, mic, etc.)
+			so it can connect media reception and transmission to media devices (screen, camera, mic, etc.).
 		
 		[<<<CALL_TERMINATE>>>]
 			The call has been terminated and all media resources have to be released.
@@ -896,7 +896,7 @@ public interface ServiceUpdateUIListener {
 
 		[<<<hang()>>>]
 			This method is called from <VideoCall Activity> when the user request to Terminate the active call.
-			Internally uses the <<<hang()>>> method provided by <<<SipCall>>>
+			Internally uses the <<<hang()>>> method provided by <<<SipCall>>>.
 
 * <<Call management Activities>>
 
@@ -908,18 +908,18 @@ public interface ServiceUpdateUIListener {
 
 	This activity is created by the <Softphone Activity> after the call has been triggered. The <Outgoing call Activity>
 	displays information about the called party and provides a call cancel control. The activity
-	terminates with one of the following events
+	terminates with one of the following events.
 	
-		** Remote peer rejects the call. Control is given back to <Softphone Activity>
+		** Remote peer rejects the call. Control is given back to <Softphone Activity>.
 		
-		** Remote peer accepts the call. <Softphone Service> will start the <VideoCall Service> to handle media
+		** Remote peer accepts the call. <Softphone Service> will start the <VideoCall Service> to handle media.
 	
-		** User cancels call. Control is given back to <Softphone Activity>
+		** User cancels call. Control is given back to <Softphone Activity>.
 
 ** <<Incoming call Activity>>
 
 	This activity is started by the <Softphone Service> after the <<<Controller>>> notifies 
-	an <<<INCOMING_CALL>>> event. It should provide	functionality listed below
+	an <<<INCOMING_CALL>>> event. It should provide	functionality listed below.
 
 		** Display of caller SIPURI or name of the contact when is known.
 		
@@ -945,7 +945,7 @@ public interface ServiceUpdateUIListener {
 	background state and the video transfer is lost.
 
 	<VideoCall Activity> is responsible to display received video stream.
-	 This activity should contain at least the following elements
+	 This activity should contain at least the following elements.
 
 		* One display <<<SurfaceView>>> where received video will be played.
 
@@ -968,7 +968,7 @@ else
 	
 		* Speaker <<<Button>>> to send received audio to the loudspeaker. The activity will
 		disconnect the audio component and it will create a new one, connected to the
-		selected output
+		selected output.
 	
 +---
 if (audioRecorderComponent != null) {
@@ -1039,27 +1039,27 @@ if (audioRecorderComponent != null) {
 		[<<Audio codecs>>]
 			Must be able to store the list of enabled audio codecs. Supported values are provided
 			by <<enum>> <<<AudioCodecType>>>. It is used during media
-			initialization to assign parameter AUDIO_CODECS
+			initialization to assign parameter AUDIO_CODECS.
 		
 		[<<Video dimension>>]
 			Must be able to store two integers to set the values of <<<Dimension>>> object. Defines
-			the value of parameter FRAME_SIZE during media initialization
+			the value of parameter FRAME_SIZE during media initialization.
 			
 		[<<Call direction>>]
 			Must be able to store a Hash Map of connection <<<Mode>> for each <<<MediaType>>> (audio and video). 			
 			Defines the media flow directions for each channel during a call. The application will use this
-			information every time it calls method <<<SipEndPoint.dial(...)>>>
+			information every time it calls method <<<SipEndPoint.dial(...)>>>.
 			
 		[<<MAX frame rate>>]
 			Integer key to store the frames per second the media core must try to deliver. It is used during media
-			initialization to assign parameter MAX_FRAME_RATE
+			initialization to assign parameter MAX_FRAME_RATE.
 			
 		[<<GOP size>>]
 			Integer key to store the configured GOP size. It is used during media
 			initialization to assign parameter GOP_SIZE.
 	
 		[<<Buffer size>>]
-			Stores an integer value to be set to the FRAMES_QUEUE_SIZE parameter during media initialization					
+			Stores an integer value to be set to the FRAMES_QUEUE_SIZE parameter during media initialization.					
 	
 
 * <<Android Manifest>>
@@ -1086,7 +1086,7 @@ if (audioRecorderComponent != null) {
 	A complete list of Android permissions can be found at
 	{{{http://developer.android.com/reference/android/Manifest.permission.html}Android developer's guide}}.
 		
-	Android Manifest will also define all activities and services required by the application
+	Android Manifest will also define all activities and services required by the application.
 		
 +--- 
 <service android:enabled="true" android:name="kas.softphone.SoftPhoneService" \>
@@ -1126,14 +1126,14 @@ public static HashMap<String, Object> contextTable = new HashMap<String, Object>
 +---
 
 	Objects can be stored from anywhere within the application using method 
-	<<<ApplicationContext.contextTable.put(key, objet)>>>
+	<<<ApplicationContext.contextTable.put(key, objet)>>>.
 
 +---
 ApplicationContext.contextTable.put("controller", controller);
 +---
 	
 	Objects can be retrieved anywhere within the application calling method 
-	<<<ApplicationContext.contextTable.get(key)>>>
+	<<<ApplicationContext.contextTable.get(key)>>>.
 	
 +---
 controller = (Controller) ApplicationContext.contextTable.get("controller");
@@ -1166,7 +1166,7 @@ public static InetAddress getLocalAddress() {
 
 Examples
 
-	This section provides code snippets and real usage examples of Kurento Android SDK
+	This section provides code snippets and real usage examples of Kurento Android SDK.
 
 * <<AndroidManifest.xml>>
 
@@ -1332,7 +1332,7 @@ signalManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
 signalManager.listen(signalListener,	PhoneStateListener.LISTEN_DATA_CONNECTION_STATE);
 +---
 
-	Any network change will be notified through method <<<onDataConnectionStateChanged>>>
+	Any network change will be notified through method <<<onDataConnectionStateChanged>>>.
 	
 +---
 private final PhoneStateListener signalListener = new PhoneStateListener() {
@@ -1432,7 +1432,7 @@ private final PhoneStateListener signalListener = new PhoneStateListener() {
 };
 +---
 
-	Main Android activity must create and initialize the <<<Controller>>> to handle SIP protocol
+	Main Android activity must create and initialize the <<<Controller>>> to handle SIP protocol.
 
 +---
 private boolean initControllerUAFromSettings() {
@@ -1562,7 +1562,7 @@ if (isExit) {
 ** <<Main service>>
 
 	Next code shows how the <Softphone Service> registers the icon to the notification bar and associates it to class <<<SoftPhone>>>
-	(<SoftPhone Activity>)
+	(<SoftPhone Activity>).
 	
 +---
 private NotificationManager mNotificationMgr;
@@ -1593,7 +1593,7 @@ mNotificationMgr.notify(NOTIF_SOFTPHONE, mNotif);
 +---
 
 	<Softphone Service> retrieves <<Controller>> instance from <<<ApplicationContext>>> and subscribes to it as
-	a <<<CallListener>>>
+	a <<<CallListener>>>.
 
 +---
 Controller controller = (Controller) ApplicationContext.contextTable
@@ -1638,7 +1638,7 @@ public void callSetup(NetworkConnection networkConnection) {
 }
 +---
 	
-	Communication between <Softphone Activity> and <Softphone Service> requires an interface
+	Communication between <Softphone Activity> and <Softphone Service> requires an interface.
 
 +---
 public interface ServiceUpdateUIListener {
@@ -1660,7 +1660,7 @@ private Handler handler = new Handler() {
 };
 +---
 
-	On termination <Softphone Service> must cancel notification bar subscription
+	On termination <Softphone Service> must cancel notification bar subscription.
 
 +---
 mNotificationMgr.cancel(NOTIF_SOFTPHONE);
@@ -1731,7 +1731,7 @@ startActivity(videoCallIntent);
 +---
 
 	When the call is terminated it must change notification bar subscription from
-	<VideoCall Activity> to <Softphone Activity>
+	<VideoCall Activity> to <Softphone Activity>.
 	
 +---
 mNotificationMgr.cancel(NOTIF_VIDEOCALL);
@@ -1747,7 +1747,7 @@ mNotif.setLatestEventInfo(this, notificationTitleSoft, "",
 mNotificationMgr.notify(NOTIF_SOFTPHONE, mNotif);
 +---
 
-	Call termination requires the audio components to be stopped
+	Call termination requires the audio components to be stopped.
 
 +---
 if (audioPlayerComponent != null)
@@ -1795,7 +1795,7 @@ private void call(String remoteURI, Integer id) {
 }
 +---
 	
-	Called SIPURI can be directly retrieved from address book
+	Called SIPURI can be directly retrieved from address book.
 	
 +---
 final Button buttonContacts = (Button) findViewById(R.id.contacts);
@@ -1817,7 +1817,7 @@ private void openContacts() {
 +---	
 
 	Method <<<onActivityResult(int requestCode, int resultCode, Intent data) >>> will contain a code similar
-	to the one shown below:
+	to the one shown below.
 
 +---
 if (requestCode == PICK_CONTACT_REQUEST) {
@@ -1891,7 +1891,7 @@ finish();
 
 ** <<Incoming calls>>
 
-	<Incoming call Activity> displays contact information, if available
+	<Incoming call Activity> displays contact information, if available.
 
 +---
 Bundle extras = getIntent().getExtras();
@@ -1927,7 +1927,7 @@ long[] pattern = { 0, 1000, 2000, 3000 };
 vibrator.vibrate(pattern, 1);
 +---
 
-	If call is acepted the activity exits after stoping the vibrator 
+	If call is acepted the activity exits after stoping the vibrator.
 	
 +---
 vibrator.cancel();
@@ -1941,7 +1941,7 @@ if (controller != null){
 finish();
 +---
 
-	Call reject requires the same behaviour, but requesting a call reject to the <<<Controller>>>
+	Call reject requires the same behaviour, but requesting a call reject to the <<<Controller>>>.
 
 +---
 controller.reject();
@@ -1950,7 +1950,7 @@ controller.reject();
 * <<Contact management>> 
 
 	Call management activities will retrieve remote party data from the address book. Given
-	a SIPURI it is possible to find the contact id (if exits)
+	a SIPURI it is possible to find the contact id (if exits).
 
 +---
 public Integer getId(String sipUri) {
@@ -1982,7 +1982,7 @@ public Integer getId(String sipUri) {
 }
 +---
 
-	Returned id can now be used to get contact information 
+	Returned id can now be used to get contact information.
 	
 +---
 public String getName(Integer id) {
@@ -2005,7 +2005,7 @@ public String getName(Integer id) {
 +---
 
 	Remote party information can be also retrieve for calls initiated from the address book thanks to 
-	the intent data. This method will work only if intent filter has been configured for the activity
+	the intent data. This method will work only if intent filter has been configured for the activity.
 
 +---
 public String getName(Intent data) {
