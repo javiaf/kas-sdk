@@ -56,6 +56,7 @@ Release notes
 
 ** Known issues
 
-	* Two SIP UA behind the same NAT can get assigned the same Mapped Port if they use different STUN servers. This might cause port
-	collision during SIP registration if they both use the same local port. In order to avoid this behavior a random local port is
+	* Two SIP UAs behind the same NAT can get assigned the same Mapped Port if they use different STUN servers. This might cause port
+	collision during SIP registration if they both use the same local port. In order to minimize this problem the application 
+	should select a random local port to bind the SIP stack.
 	selected.
