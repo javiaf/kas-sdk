@@ -42,11 +42,11 @@
 					<td>Create video component</td>
 					<td bgcolor="#00FF00">Ok</td>
 				</tr>
-								<tr>
+				<tr>
 					<td>Connect audio component to network connection</td>
 					<td bgcolor="#00FF00">Ok</td>
 				</tr>
-				
+
 				<tr>
 					<td>Connect video component to network connection</td>
 					<td bgcolor="#00FF00">Ok</td>
@@ -85,6 +85,27 @@
 
 		</section>
 
+		<section name="Test platform">
+			<br>This software has been tested with following Android platforms
+			</br>
+			<ul>
+				<li>Samsung Galaxy II</li>
+
+				<li>Samsung Galaxy I</li>
+
+				<li>Samsung Galaxy ACE</li>
+
+				<li>HTC Desire</li>
+
+				<li>Nexus One</li>
+			</ul>
+			<br>This software is known to be compatible with following
+				soft-phones:</br>
+			<ul>
+				<li> LinPhone (version 3.4.0)</li>
+			</ul>
+
+		</section>
 	</body>
 
 </document>
