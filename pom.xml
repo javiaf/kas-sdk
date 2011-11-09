@@ -3,7 +3,7 @@
 
 	<groupId>com.kurento.kas</groupId>
 	<artifactId>kurento-android-sdk</artifactId>
-	<version>1.0.0-RC-4-SNAPSHOT</version>
+	<version>1.0.0-RC-4</version>
 	<packaging>pom</packaging>
 
 	<name>Kurento Android SDK</name>
