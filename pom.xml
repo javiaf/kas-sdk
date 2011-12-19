@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.kurento.kas</groupId>
@@ -28,18 +29,18 @@
 
 		<!-- Dependency versions -->
 		<kcMediaSpecVersion>1.1.0-RC-2</kcMediaSpecVersion>
-		
+
 		<kasMediaNativeVersion>1.2.0-SNAPSHOT</kasMediaNativeVersion>
 		<kasMediaVersion>1.2.0-SNAPSHOT</kasMediaVersion>
-						
+
 		<kcMsControlVersion>1.0.0-RC-2</kcMsControlVersion>
 		<kasMsControlVersion>1.1.0-RC-3-SNAPSHOT</kasMsControlVersion>
-		
-		<kasSipUaVersion>1.1.0-RC-1</kasSipUaVersion>
-		<kasSipUaImplVersion>1.1.0-RC-3</kasSipUaImplVersion>
 
+		<kasSipUaVersion>1.1.0-RC-1</kasSipUaVersion>
+		<kasSipUaImplVersion>1.1.0-RC-4-SNAPSHOT</kasSipUaImplVersion>
+<!-- <kasSipUaImplVersion>1.2.0-SNAPSHOT</kasSipUaImplVersion> -->
 		<kasSoftPhoneVersion>1.1.0-RC-3</kasSoftPhoneVersion>
-		
+
 		<kmsCoreVersion>0.7.0-SNAPSHOT</kmsCoreVersion>
 	</properties>
 
@@ -86,14 +87,12 @@
 			<artifactId>kc-mediaspec</artifactId>
 			<version>${kcMediaSpecVersion}</version>
 			<type>jar</type>
-			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.kurento.kas</groupId>
 			<artifactId>kas-media</artifactId>
 			<version>${kasMediaVersion}</version>
 			<type>jar</type>
-			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.kurento.kas</groupId>
@@ -106,7 +105,18 @@
 			<artifactId>kas-sipua-impl</artifactId>
 			<version>${kasSipUaImplVersion}</version>
 			<type>jar</type>
-			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.sdp</groupId>
+			<artifactId>nist-sdp</artifactId>
+			<version>1.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.sip</groupId>
+			<artifactId>jain-sip-api</artifactId>
+			<version>1.2</version>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 
