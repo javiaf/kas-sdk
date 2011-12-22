@@ -292,7 +292,7 @@ params.put(MediaSessionAndroid.GOP_SIZE, gopSize);
 int maxQueueSize = 3;
 params.put(MediaSessionAndroid.FRAMES_QUEUE_SIZE, maxQueueSize);
 
-String stunHost = "stun.xten.com"
+String stunHost = "stun.xten.com";
 Integer stunPort = 3478;
 params.put(MediaSessionAndroid.STUN_HOST, stunHost);
 params.put(MediaSessionAndroid.STUN_PORT, stunPort);
