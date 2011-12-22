@@ -225,6 +225,10 @@ public void onEvent(SipCallEvent event) {
 *--------*-----------*----*-------*----------------------------------------------------------------+
 | proxyPort| M | String |  1-2^16  | Set the remote port in the SIP PROXY where messages are sent|
 *--------*-----------*----*-------*----------------------------------------------------------------+
+| stunHost| O | String |  NA | Url to Server Stun|
+*--------*-----------*----*-------*----------------------------------------------------------------+
+| stunPort| O | Integer |  1-2^16  | Port to Server Stun|
+*--------*-----------*----*-------*----------------------------------------------------------------+
 (M: Mandatory; O: Optional)
 	
 
@@ -242,6 +246,8 @@ sipConfig.setLocalAddress(localAddress.getHostAddress());
 sipConfig.setLocalPort(6060);
 sipConfig.setProxyAddress(proxyIP);
 sipConfig.setProxyPort(proxyPort);
+sipConfig.setStunAddress(stunHost);
+sipConfig.setStunPort(stunPort);
 +---
 
 	* <<Media Configuration>>: It provides relevant information required by media core for call 
@@ -285,6 +291,11 @@ params.put(MediaSessionAndroid.GOP_SIZE, gopSize);
 
 int maxQueueSize = 3;
 params.put(MediaSessionAndroid.FRAMES_QUEUE_SIZE, maxQueueSize);
+
+String stunHost = "stun.xten.com"
+Integer stunPort = 3478;
+params.put(MediaSessionAndroid.STUN_HOST, stunHost);
+params.put(MediaSessionAndroid.STUN_PORT, stunPort);
 
 
 MediaSessionAndroid mediaSession = MSControlFactory.createMediaSession(params);
@@ -483,6 +494,10 @@ User Plane
 *--------*-----------*----*-------*---------------*-------------------------------------------------+
 | FRAMES_QUEUE_SIZE | O | Integer | [2, MAX_INT] | 2 | Configures the size of jitter buffer in frames. Large numbers will cause latency increase |
 *--------*-----------*----*-------*---------------*-------------------------------------------------+
+| STUN_HOST| O | String |  NA | Url to Server Stun|
+*--------*-----------*----*-------*----------------------------------------------------------------+
+| STUN_PORT| O | Integer |  1-2^16  | Port to Server Stun|
+*--------*-----------*----*-------*----------------------------------------------------------------+
 (M: Mandatory; O: Optional)
 
 	
@@ -597,13 +612,14 @@ videoRecorderComponent = mediaSession.createMediaComponent(
 		MediaComponentAndroid.VIDEO_RECORDER, params);
 +---
 
-	* Create video output component, for a given <<SurfaceView>> and device orientation.
+	* Create video output component, for a given <<SurfaceView>>, the back or front camera and device orientation.
 
 +---
 Parameters params = MSControlFactory.createParameters();
 params.put(MediaComponentAndroid.PREVIEW_SURFACE,
 		(View) findViewById(R.id.video_capture_surface));
 params.put(MediaComponentAndroid.DISPLAY_ORIENTATION, Orientation);
+params.put(MediaComponentAndroid.CAMERA_FACING,	cameraFacing);
 videoPlayerComponent = mediaSession.createMediaComponent(
 		MediaComponentAndroid.VIDEO_PLAYER, params);
 +---
