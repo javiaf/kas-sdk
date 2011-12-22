@@ -7,9 +7,32 @@
    
 Release notes
 
-* Version 1.0.0 
+* Version 1.1.0
 
 ** New Features
+
+	* <<Supports H.264 video codec.>>
+	
+		* The parameters are configured for an encoding ajusted to real time transmission.
+		
+		* To encode we used library X264.
+		
+	* <<Compiled for version ARM7. For version ARM6 doesn't work.>>
+	
+	* <<Improvement in the convergence of the video quality>>
+	
+		* The parameters of the video encoders are configurated for get the target bit_rate fastly, 
+		so get a better quality.
+		
+	* <<Only supports one call at a time.>>
+	
+	* <<Change the back or front camera during a call.>>
+		
+	* <<Fixed bugs>>
+
+* Version 1.0.0 
+
+** Features
 	
 	* <<Supports AMR and MP2 audio codecs.>>
 	
