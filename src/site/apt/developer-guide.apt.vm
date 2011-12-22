@@ -225,9 +225,9 @@ public void onEvent(SipCallEvent event) {
 *--------*-----------*----*-------*----------------------------------------------------------------+
 | proxyPort| M | String |  1-2^16  | Set the remote port in the SIP PROXY where messages are sent|
 *--------*-----------*----*-------*----------------------------------------------------------------+
-| stunHost| O | String |  NA | Url to Server Stun|
+| STUN_HOST         | O | String  |  NA          | Url to Server Stun  |
 *--------*-----------*----*-------*----------------------------------------------------------------+
-| stunPort| O | Integer |  1-2^16  | Port to Server Stun|
+| STUN_PORT         | O | Integer |  1-2^16    | Port to Server Stun |
 *--------*-----------*----*-------*----------------------------------------------------------------+
 (M: Mandatory; O: Optional)
 	
@@ -494,10 +494,10 @@ User Plane
 *--------*-----------*----*-------*---------------*-------------------------------------------------+
 | FRAMES_QUEUE_SIZE | O | Integer | [2, MAX_INT] | 2 | Configures the size of jitter buffer in frames. Large numbers will cause latency increase |
 *--------*-----------*----*-------*---------------*-------------------------------------------------+
-| STUN_HOST| O | String |  NA | Url to Server Stun|
-*--------*-----------*----*-------*----------------------------------------------------------------+
-| STUN_PORT| O | Integer |  1-2^16  | Port to Server Stun|
-*--------*-----------*----*-------*----------------------------------------------------------------+
+| STUN_HOST         | O | String  |  NA          | "stun.xten.com" | Url to Server Stun  |
+*--------*-----------*----*-------*----------------*------------------------------------------------+
+| STUN_PORT         | O | Integer |  1-2^16      | 3478            | Port to Server Stun |
+*--------*-----------*----*-------*-----------------*-----------------------------------------------+
 (M: Mandatory; O: Optional)
 
 	
