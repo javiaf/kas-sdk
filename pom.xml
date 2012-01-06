@@ -29,7 +29,7 @@
 		<!-- Dependency versions -->
 		<kcMediaSpecVersion>1.1.0-RC-2</kcMediaSpecVersion>
 
-		<kasMediaNativeVersion>1.2.0-RC-1</kasMediaNativeVersion>
+		<kasMediaNativeVersion>1.2.0-RC-2-SNAPSHOT</kasMediaNativeVersion>
 		<kasMediaVersion>1.2.0-RC-2</kasMediaVersion>
 
 		<kcMsControlVersion>1.0.0-RC-2</kcMsControlVersion>
