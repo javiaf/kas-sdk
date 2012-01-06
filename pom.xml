@@ -36,7 +36,7 @@
 		<kasMsControlVersion>1.1.0-RC-3</kasMsControlVersion>
 
 		<kasSipUaVersion>1.1.0-RC-1</kasSipUaVersion>
-		<kasSipUaImplVersion>1.1.0-RC-4</kasSipUaImplVersion>
+		<kasSipUaImplVersion>1.1.0-RC-5-SNAPSHOT</kasSipUaImplVersion>
 <!-- <kasSipUaImplVersion>1.2.0-SNAPSHOT</kasSipUaImplVersion> -->
 		<kasSoftPhoneVersion>1.1.0-RC-4</kasSoftPhoneVersion>
 
