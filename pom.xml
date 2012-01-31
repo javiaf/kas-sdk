@@ -105,18 +105,6 @@
 			<version>${kasSipUaImplVersion}</version>
 			<type>jar</type>
 		</dependency>
-		<dependency>
-			<groupId>javax.sdp</groupId>
-			<artifactId>nist-sdp</artifactId>
-			<version>1.0</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>javax.sip</groupId>
-			<artifactId>jain-sip-api</artifactId>
-			<version>1.2</version>
-			<scope>provided</scope>
-		</dependency>
 	</dependencies>
 
 	<build>
