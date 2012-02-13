@@ -38,7 +38,7 @@
 		<kcUaVersion>1.2.0</kcUaVersion>
 		<kasSipUaImplVersion>1.1.0-RC-7</kasSipUaImplVersion>
 <!-- <kasSipUaImplVersion>1.2.0-SNAPSHOT</kasSipUaImplVersion> -->
-		<kasSoftPhoneVersion>1.1.0-RC-5</kasSoftPhoneVersion>
+		<kasSoftPhoneVersion>1.1.0-RC-6</kasSoftPhoneVersion>
 
 		<kmsCoreVersion>0.7.0-SNAPSHOT</kmsCoreVersion>
 	</properties>
