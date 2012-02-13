@@ -848,7 +848,7 @@ public interface ServiceUpdateUIListener {
 
 ** <<Controller>>
 
-	This class wraps projects {{{../../kas-sipua/${kasSipUaVersion}}KAS-SIPUA}} and 
+	This class wraps projects {{{../../kc-ua/${kcUaVersion}}KC-UA}} and 
 	{{{../../kas-sipua-impl/${kasSipUaImplVersion}}KAS-SIPUA implementation}}.
 	It provides a simplified control API of SIP User Agent, based in the application's
 	model of use.

@@ -11,7 +11,7 @@ Kurento Android SDK reference guide
 	
 	* <<Control Plane API>>: Javadoc documentation for call handling
 
- 		** {{{../../kas-sipua/${kasSipUaVersion}/apidocs/index.html}<<SIP User Agent API>>}}: kas-sipua
+ 		** {{{../../kc-ua/${kcUaVersion}/apidocs/index.html}<<SIP User Agent API>>}}: kc-ua
 
 		** {{{../../kas-sipua-impl/${kasSipUaImplVersion}/apidocs/index.html}<<SIP User Agent Factory API>>}}: kas-sipua-impl
 	
