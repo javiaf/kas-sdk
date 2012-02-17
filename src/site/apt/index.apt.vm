@@ -18,7 +18,7 @@ Kurento Android SDK
 	like AMR, MP2 audio, H.263 H.264, MPEG4 and many more in the near future. 
 	
 	Kurento Android SDK is incorporated to applications as a standard Android library. Internally
-	The SIP and Media stacks are instantiated and controlled through the API as shown in the 
+	the SIP and Media stacks are instantiated and controlled through the API as shown in the 
 	Figure below.
   				
 [./images/kurento-android-docs-stack.png] Kurento Android SDK stack
@@ -27,7 +27,7 @@ Kurento Android SDK
   {{{./developer-guide.html}Kurento Android SDK developer's guide}}. There's
   also a complete  {{{./reference-guide.html} Reference Guide}} for the API
   
-  {{{../../kas-softphone}K-Phone}} is a good example of Kurento Android SDK capabilities.
+  {{{../../kas-softphone/${kasSoftPhoneVersion}}K-Phone}} is a good example of Kurento Android SDK capabilities.
   This is a test application that can help in integration procedures or as guidance
   for new developers.
   
@@ -71,7 +71,7 @@ Kurento Android SDK
 * Resources & Community
 
 	Kurento Android SDK is part of {{{http://www.kurento.com}Kurento}}. An End-to-End
-	media suite that also includes a {{{http://www.kurento.com/kurento/kms}media server}}
+	media suite that also includes a {{{http://www.kurento.com/kms}media server}}
     compatible with the {{{http://www.mobicents.org}Mobicents Sip Servlet (MSS)}}
     
     Kurento is intended to be an open initiative and most of its software will be 

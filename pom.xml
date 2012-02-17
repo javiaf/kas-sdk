@@ -3,7 +3,7 @@
 
 	<groupId>com.kurento.kas</groupId>
 	<artifactId>kurento-android-sdk</artifactId>
-	<version>1.1.0-SNAPSHOT</version>
+	<version>1.0.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Kurento Android SDK</name>
@@ -23,11 +23,23 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
+		<!-- KurentoAndroidSdk versions -->
+		<kurentoAndroidSdkVersion>1.0.0</kurentoAndroidSdkVersion>
+
 		<!-- Dependency versions -->
-		<kcMediaSpecVersion>1.1.0-RC-1</kcMediaSpecVersion>
-		<kasMediaVersion>1.1.0-RC-1</kasMediaVersion>
-		<kasMsControlVersion>1.1.0-RC-1</kasMsControlVersion>
-		<kasSipUaImplVersion>1.1.0-RC-1</kasSipUaImplVersion>
+		<kcMediaSpecVersion>1.2.0</kcMediaSpecVersion>
+
+		<kasMediaNativeVersion>1.2.0</kasMediaNativeVersion>
+		<kasMediaVersion>1.2.0</kasMediaVersion>
+
+		<kcMsControlVersion>1.1.0</kcMsControlVersion>
+		<kasMsControlVersion>1.1.0</kasMsControlVersion>
+
+		<kcUaVersion>1.2.3</kcUaVersion>
+		<kasSipUaImplVersion>1.1.0</kasSipUaImplVersion>
+		<kasSoftPhoneVersion>1.1.0</kasSoftPhoneVersion>
+
+		<kmsCoreVersion>0.7.0-SNAPSHOT</kmsCoreVersion>
 	</properties>
 
 	<organization>
@@ -73,14 +85,12 @@
 			<artifactId>kc-mediaspec</artifactId>
 			<version>${kcMediaSpecVersion}</version>
 			<type>jar</type>
-			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.kurento.kas</groupId>
 			<artifactId>kas-media</artifactId>
 			<version>${kasMediaVersion}</version>
 			<type>jar</type>
-			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.kurento.kas</groupId>
@@ -93,7 +103,6 @@
 			<artifactId>kas-sipua-impl</artifactId>
 			<version>${kasSipUaImplVersion}</version>
 			<type>jar</type>
-			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 
