@@ -81,18 +81,6 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>com.kurento.commons</groupId>
-			<artifactId>kc-mediaspec</artifactId>
-			<version>${kcMediaSpecVersion}</version>
-			<type>jar</type>
-		</dependency>
-		<dependency>
-			<groupId>com.kurento.kas</groupId>
-			<artifactId>kas-media</artifactId>
-			<version>${kasMediaVersion}</version>
-			<type>jar</type>
-		</dependency>
-		<dependency>
 			<groupId>com.kurento.kas</groupId>
 			<artifactId>kas-mscontrol</artifactId>
 			<version>${kasMsControlVersion}</version>
