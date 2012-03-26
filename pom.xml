@@ -92,6 +92,12 @@
 			<version>${kasSipUaImplVersion}</version>
 			<type>jar</type>
 		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-android</artifactId>
+			<version>1.6.1-RC1</version>
+			<type>jar</type>
+		</dependency>
 	</dependencies>
 
 	<build>
