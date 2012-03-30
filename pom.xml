@@ -32,11 +32,11 @@
 		<kasMediaNativeVersion>1.2.0</kasMediaNativeVersion>
 		<kasMediaVersion>1.2.0</kasMediaVersion>
 
-		<kcMsControlVersion>1.1.1-SNAPSHOT</kcMsControlVersion>
+		<kcMsControlVersion>1.1.1</kcMsControlVersion>
 		<kasMsControlVersion>1.1.1-SNAPSHOT</kasMsControlVersion>
 
-		<kcUaVersion>1.2.3</kcUaVersion>
-		<kasSipUaImplVersion>1.1.1-SNAPSHOT</kasSipUaImplVersion>
+		<kcUaVersion>1.2.4</kcUaVersion>
+		<kasSipUaImplVersion>1.1.2-SNAPSHOT</kasSipUaImplVersion>
 		<kasSoftPhoneVersion>1.1.0</kasSoftPhoneVersion>
 
 		<kmsCoreVersion>0.7.0-SNAPSHOT</kmsCoreVersion>
