@@ -29,8 +29,8 @@
 		<!-- Dependency versions -->
 		<kcMediaSpecVersion>2.0.0</kcMediaSpecVersion>
 
-		<kasMediaNativeVersion>1.2.0</kasMediaNativeVersion>
-		<kasMediaVersion>1.2.0</kasMediaVersion>
+		<kasMediaNativeVersion>1.2.1-SNAPSHOT</kasMediaNativeVersion>
+		<kasMediaVersion>1.2.1-SNAPSHOT</kasMediaVersion>
 
 		<kcMsControlVersion>2.0.0</kcMsControlVersion>
 		<kasMsControlVersion>1.1.1-SNAPSHOT</kasMsControlVersion>
