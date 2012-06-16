@@ -35,8 +35,8 @@
 		<kcMsControlVersion>2.0.0</kcMsControlVersion>
 		<kasMsControlVersion>1.1.1</kasMsControlVersion>
 
-		<kcUaVersion>1.2.6-SNAPSHOT</kcUaVersion>
-		<kasSipUaImplVersion>1.1.2-SNAPSHOT</kasSipUaImplVersion>
+		<kcUaVersion>1.2.6</kcUaVersion>
+		<kasSipUaImplVersion>1.1.2</kasSipUaImplVersion>
 		<kasSoftPhoneVersion>1.1.0</kasSoftPhoneVersion>
 
 	</properties>
