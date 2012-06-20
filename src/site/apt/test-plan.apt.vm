@@ -1,0 +1,16 @@
+	------
+	Kurento Android SDK
+	------
+	------
+	Date
+	------
+	
+Test Plan
+
+	This section provides detailed documentation on the Kurento Android SDK test plan.
+	Test are organized by basic functions: signaling protocols, media, etc.
+	
+	Pass status information can be seen at (add link to surefire reports)
+	
+
+	 * {{{../../kas-sipua-impl/${kasSipUaImplVersion}/test-plan.html}SIP Test plan}}

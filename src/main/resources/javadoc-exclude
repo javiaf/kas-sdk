@@ -1,0 +1,16 @@
+# Sip UA excluded classes and packages
+com.kurento.commons.sip.transaction
+com.kurento.commons.sip.transaction 
+com.kurento.commons.sip.util
+com.kurento.commons.sip.agent.UaImpl
+com.kurento.commons.sip.agent.SipContext
+com.kurento.commons.sip.agent.SipEndPointImpl
+
+# General excluded classes
+com.kurento.javadoc.utils
+
+# kas-MsControl classes
+com.kurento.kas.mscontrol.join 
+com.kurento.kas.mscontrol.internal
+com.kurento.kas.mscontrol.mediacomponent.internal 
+com.kurento.kas.mscontrol.networkconnection.internal 

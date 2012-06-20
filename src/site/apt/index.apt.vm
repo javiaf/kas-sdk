@@ -7,23 +7,20 @@
 
 Kurento Android SDK
    
-   	Kurento Android SDK (KAS) is a development framework intended to accelerate development of SIP
-	applications with video support on Android platform. KAS enable flexible, rapid application
-	development, with video conferencing capabilities, through an easy API layer for full user
-	control and flexibility.
+   	Kurento Android SDK (KAS) is a framework enabling video conference capabilities
+   	to aplications. Kurento Android SDK is built on open standards and as such,
+   	complies with IETF and 3GPP specifications to create, manage and terminate
+	video conferencing sessions that seamlessly integrates within Android Applications.
+	Multimedia sessions are built on most popular codecs like AMR, MP2 audio,
+	H.263 H.264, MPEG4 and many more in the near future. 
 	
-	Kurento Android SDK is built on open standards and as such, complies with IETF and 3GPP
-	specifications to create, manage and terminate video conferencing sessions that seamlessly
-	integrates within Android Applications. Multimedia sessions are built on most popular codecs
-	like AMR, MP2 audio, H.263 H.264, MPEG4 and many more in the near future. 
-	
-	Kurento Android SDK is incorporated to applications as a standard Android library. Internally
-	the SIP and Media stacks are instantiated and controlled through the API as shown in the 
-	Figure below.
+	Kurento Android SDK is incorporated to applications as a standard Android library.
+	Internally the call management protocols (SIP and similar) and Media stacks
+	are instantiated and controlled through a comprehensive and flexible API.
   				
 [./images/kurento-android-docs-stack.png] Kurento Android SDK stack
    
-  Detailed information on Kurento Android SDK usage can be found in the 
+    Detailed information on Kurento Android SDK usage can be found in the 
   {{{./developer-guide.html}Kurento Android SDK developer's guide}}. There's
   also a complete  {{{./reference-guide.html} Reference Guide}} for the API
   
@@ -31,6 +28,9 @@ Kurento Android SDK
   This is a test application that can help in integration procedures or as guidance
   for new developers.
   
+
+Desde aqui <-------
+
 
 * SIP User Agent
 
