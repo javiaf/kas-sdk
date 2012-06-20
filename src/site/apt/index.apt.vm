@@ -7,16 +7,13 @@
 
 Kurento Android SDK
    
-   	Kurento Android SDK (KAS) is a framework enabling video conference capabilities
-   	to aplications. Kurento Android SDK is built on open standards and as such,
-   	complies with IETF and 3GPP specifications to create, manage and terminate
-	video conferencing sessions that seamlessly integrates within Android Applications.
-	Multimedia sessions are built on most popular codecs like AMR, MP2 audio,
-	H.263 H.264, MPEG4 and many more in the near future. 
+   	Kurento Android SDK (KAS) is a framework enabling seamless integration of
+   	video conference capabilities within applications. It is built on open 
+   	standards and as such complies with IETF and 3GPP specifications. KAS 
+   	supports most popular codecs, like AMR, MP2 audio, H.263 H.264, MPEG4
+   	and many more in the near future. 
 	
-	Kurento Android SDK is incorporated to applications as a standard Android library.
-	Internally the call management protocols (SIP and similar) and Media stacks
-	are instantiated and controlled through a comprehensive and flexible API.
+	Kurento Android SDK functions are controlled through an easy and flexible API.
   				
 [./images/kurento-android-docs-stack.png] Kurento Android SDK stack
    
@@ -24,33 +21,30 @@ Kurento Android SDK
   {{{./developer-guide.html}Kurento Android SDK developer's guide}}. There's
   also a complete  {{{./reference-guide.html} Reference Guide}} for the API
   
-  {{{../../kas-softphone/${kasSoftPhoneVersion}}K-Phone}} is a good example of Kurento Android SDK capabilities.
-  This is a test application that can help in integration procedures or as guidance
-  for new developers.
+  {{{../../kas-softphone/${kasSoftPhoneVersion}}K-Phone}} is a good example
+  of Kurento Android SDK capabilities. This is a test application that can
+  help in integration procedures or as guidance for new developers.
   
+	KAS API consist of two main sections: Control plane and User plane
 
-Desde aqui <-------
-
-
-* SIP User Agent
-
-	  This component comprises a <<Control Plane>> function required by Kurento Android SDK
-	  for call control. It is a standard SIP User Agent implementing contact management and 
-      call handling. The SIP User Agent manages call negotiation without any external
-      intervention from the application layer and instantiates network connections on successful
-      call set up.
-    
-* Media control
+* Control plane
 	
-	 This component implements the <<User Plane function>>. It provides basic
-	 multimedia blocks that can be created and inter-connected 
-	 by the application. Media Control API is 
-     designed around  the <Joinable> interface concept,defined by 
-     {{{http://www.jcp.org/en/jsr/detail?id=309}JSR309 Media Server Control API}}.
-     All media process complexities are kept hidden to the application,
-     that only cares about media distribution topology, connecting physical devices to network
-     interfaces for media transmission and reception. Next Figure shows Kurento Android SDK
-     building blocks
+	Provides the User Agent interface for call control. Currently KAS provides
+	a SIP based UA.
+	   
+* User plane
+
+	Implements the media stack control interface. KAS API resembles
+	the {{{http://www.jcp.org/en/jsr/detail?id=309}JSR309 Media 
+	Server Control API}}, based in two elements that can ebe interconnected:
+	NetworkConnection and MediaComponent. NetworkConnection includes relay functions,
+	while MediaComponent provides a generic interface
+	to multimedia devices, both: presentation and capture.
+	All media process complexities are kept hidden to the application,
+    that only cares about media distribution topology, connecting 
+    physical devices to network interfaces for media transmission and reception.
+    Next Figure shows Kurento Android SDK building blocks
+	   		
 
 [./images/block-list.png]
 

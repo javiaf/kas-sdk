@@ -38,8 +38,10 @@
 
 		<kcUaVersion>1.2.6</kcUaVersion>
 		<kasSipUaImplVersion>1.1.2</kasSipUaImplVersion>
+		<kasHcpUaImplVersion>1.0.0</kasHcpUaImplVersion>
+
 		<kasSoftPhoneVersion>1.1.0</kasSoftPhoneVersion>
-		
+
 		<kcConfigVersion>1.0.0</kcConfigVersion>
 	</properties>
 
@@ -96,6 +98,13 @@
 		</dependency>
 
 		<dependency>
+			<groupId>com.kurento.kas</groupId>
+			<artifactId>kas-hcp-ua</artifactId>
+			<version>${kasHcpUaImplVersion}</version>
+			<type>jar</type>
+		</dependency>
+
+		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-android</artifactId>
 			<version>1.6.1-RC1</version>
@@ -104,13 +113,13 @@
 
 		<!-- These dependencies are required to compile javadoc. They must be included 
 			because their scope is provided and they are not transitive -->
-			
+
 		<dependency>
 			<groupId>com.kurento.commons</groupId>
 			<artifactId>kc-config</artifactId>
 			<version>${kcConfigVersion}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>javax.sip</groupId>
 			<artifactId>jain-sip-api</artifactId>
@@ -128,8 +137,7 @@
 		<dependency>
 			<groupId>com.kurento.commons</groupId>
 			<artifactId>kc-mscontrol</artifactId>
-			<version>2.0.1-SNAPSHOT</version>
-			<scope>provided</scope>
+			<version>[0.0.0,)</version>
 		</dependency>
 
 		<dependency>
@@ -138,27 +146,23 @@
 			<version>2.3.3</version>
 			<scope>provided</scope>
 		</dependency>
-		
-	
+
 		<dependency>
 			<groupId>com.kurento.commons</groupId>
 			<artifactId>kc-mediaspec</artifactId>
-			<version>2.0.1-SNAPSHOT</version>
+			<version>[0.0.0,)</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.kurento.commons</groupId>
+			<artifactId>kc-ua</artifactId>
+			<version>[0.0.0,)</version>
 		</dependency>
 
 	</dependencies>
 
 	<build>
 		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.3.2</version>
-				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
-				</configuration>
-			</plugin>
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -169,17 +173,24 @@
 					<encoding>UTF-8</encoding>
 				</configuration>
 			</plugin>
+		</plugins>
 
+		<extensions>
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-ssh</artifactId>
+				<version>2.0</version>
+			</extension>
+		</extensions>
+	</build>
+
+	<reporting>
+		<plugins>
 			<plugin>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>2.8.1</version>
-				<executions>
-					<execution>
-						<id>javadoc-jar</id>
-						<phase>package</phase>
-						<goals>
-							<goal>jar</goal>
-						</goals>
+				<reportSets>
+					<reportSet>
 						<configuration>
 							<doclet>com.kurento.javadoc.utils.ExcludeDoclet</doclet>
 							<docletArtifact>
@@ -199,27 +210,22 @@
 							<dependencySourceIncludes>
 								<dependencySourceInclude>com.kurento.commons:kc-ua</dependencySourceInclude>
 								<dependencySourceInclude>com.kurento.commons:kas-sipua-impl</dependencySourceInclude>
+								<dependencySourceInclude>com.kurento.kas:kas-hcp-ua</dependencySourceInclude>
 								<dependencySourceInclude>com.kurento.commons:kc-mscontrol</dependencySourceInclude>
 								<dependencySourceInclude>com.kurento.kas:kas-mscontrol</dependencySourceInclude>
-								<dependencySourceInclude>com.kurento.kas:kas-hcp-ua</dependencySourceInclude>
 								<dependencySourceInclude>com.kurento.commons:kc-config</dependencySourceInclude>
 								<dependencySourceInclude>com.kurento.commons:kc-mediaspec</dependencySourceInclude>
 							</dependencySourceIncludes>
 
 						</configuration>
-					</execution>
-				</executions>
+						<reports>
+							<report>javadoc</report>
+						</reports>
+					</reportSet>
+				</reportSets>
 			</plugin>
 		</plugins>
-
-		<extensions>
-			<extension>
-				<groupId>org.apache.maven.wagon</groupId>
-				<artifactId>wagon-ssh</artifactId>
-				<version>2.0</version>
-			</extension>
-		</extensions>
-	</build>
+	</reporting>
 
 	<repositories>
 		<repository>

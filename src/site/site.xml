@@ -9,17 +9,17 @@
 		<links>
 			<item name="Kurento" href="http://www.kurento.com/" />
 		</links>
-		<menu name="Kurento Android">
+		<menu name="Kurento Android SDK">
 			<item name="About" href="index.html" />
-			<item name="Release notes" href="releasenote.html" />
-			<item name="Source code" href="./source.html" />
-			<item name="Test Plan" href="test-plan.html" />
+<!-- 			<item name="Release notes" href="releasenote.html" /> -->
+<!-- 			<item name="Source code" href="./source.html" /> -->
+<!-- 			<item name="Test Plan" href="test-plan.html" /> -->
 		</menu>
-		<menu name="Developers">
-			<item name="Developer's guide" href="./developer-guide.html" />
-			<item name="SDK reference guide" href="./reference-guide.html" />
-			<item name="Integration Howto" href="./integration-guide.html" />
-		</menu>
+<!-- 		<menu name="Developers"> -->
+<!-- 			<item name="Developer's guide" href="./developer-guide.html" /> -->
+<!-- 			<item name="SDK reference guide" href="./reference-guide.html" /> -->
+<!-- 			<item name="Integration Howto" href="./integration-guide.html" /> -->
+<!-- 		</menu> -->
 
 		<menu ref="reports" />
 

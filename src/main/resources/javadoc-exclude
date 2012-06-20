@@ -1,10 +1,10 @@
 # Sip UA excluded classes and packages
 com.kurento.commons.sip.transaction
-com.kurento.commons.sip.transaction 
 com.kurento.commons.sip.util
 com.kurento.commons.sip.agent.UaImpl
 com.kurento.commons.sip.agent.SipContext
 com.kurento.commons.sip.agent.SipEndPointImpl
+com.kurento.commons.sip.exception
 
 # General excluded classes
 com.kurento.javadoc.utils
