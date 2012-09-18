@@ -28,21 +28,21 @@
 		<kurentoAndroidSdkVersion>1.0.1</kurentoAndroidSdkVersion>
 
 		<!-- Dependency versions -->
-		<kcMediaSpecVersion>2.0.1</kcMediaSpecVersion>
+		<kcMediaSpecVersion>2.0.2-SNAPSHOT</kcMediaSpecVersion>
 
-		<kasMediaNativeVersion>1.2.1</kasMediaNativeVersion>
-		<kasMediaVersion>1.2.1</kasMediaVersion>
+		<kasMediaNativeVersion>1.2.2-SNAPSHOT</kasMediaNativeVersion>
+		<kasMediaVersion>1.2.2-SNAPSHOT</kasMediaVersion>
 
-		<kcMsControlVersion>2.0.0</kcMsControlVersion>
-		<kasMsControlVersion>1.1.1</kasMsControlVersion>
+		<kcMsControlVersion>2.0.2-SNAPSHOT</kcMsControlVersion>
+		<kasMsControlVersion>1.1.2-SNAPSHOT</kasMsControlVersion>
 
-		<kcUaVersion>1.2.6</kcUaVersion>
+		<kcUaVersion>1.2.7-SNAPSHOT</kcUaVersion>
 		<kasSipUaImplVersion>1.1.2</kasSipUaImplVersion>
-		<kasHcpUaImplVersion>1.0.0</kasHcpUaImplVersion>
+		<kasHcpUaImplVersion>1.0.1-SNAPSHOT</kasHcpUaImplVersion>
 
 		<kasSoftPhoneVersion>1.1.0</kasSoftPhoneVersion>
 
-		<kcConfigVersion>1.0.0</kcConfigVersion>
+		<kcConfigVersion>1.0.1-SNAPSHOT</kcConfigVersion>
 	</properties>
 
 	<organization>
