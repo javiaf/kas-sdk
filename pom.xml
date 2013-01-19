@@ -37,7 +37,7 @@
 		<kasMsControlVersion>1.1.2-SNAPSHOT</kasMsControlVersion>
 
 		<kcUaVersion>1.2.7-SNAPSHOT</kcUaVersion>
-		<kasSipUaImplVersion>1.1.2</kasSipUaImplVersion>
+		<kasSipUaImplVersion>1.1.3-SNAPSHOT</kasSipUaImplVersion>
 		<kasHcpUaImplVersion>1.0.1-SNAPSHOT</kasHcpUaImplVersion>
 
 		<kasSoftPhoneVersion>1.1.0</kasSoftPhoneVersion>
@@ -137,7 +137,7 @@
 		<dependency>
 			<groupId>com.kurento.commons</groupId>
 			<artifactId>kc-mscontrol</artifactId>
-			<version>[0.0.0,)</version>
+			<version>${kcMsControlVersion}</version>
 		</dependency>
 
 		<dependency>
@@ -150,13 +150,13 @@
 		<dependency>
 			<groupId>com.kurento.commons</groupId>
 			<artifactId>kc-mediaspec</artifactId>
-			<version>[0.0.0,)</version>
+			<version>${kcMediaSpecVersion}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>com.kurento.commons</groupId>
 			<artifactId>kc-ua</artifactId>
-			<version>[0.0.0,)</version>
+			<version>${kcUaVersion}</version>
 		</dependency>
 
 	</dependencies>
