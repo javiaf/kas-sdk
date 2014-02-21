@@ -3,7 +3,7 @@
 
 	<groupId>com.kurento.kas</groupId>
 	<artifactId>kurento-android-sdk</artifactId>
-	<version>1.0.1</version>
+	<version>1.0.2-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Kurento Android SDK</name>
@@ -24,20 +24,20 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
 		<!-- KurentoAndroidSdk versions -->
-		<kurentoAndroidSdkVersion>1.0.1</kurentoAndroidSdkVersion>
+		<kurentoAndroidSdkVersion>1.0.2-SNAPSHOT</kurentoAndroidSdkVersion>
 
 		<!-- Dependency versions -->
-		<kcMediaSpecVersion>2.0.1</kcMediaSpecVersion>
+		<kcMediaSpecVersion>2.0.2</kcMediaSpecVersion>
 
-		<kasMediaNativeVersion>1.2.1</kasMediaNativeVersion>
-		<kasMediaVersion>1.2.1</kasMediaVersion>
+		<kasMediaNativeVersion>1.2.3-SNAPSHOT</kasMediaNativeVersion>
+		<kasMediaVersion>1.2.3-SNAPSHOT</kasMediaVersion>
 
 		<kcMsControlVersion>2.0.0</kcMsControlVersion>
-		<kasMsControlVersion>1.1.1</kasMsControlVersion>
+		<kasMsControlVersion>1.1.6-SNAPSHOT</kasMsControlVersion>
 
-		<kcUaVersion>1.2.6</kcUaVersion>
-		<kasSipUaImplVersion>1.1.2</kasSipUaImplVersion>
-		<kasSoftPhoneVersion>1.1.0</kasSoftPhoneVersion>
+		<kcUaVersion>1.2.9-SNAPSHOT</kcUaVersion>
+		<kasSipUaImplVersion>1.1.3-SNAPSHOT</kasSipUaImplVersion>
+		<kasSoftPhoneVersion>1.1.3-SNAPSHOT</kasSoftPhoneVersion>
 
 	</properties>
 
